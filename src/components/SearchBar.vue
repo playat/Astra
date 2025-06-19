@@ -5,7 +5,11 @@
 </template>
 
 <script setup lang="ts">
-const searchInput = (e) => {
-  console.log(e.target.value);
+import { suSearch } from '@/api/su'
+const searchInput = async (e) => {
+  const res = await suSearch({
+    w: e.target.value,
+  })
+  console.log(res)
 }
 </script>
