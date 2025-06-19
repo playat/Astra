@@ -25,7 +25,6 @@ export default defineConfig({
       "/api": {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
-        // target: 'https://exam-admin.demo.bin-go.cc/api',
         target: env.VITE_API_URL,
         ws: false,
       },
