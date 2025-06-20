@@ -5,6 +5,6 @@
 </template>
 
 <script setup lang="ts">
-const bgUrl = "C:/Users/Administrator/Downloads/KT68h.jpg"
+import bgUrl from "@/assets/bg.jpg"
 
 </script>
