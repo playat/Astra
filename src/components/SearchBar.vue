@@ -2,19 +2,23 @@
   <div
     class="absolute z-10 left-1/2 top-1/8 w-1/8 hover:w-1/4 transition-all -translate-x-1/2"
     :class="inputFucos ? '!w-1/4' : 'w-1/8'"
+    @mouseenter="focus = true"
+    @mouseleave="focus = false"
   >
     <div
-      class="w-full bg-white-0.15 rounded-full py-2 px-4 transition-all"
+      class="w-full bg-white-0.15 rounded-full py-2 px-4 transition-all flex items-center justify-center"
       style="backdrop-filter: blur(6px)"
     >
       <input
-        class="w-full text-gray-300 bg-transparent"
+        v-show="focus"
+        class="flex-1 text-gray-300 bg-transparent"
         @input="searchInput"
         v-model="searchText"
         @focus="inputFucos = true"
         @blur="inputFucos = false"
         @keydown.enter="toSearch(searchText)"
       />
+      <img v-show="!focus" :src="SearchSvg" />
     </div>
     <div
       class="mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
@@ -39,11 +43,12 @@
 import { suSearch } from "@/api/su";
 import searchApi from "@/config";
 import { ref } from "vue";
-
+import SearchSvg from "@/assets/svg/search.svg";
 const searchFrom = ref("bing");
 const suList = ref<string[]>([]);
 const searchText = ref("");
 const inputFucos = ref(false);
+const focus = ref(false)
 let timer: any;
 const searchInput = (e) => {
   searchText.value = e.target.value;
