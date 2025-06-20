@@ -22,10 +22,10 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 8888,
     proxy: {
-      "/api": {
+      "/su": {
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
-        target: env.VITE_API_URL,
+        rewrite: (path) => path.replace(/^\/su/, ""),
+        target: env.VITE_SEARCH_SU_API,
         ws: false,
       },
     },
