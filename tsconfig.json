@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    "module": "node16",
+    "moduleResolution": "node16",
     "strict": false,
     "importHelpers": true,
     "experimentalDecorators": true,
@@ -19,7 +19,6 @@
     "lib": ["dom", "esnext"],
     "paths": {
       "@/*": ["src/*"],
-      "@build/*": ["build/*"]
     },
     "types": ["node", "vite/client"]
   },

@@ -1,28 +1,31 @@
 <template>
-  <div
-    class="absolute z-10 left-1/2 top-1/8 w-1/8 hover:w-1/4 transition-all -translate-x-1/2"
-    :class="inputFucos ? '!w-1/4' : 'w-1/8'"
-    @mouseenter="focus = true"
-    @mouseleave="focus = false"
-  >
+  <div class="absolute top-1/8 left-1/2 w-max -translate-x-1/2 transition-all">
     <div
-      class="w-full bg-white-0.15 rounded-full py-2 px-4 transition-all flex items-center justify-center"
+      class="text-gray-300 rounded-full w-[10vw] h-10 hover:w-[20vw] transition-all duration-300 flex justify-center items-center bg-white-0.15 px-4 cursor-pointer"
       style="backdrop-filter: blur(6px)"
+      :class="{ 'w-[20vw]': focus }"
+      @click="toFocus"
     >
       <input
+        ref="inputRef"
         v-show="focus"
-        class="flex-1 text-gray-300 bg-transparent"
+        class="flex-1 text-center"
         @input="searchInput"
         v-model="searchText"
-        @focus="inputFucos = true"
-        @blur="inputFucos = false"
+        @blur="toBlur"
         @keydown.enter="toSearch(searchText)"
       />
-      <img v-show="!focus" :src="SearchSvg" />
+      <img
+        :src="SearchSvg"
+        v-show="!focus"
+        class="transition-all"
+        :class="{ 'opacity-0 invisible': focus }"
+      />
     </div>
+
     <div
-      class="mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
-      style="backdrop-filter: blur(12px)"
+      class="absolute top-full mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
+      style="backdrop-filter: blur(6px)"
       :class="{
         'invisible opacity-0': !inputFucos,
       }"
@@ -42,13 +45,14 @@
 <script setup lang="ts">
 import { suSearch } from "@/api/su";
 import searchApi from "@/config";
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
 const searchFrom = ref("bing");
 const suList = ref<string[]>([]);
 const searchText = ref("");
 const inputFucos = ref(false);
-const focus = ref(false)
+const focus = ref(false);
+const inputRef = ref();
 let timer: any;
 const searchInput = (e) => {
   searchText.value = e.target.value;
@@ -65,6 +69,18 @@ const searchInput = (e) => {
     clearTimeout(timer);
     timer = null;
   }, 100);
+};
+
+const toFocus = () => {
+  focus.value = !focus.value;
+  nextTick(() => {
+    inputRef.value.focus();
+  });
+};
+
+const toBlur = () => {
+  focus.value = false;
+  searchText.value = "";
 };
 
 const toSearch = (keyWord: string) => {
