@@ -5,10 +5,10 @@ import { reactive, ref } from "vue";
 const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
     url: string;
-    type: "image" | "video";
+    type: "image" | "video" | undefined;
   }>({
     url: "",
-    type: "image",
+    type: undefined,
   });
   getItem("bg", "bg_img").then((res: {type: "image" | "video", imgFile: File}) => {
     if(res) {

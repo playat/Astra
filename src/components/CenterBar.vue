@@ -1,7 +1,8 @@
 <template>
   <div class="text-white px-24 text-center mt-10 flex-grow">
-    <button @click="selectBg('image')">选择图片背景</button>
-    <button @click="selectBg('video')">选择视频背景</button>
+    <button @click="selectBg('image')">选择图片</button>
+    -
+    <button @click="selectBg('video')">选择视频</button>
   </div>
 </template>
 
@@ -12,7 +13,7 @@ const appStore = useApp()
 const selectBg = (type: "image" | "video") => {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = "image/*";
+  input.accept = `${type}/*`;
   input.click();
 
   input.onchange = (e: any) => {

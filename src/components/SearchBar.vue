@@ -1,30 +1,45 @@
 <template>
   <div class="w-max mx-auto mt-[calc(100vh/8)] relative">
     <div
-      class="text-gray-300 relative rounded-full w-40 h-10 transition-[width] flex items-center justify-center hover:w-xl duration-300 bg-white-0.15 px-4 cursor-pointer"
-      style="backdrop-filter: blur(6px)"
-      :class="{ 'w-xl': focus }"
+      class="text-gray-300 backdrop-blur-6px relative rounded-full w-40 h-10 transition-[width background] flex items-center justify-center hover:w-xl hover:!bg-neutral-800 duration-300 bg-white-0.15 px-4 cursor-pointer"
+      :class="{ 'w-xl !bg-neutral-800': focus }"
     >
-      <input
-        ref="inputRef"
-        class="text-center transform-[opacity] w-full px-4 absolute left-0 top-0 h-10 delay-300"
+      <div
+        class="transform-[opacity] w-full flex items-center px-4 absolute left-0 top-0 delay-200"
         :class="!focus ? 'opacity-0' : 'opacity-100'"
-        @input="searchInput"
-        v-model="searchText"
-        @blur="toBlur"
-        @focus="toFocus"
-        @keydown.enter="toSearch(searchText)"
-      />
-      <img
+        tabindex="0"
+      >
+        <img
+          @click="selectSearch"
+          :src="BingSvg"
+          class="w-5 h-5"
+        />
+        <input
+          ref="inputRef"
+          class="text-center h-10 flex-1"
+          @input="searchInput"
+          @focus="toFocus"
+          @blur="toFocus"
+          v-model="searchText"
+          @keydown.enter="toSearch(searchText)"
+        />
+        <img :src="SearchSvg" class="mx-auto w-5 h-5" />
+      </div>
+      <span
+        class="text-sm transition-[opacity]"
+        :class="focus ? 'opacity-0' : 'opacity-100'"
+      >
+        搜索
+      </span>
+      <!-- <img
         :src="SearchSvg"
         class="transition-[opacity] mx-auto w-5 h-5"
         :class="focus ? 'opacity-0' : 'opacity-100'"
-      />
+      /> -->
     </div>
 
     <div
-      class="mt-4 absolute top-full transition-all w-full rounded-md bg-white-0.15 text-gray-300"
-      style="backdrop-filter: blur(6px)"
+      class="mt-4 absolute top-full backdrop-blur-6px transition-all w-full rounded-md bg-white-0.15 text-gray-300"
       :class="{
         'invisible opacity-0': !focus,
       }"
@@ -44,8 +59,9 @@
 <script setup lang="ts">
 import { suSearch } from "@/api/su";
 import searchApi from "@/config";
-import { ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
+import BingSvg from "@/assets/svg/bing.svg";
 const searchFrom = ref("bing");
 const suList = ref<string[]>([]);
 const searchText = ref("");
@@ -76,14 +92,30 @@ const toFocus = () => {
   focus.value = !focus.value;
 };
 
-const toBlur = () => {
-  focus.value = false;
-  searchText.value = "";
-};
+const selectSearch = () => {
+  
+}
 
 const toSearch = (keyWord: string) => {
   window.open(`${searchApi[searchFrom.value]}${keyWord}`);
   searchText.value = "";
   suList.value = [];
 };
+
+const handleKeydown = (e: KeyboardEvent) => {
+  const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
+
+  if (isLetterOrNumber && !focus.value) {
+    focus.value = true;
+    inputRef.value.focus();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>
