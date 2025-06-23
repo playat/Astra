@@ -1,33 +1,32 @@
 <template>
-  <div class="absolute top-1/8 left-1/2 w-max -translate-x-1/2 transition-all">
+  <div class="mx-auto mt-[calc(100vh/8)] left-1/2 w-max">
     <div
-      class="text-gray-300 rounded-full w-[10vw] h-10 hover:w-[20vw] transition-all duration-300 flex justify-center items-center bg-white-0.15 px-4 cursor-pointer"
+      class="text-gray-300 relative rounded-full w-40 h-10 transition-[width] flex items-center justify-center hover:w-xl duration-300 bg-white-0.15 px-4 cursor-pointer"
       style="backdrop-filter: blur(6px)"
-      :class="{ 'w-[20vw]': focus }"
-      @click="toFocus"
+      :class="{ 'w-xl': focus }"
     >
       <input
         ref="inputRef"
-        v-show="focus"
-        class="flex-1 text-center"
+        class="text-center transform-[opacity] w-full px-4 absolute left-0 top-0 h-10 delay-300"
+        :class="!focus ? 'opacity-0' : 'opacity-100'"
         @input="searchInput"
         v-model="searchText"
         @blur="toBlur"
+        @focus="toFocus"
         @keydown.enter="toSearch(searchText)"
       />
       <img
         :src="SearchSvg"
-        v-show="!focus"
-        class="transition-all"
-        :class="{ 'opacity-0 invisible': focus }"
+        class="transition-[opacity] mx-auto w-5 h-5"
+        :class="focus ? 'opacity-0' : 'opacity-100'"
       />
     </div>
 
     <div
-      class="absolute top-full mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
+      class="top-full mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
       style="backdrop-filter: blur(6px)"
       :class="{
-        'invisible opacity-0': !inputFucos,
+        'invisible opacity-0': !focus,
       }"
     >
       <div
@@ -65,6 +64,8 @@ const searchInput = (e) => {
       wd: e.target.value,
       cb: "SUJsonP",
     });
+    console.log(res);
+
     suList.value = res.s;
     clearTimeout(timer);
     timer = null;
@@ -73,9 +74,6 @@ const searchInput = (e) => {
 
 const toFocus = () => {
   focus.value = !focus.value;
-  nextTick(() => {
-    inputRef.value.focus();
-  });
 };
 
 const toBlur = () => {

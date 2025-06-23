@@ -7,5 +7,5 @@ export const suSearch = async (params: {wd: string, cb: string}) => {
   const bufferRes = await res.arrayBuffer()
   const decoder = new TextDecoder('gbk'); 
   const text = decoder.decode(bufferRes);
-  return new Function(`const SUJsonP = (data) => {return data}; return ${text}`)();
+  return new Function(`const SUJsonP = (data) => data; return ${text}`)();
 }
