@@ -26,7 +26,7 @@ export const setItem = async (tableKey: string, key: string, value: any) => {
   const db: IDBDatabase = await open(tableKey);
   db.transaction(tableKey, "readwrite")
     .objectStore(tableKey)
-    .put({ data: JSON.stringify(value) }, key);
+    .put(value, key);
 };
 
 export const deleteData = async (tableKey: string, key: string) => {
@@ -43,7 +43,7 @@ export const getItem = async (tableKey: string, key: string) => {
       .get(key);
 
     request.onsuccess = () => {
-      resolve(request.result?.data);
+      resolve(request.result);
     };
 
     request.onerror = () => {
