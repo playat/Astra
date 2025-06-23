@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto mt-[calc(100vh/8)] left-1/2 w-max">
+  <div class="w-max mx-auto mt-[calc(100vh/8)] relative">
     <div
       class="text-gray-300 relative rounded-full w-40 h-10 transition-[width] flex items-center justify-center hover:w-xl duration-300 bg-white-0.15 px-4 cursor-pointer"
       style="backdrop-filter: blur(6px)"
@@ -23,7 +23,7 @@
     </div>
 
     <div
-      class="top-full mt-4 transition-all w-full rounded-md bg-white-0.15 text-gray-300"
+      class="mt-4 absolute top-full transition-all w-full rounded-md bg-white-0.15 text-gray-300"
       style="backdrop-filter: blur(6px)"
       :class="{
         'invisible opacity-0': !focus,
@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { suSearch } from "@/api/su";
 import searchApi from "@/config";
-import { ref, nextTick } from "vue";
+import { ref } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
 const searchFrom = ref("bing");
 const suList = ref<string[]>([]);
