@@ -11,23 +11,32 @@ const useApp = defineStore("app", () => {
     type: undefined,
   });
 
-  const apps = ref([
+  const apps = ref<
+    {
+      key: string;
+      name: string;
+      icon: string;
+    }[]
+  >([
     {
       key: "set_bg",
       icon: "",
-      name: "背景设置"
-    }
-  ])
+      name: "背景设置",
+    },
+  ]);
 
-  getItem("bg", "bg_img").then((res: {type: "image" | "video", imgFile: File}) => {
-    if(res) {
-      bgCfn.url = URL.createObjectURL(res.imgFile);
-      bgCfn.type = res.type
+  getItem("bg", "bg_img").then(
+    (res: { type: "image" | "video"; imgFile: File }) => {
+      if (res) {
+        bgCfn.url = URL.createObjectURL(res.imgFile);
+        bgCfn.type = res.type;
+      }
     }
-  });
+  );
 
   return {
     bgCfn,
+    apps,
   };
 });
 
