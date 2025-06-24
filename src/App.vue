@@ -4,7 +4,7 @@
     <div class="h-full w-full absolute left-0 top-0 flex flex-col">
       <SearchBar />
       <CenterBar />
-      <!-- <BottomBar /> -->
+      <BottomBar />
     </div>
   </div>
 </template>

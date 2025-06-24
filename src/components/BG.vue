@@ -7,7 +7,7 @@
       muted
       autoplay
       :src="appStore.bgCfn.url"
-      class="w-auto h-full object-cover"
+      class="w-full h-full object-cover"
     />
     <img
       v-if="appStore.bgCfn.type === 'image'"

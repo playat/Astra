@@ -10,6 +10,15 @@ const useApp = defineStore("app", () => {
     url: "",
     type: undefined,
   });
+
+  const apps = ref([
+    {
+      key: "set_bg",
+      icon: "",
+      name: "背景设置"
+    }
+  ])
+
   getItem("bg", "bg_img").then((res: {type: "image" | "video", imgFile: File}) => {
     if(res) {
       bgCfn.url = URL.createObjectURL(res.imgFile);

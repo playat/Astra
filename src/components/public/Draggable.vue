@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex justify-center flex-wrap relative"
+    class="flex justify-center flex-wrap relative gap-x-2 py-2 overflow-hidden"
     @mousemove="mouseMove"
     @mouseup="mouseUp"
   >
@@ -41,8 +41,8 @@ const top = ref(0);
 const left = ref(0);
 const itemRefs = ref([]);
 const curItem = ref();
-let initX = 0;
-let initY = 0;
+let initClientX = 0;
+let initClientY = 0;
 const curIn = ref();
 const curEl = ref();
 let initPoint: {
@@ -54,32 +54,34 @@ let initPoint: {
 
 const isMove = ref();
 const mouseDown = (e, item, index) => {
+  initClientX = e.clientX;
+  initClientY = e.clientY;
+
   curEl.value = e.currentTarget;
   curItem.value = item;
   initIndex.value = index;
-  const { pageX, pageY } = e;
 
-  initPoint = e.currentTarget.getBoundingClientRect();
-
-  initX = pageX - initPoint.left;
-  initY = pageY - initPoint.top;
+  initPoint = {
+    left: e.currentTarget.offsetLeft,
+    top: e.currentTarget.offsetTop,
+    width: e.currentTarget.offsetWidth,
+    height: e.currentTarget.offsetHeight,
+  };
 
   isMove.value = true;
-  const { offsetLeft, offsetTop } = e.currentTarget;
-  left.value = offsetLeft;
-  top.value = offsetTop;
+  left.value = e.currentTarget.offsetLeft;
+  top.value = e.currentTarget.offsetTop;
 
   if (positions.value.length === 0) {
     itemRefs.value.forEach((el, i) => {
       el.setAttribute("data-index", i);
-      const rect = el.getBoundingClientRect();
       el.style.transform = "translate3d(0, 0, 0)";
       el.style.transition = "transform 0.3s ease";
       positions.value.push({
-        left: rect.left,
-        top: rect.top,
-        width: rect.width,
-        height: rect.height,
+        left: el.offsetLeft,
+        top: el.offsetTop,
+        width: el.offsetWidth,
+        height: el.offsetHeight,
       });
     });
   }
@@ -97,12 +99,8 @@ const mouseMove = (e) => {
   if (!isMove.value) {
     return;
   }
-  const { pageX, pageY } = e;
-
-  const { left: containerLeft, top: containerTop } =
-    e.currentTarget.getBoundingClientRect();
-  left.value = pageX - containerLeft - initX;
-  top.value = pageY - containerTop - initY;
+  left.value = initPoint.left + (e.clientX - initClientX);
+  top.value = initPoint.top + (e.clientY - initClientY);
 
   const curEl = itemRefs.value[initIndex.value];
   const curIndex = Number(curEl.getAttribute("data-index"));
