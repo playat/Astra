@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white w-full px-24 text-center bg-black absolute mt-4 top-1/5">
+  <div class="text-white w-full px-24 text-center absolute mt-4 top-1/5">
     <button @click="selectBg('image')">选择图片</button>
     -
     <button @click="selectBg('video')">选择视频</button>

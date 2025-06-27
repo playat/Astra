@@ -1,41 +1,48 @@
 <template>
   <div
     class="text-gray-300 backdrop-blur-6px absolute top-1/8 left-1/2 -translate-x-1/2 rounded-full w-40 h-10 transition-[width background] flex items-center justify-center hover:w-xl hover:!bg-neutral-800 duration-300 bg-white-0.15 px-4 cursor-pointer"
-    :class="{ 'w-xl !bg-neutral-800': focus }"
+    :class="{ 'w-xl !bg-neutral-800': appStore.searchFocus }"
   >
     <div
-      class="transform-[opacity] w-full flex items-center px-4 absolute left-0 top-0 delay-200"
-      :class="!focus ? 'opacity-0' : 'opacity-100'"
+      class="transform-[opacity] w-full flex items-center px-4 delay-200"
       tabindex="0"
     >
-      <img @click="selectSearch" :src="BingSvg" class="w-5 h-5" />
+      <img
+        @click.stop="selectSearch"
+        :src="BingSvg"
+        class="w-5 h-5"
+        :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100'"
+      />
+      <div
+        class="text-sm transition-[opacity] cursor-pointer flex items-center justify-center w-full h-10 text-white whitespace-nowrap"
+        :class="
+          appStore.searchFocus ? 'opacity-0' : 'opacity-100 flex-1'
+        "
+        @click="toFocus"
+      >
+        搜索
+      </div>
       <input
         ref="inputRef"
-        class="text-center h-10 flex-1"
+        class="text-center h-10 select-none"
+        :class="
+          !appStore.searchFocus ? 'opacity-0' : 'opacity-100 flex-1'
+        "
         @input="searchInput"
-        @focus="toFocus"
-        @blur="toFocus"
         v-model="searchText"
         @keydown.enter="toSearch(searchText)"
       />
-      <img :src="SearchSvg" class="mx-auto w-5 h-5" />
-    </div>
-    <span
-      class="text-sm transition-[opacity]"
-      :class="focus ? 'opacity-0' : 'opacity-100'"
-    >
-      搜索
-    </span>
-    <!-- <img
+      <img
         :src="SearchSvg"
-        class="transition-[opacity] mx-auto w-5 h-5"
-        :class="focus ? 'opacity-0' : 'opacity-100'"
-      /> -->
+        class="mx-auto w-5 h-5"
+        :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100'"
+      />
+    </div>
   </div>
 
   <div
     class="mt-4 absolute top-1/5 w-xl backdrop-blur-6px overflow-y-scroll transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
-    :class="focus ? 'h-[50vh]' : 'h-0 opacity-0'"
+    :class="appStore.searchFocus ? 'h-[50vh]' : 'h-0 opacity-0'"
   >
     <div
       v-for="item in suList"
@@ -55,6 +62,7 @@ import searchApi from "@/config";
 import { onMounted, onUnmounted, ref } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
 import BingSvg from "@/assets/svg/bing.svg";
+import useApp from "@/store/app";
 const searchFrom = ref("bing");
 const suList = ref<string[]>([
   "小米",
@@ -68,9 +76,8 @@ const suList = ref<string[]>([
   "小米",
   "xiaomi",
 ]);
+const appStore = useApp();
 const searchText = ref("");
-const inputFucos = ref(false);
-const focus = ref(false);
 const inputRef = ref();
 let timer: any;
 const searchInput = (e) => {
@@ -91,11 +98,10 @@ const searchInput = (e) => {
     timer = null;
   }, 100);
 };
-
 const toFocus = () => {
-  focus.value = !focus.value;
+  appStore.searchFocus = true;
+  inputRef.value.focus();
 };
-
 const selectSearch = () => {};
 
 const toSearch = (keyWord: string) => {
@@ -104,20 +110,20 @@ const toSearch = (keyWord: string) => {
   suList.value = [];
 };
 
-const handleKeydown = (e: KeyboardEvent) => {
-  const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
+// const handleKeydown = (e: KeyboardEvent) => {
+//   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
 
-  if (isLetterOrNumber && !focus.value) {
-    focus.value = true;
-    inputRef.value.focus();
-  }
-};
+//   if (isLetterOrNumber && !appStore.searchFocus) {
+//     appStore.searchFocus = true;
+//     inputRef.value.focus();
+//   }
+// };
 
-onMounted(() => {
-  window.addEventListener("keydown", handleKeydown);
-});
+// onMounted(() => {
+//   window.addEventListener("keydown", handleKeydown);
+// });
 
-onUnmounted(() => {
-  window.removeEventListener("keydown", handleKeydown);
-});
+// onUnmounted(() => {
+//   window.removeEventListener("keydown", handleKeydown);
+// });
 </script>

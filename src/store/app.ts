@@ -11,6 +11,8 @@ const useApp = defineStore("app", () => {
     type: undefined,
   });
 
+  const searchFocus = ref(false);
+
   const apps = ref<
     {
       key: string;
@@ -37,6 +39,7 @@ const useApp = defineStore("app", () => {
   return {
     bgCfn,
     apps,
+    searchFocus,
   };
 });
 
