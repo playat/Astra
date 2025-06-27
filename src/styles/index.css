@@ -3,12 +3,12 @@
 #app {
   width: 100vw;
   height: 100vh;
+  position: relative;
 }
 
 input {
   outline: none;
 }
-
 
 .bg-white-0\.1 {
   background-color: rgba(255, 255, 255, 0.1);
@@ -32,6 +32,9 @@ input {
 .bg-white-0\.15 {
   background-color: rgba(255, 255, 255, 0.15);
 }
+.hover\:bg-white-0\.15:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
 
 .bg-black-0\.5 {
   background-color: rgba(0, 0, 0, 0.5);
@@ -39,4 +42,8 @@ input {
 
 .backdrop-blur-6px {
   backdrop-filter: blur(6px);
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
