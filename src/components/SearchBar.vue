@@ -7,7 +7,6 @@
       class="transform-[opacity] w-full flex items-center justify-between delay-200"
     >
       <img
-        @click.stop="selectSearch"
         :src="BingSvg"
         class="w-5 h-5"
         :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100'"
@@ -40,17 +39,17 @@
   </div>
 
   <div
-    class="absolute top-1/3 w-xl backdrop-blur-6px overflow-y-scroll transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
+    class="absolute top-1/3 w-xl backdrop-blur-6px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
     :class="
       appStore.searchFocus && suList.length
-        ? 'h-[50vh] visible'
+        ? 'visible'
         : 'h-0 opacity-0 invisible'
     "
   >
     <div
       v-for="item in suList"
       :key="item"
-      class="text-sm cursor-pointer py-2 px-4 hover:bg-white-0.15 rounded-lg"
+      class="text-sm cursor-pointer py-1.5 px-4 hover:bg-white-0.15 font-bold rounded-lg transition-all"
       @click="toSearch(item)"
     >
       {{ item }}
@@ -94,7 +93,6 @@ const toFocus = () => {
   appStore.searchFocus = true;
   inputRef.value.focus();
 };
-const selectSearch = () => {};
 
 const toSearch = (keyWord: string) => {
   window.open(`${searchApi[searchFrom.value]}${keyWord}`);
@@ -103,20 +101,20 @@ const toSearch = (keyWord: string) => {
   appStore.searchFocus = false;
 };
 
-// const handleKeydown = (e: KeyboardEvent) => {
-//   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
+const handleKeydown = (e: KeyboardEvent) => {
+  const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
 
-//   if (isLetterOrNumber && !appStore.searchFocus) {
-//     appStore.searchFocus = true;
-//     inputRef.value.focus();
-//   }
-// };
+  if (isLetterOrNumber && !appStore.searchFocus) {
+    appStore.searchFocus = true;
+    inputRef.value.focus();
+  }
+};
 
-// onMounted(() => {
-//   window.addEventListener("keydown", handleKeydown);
-// });
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
 
-// onUnmounted(() => {
-//   window.removeEventListener("keydown", handleKeydown);
-// });
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
 </script>

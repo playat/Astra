@@ -33,8 +33,9 @@ import { ref } from "vue";
 
 const props = defineProps<{
   list: any[];
+  isDrag: boolean;
 }>();
-const emits = defineEmits(["update:list"]);
+const emits = defineEmits(["update:list", "update:isDrag"]);
 const initIndex = ref();
 const positions = ref([]);
 const top = ref(0);
@@ -53,12 +54,17 @@ let initPoint: {
 } = {};
 
 const isMove = ref();
+let isDragTimer: any;
 const mouseDown = (e, item, index) => {
+  isDragTimer = setTimeout(() => {
+    emits("update:isDrag", true);
+  }, 300);
   initClientX = e.clientX;
   initClientY = e.clientY;
 
   curEl.value = e.currentTarget;
   curItem.value = item;
+
   initIndex.value = index;
 
   initPoint = {
@@ -85,6 +91,7 @@ const mouseDown = (e, item, index) => {
       });
     });
   }
+  console.log("目前元素", itemRefs, positions);
 };
 // 检查当前拖拽点是否进入某个矩形范围内
 const checkPointInRect = (point, rect) => {
@@ -114,8 +121,8 @@ const mouseMove = (e) => {
       },
       rect
     );
-
     if (isEnter && curIn.value !== index) {
+      curIn.value = index;
       if (curIndex < index) {
         transPrev(curIndex, index);
       }
@@ -123,12 +130,15 @@ const mouseMove = (e) => {
         transNext(curIndex, index);
       }
       transCur(index);
-      curIn.value = index;
+      console.log("变换后目前元素", itemRefs, positions);
     }
   });
 };
 
 const mouseUp = () => {
+  clearTimeout(isDragTimer);
+  emits("update:isDrag", false);
+
   if (initIndex.value) {
     const curEl = itemRefs.value[initIndex.value];
     const curIndex = Number(curEl.getAttribute("data-index"));
@@ -150,7 +160,7 @@ const mouseUp = () => {
   curItem.value = null;
   initIndex.value = null;
   positions.value = [];
-  curIn.value = null;
+  // curIn.value = null;
 };
 
 const transPrev = (from, to) => {

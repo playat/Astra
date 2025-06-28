@@ -15,6 +15,7 @@ const useApp = defineStore("app", () => {
 
   const apps = ref<
     {
+      isDefault: boolean;
       key: string;
       name: string;
       icon: string;
@@ -22,9 +23,16 @@ const useApp = defineStore("app", () => {
   >([
     {
       key: "set_bg",
+      isDefault: true,
       icon: "",
       name: "背景设置",
     },
+    {
+      key: "https://www.mi.com/",
+      isDefault: false,
+      icon: "https://s01.mifile.cn/favicon.ico",
+      name: "小米官网"
+    }
   ]);
 
   getItem("bg", "bg_img").then(

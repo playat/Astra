@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full relative" @click="appStore.searchFocus = false">
+  <div class="w-full h-full relative" @click="reset">
     <div class="absolute inset-0 bg-black/30"></div>
     <video
       v-if="appStore.bgCfn.type === 'video'"
@@ -20,4 +20,8 @@
 <script setup lang="ts">
 import useApp from "@/store/app";
 const appStore = useApp();
+
+const reset = () => {
+  appStore.searchFocus = false;
+};
 </script>
