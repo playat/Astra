@@ -32,6 +32,12 @@ const useApp = defineStore("app", () => {
       isDefault: false,
       icon: "https://s01.mifile.cn/favicon.ico",
       name: "小米官网"
+    },
+    {
+      key: "https://element-plus.org/zh-CN/component/overview.html",
+      isDefault: false,
+      icon: "https://element-plus.org/images/element-plus-logo-small.svg",
+      name: "Element Plus"
     }
   ]);
 
