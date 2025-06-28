@@ -5,9 +5,10 @@
     @mouseup="mouseUp"
   >
     <div
-      ref="itemRefs"
+      :ref="(el) => setItems(index, el)"
       v-for="(item, index) in list"
-      :key="item"
+      :data-index="index"
+      :key="item.key"
       @mousedown="mouseDown($event, item, index)"
       :style="{
         opacity: initIndex === index ? 0.5 : 1,
@@ -40,7 +41,7 @@ const initIndex = ref();
 const positions = ref([]);
 const top = ref(0);
 const left = ref(0);
-const itemRefs = ref([]);
+const itemRefs = ref({});
 const curItem = ref();
 let initClientX = 0;
 let initClientY = 0;
@@ -53,8 +54,36 @@ let initPoint: {
   height?: number;
 } = {};
 
+const setItems = (key, el) => {
+  itemRefs.value[key] = el;
+};
+
 const isMove = ref();
 let isDragTimer: any;
+const createPositions = () => {
+  for (const key in itemRefs.value) {
+    const el = itemRefs.value[key];
+    el.style.transform = "translate3d(0, 0, 0)";
+    el.style.transition = "transform 0.3s ease";
+    positions.value.push({
+      left: el.offsetLeft,
+      top: el.offsetTop,
+      width: el.offsetWidth,
+      height: el.offsetHeight,
+    });
+  }
+  // itemRefs.value.forEach((el, i) => {
+  //   el.setAttribute("data-index", i);
+  //   el.style.transform = "translate3d(0, 0, 0)";
+  //   el.style.transition = "transform 0.3s ease";
+  //   positions.value.push({
+  //     left: el.offsetLeft,
+  //     top: el.offsetTop,
+  //     width: el.offsetWidth,
+  //     height: el.offsetHeight,
+  //   });
+  // });
+};
 const mouseDown = (e, item, index) => {
   isDragTimer = setTimeout(() => {
     emits("update:isDrag", true);
@@ -79,19 +108,8 @@ const mouseDown = (e, item, index) => {
   top.value = e.currentTarget.offsetTop;
 
   if (positions.value.length === 0) {
-    itemRefs.value.forEach((el, i) => {
-      el.setAttribute("data-index", i);
-      el.style.transform = "translate3d(0, 0, 0)";
-      el.style.transition = "transform 0.3s ease";
-      positions.value.push({
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        width: el.offsetWidth,
-        height: el.offsetHeight,
-      });
-    });
+    createPositions();
   }
-  console.log("目前元素", itemRefs, positions);
 };
 // 检查当前拖拽点是否进入某个矩形范围内
 const checkPointInRect = (point, rect) => {
@@ -110,6 +128,7 @@ const mouseMove = (e) => {
   top.value = initPoint.top + (e.clientY - initClientY);
 
   const curEl = itemRefs.value[initIndex.value];
+
   const curIndex = Number(curEl.getAttribute("data-index"));
 
   // 检查是否进入其他卡片范围
@@ -130,7 +149,6 @@ const mouseMove = (e) => {
         transNext(curIndex, index);
       }
       transCur(index);
-      console.log("变换后目前元素", itemRefs, positions);
     }
   });
 };
@@ -150,11 +168,15 @@ const mouseUp = () => {
       emits("update:list", newList);
     }
   }
-
-  itemRefs.value.forEach((el) => {
+  for (const key in itemRefs.value) {
+    const el = itemRefs.value[key];
     el.style.transform = "";
     el.style.transition = "";
-  });
+  }
+  // itemRefs.value.forEach((el) => {
+  //   el.style.transform = "";
+  //   el.style.transition = "";
+  // });
 
   isMove.value = false;
   curItem.value = null;
@@ -164,7 +186,8 @@ const mouseUp = () => {
 };
 
 const transPrev = (from, to) => {
-  itemRefs.value.forEach((el) => {
+  for (const key in itemRefs.value) {
+    const el = itemRefs.value[key];
     const i = Number(el.getAttribute("data-index"));
     if (i <= to && i > from) {
       const curPos = positions.value[i];
@@ -183,11 +206,12 @@ const transPrev = (from, to) => {
       el.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
       el.setAttribute("data-index", i - 1);
     }
-  });
+  }
 };
 
 const transNext = (from, to) => {
-  itemRefs.value.forEach((el) => {
+  for (const key in itemRefs.value) {
+    const el = itemRefs.value[key];
     const i = Number(el.getAttribute("data-index"));
     if (i >= to && i < from) {
       const curPos = positions.value[i];
@@ -206,7 +230,7 @@ const transNext = (from, to) => {
       el.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
       el.setAttribute("data-index", i + 1);
     }
-  });
+  }
 };
 
 const transCur = (toIndex) => {
