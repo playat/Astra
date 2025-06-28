@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full relative">
+  <div class="w-full h-full relative" @click="appStore.searchFocus = false">
     <div class="absolute inset-0 bg-black/30"></div>
     <video
       v-if="appStore.bgCfn.type === 'video'"

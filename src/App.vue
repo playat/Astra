@@ -1,7 +1,8 @@
 <template>
   <BG />
-  <CenterBar />
+  <!-- <CenterBar /> -->
   <BottomBar />
+  <TimeNumber />
   <SearchBar />
 </template>
 
@@ -10,4 +11,5 @@ import BottomBar from "@/components/BottomBar.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import BG from "@/components/BG.vue";
 import CenterBar from "@/components/CenterBar.vue";
+import TimeNumber from "./components/TimeNumber.vue";
 </script>
