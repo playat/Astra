@@ -1,19 +1,30 @@
 <template>
   <div
-    class="fixed transition-all"
-    :class="dialog.visible ? 'w-auto auto -translate-x-1/2 -translate-y-1/2' : 'w-0 h-0'"
-    :style="{
-      left: dialog.visible ? '50%' : `${positions.x}px`,
-      top: dialog.visible ? '50%' : `${positions.y}px`,
-    }"
+    class="fixed transition-all bg-neutral-800 p-3 rounded-md flex flex-col gap-3"
+    :class="
+      visible
+        ? '-translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2'
+        : 'translate-0 left-0 top-full opacity-0'
+    "
   >
-    <component :is="dialog.content" />
+    <div class="flex items-center justify-end">
+      <img
+        class="w-4 h-4 cursor-pointer"
+        :src="CloseSvg"
+        @click="appStore.dialog.visible = false"
+      />
+    </div>
+    <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject } from "vue";
-import dialog from "@/hooks/useDialog";
+import CloseSvg from "@/assets/svg/close.svg";
+import useApp from "@/store/app";
+defineProps<{
+  visible: boolean;
+}>();
 
-const positions: { x: number; y: number } = inject("UI_DIALOG");
+const emits = defineEmits(["update:visible"]);
+const appStore = useApp();
 </script>

@@ -1,0 +1,146 @@
+[
+  {
+    "identifier": {
+      "id": "bradlc.vscode-tailwindcss",
+      "uuid": "4db62a7c-7d70-419c-96d2-6c3a4dc77ea5"
+    },
+    "version": "0.14.23",
+    "location": {
+      "$mid": 1,
+      "path": "/c:/Users/桂桂/.trae/extensions/bradlc.vscode-tailwindcss-0.14.23-universal",
+      "scheme": "file"
+    },
+    "relativeLocation": "bradlc.vscode-tailwindcss-0.14.23-universal",
+    "metadata": {
+      "installedTimestamp": 1751179901912,
+      "pinned": false,
+      "source": "gallery",
+      "id": "4db62a7c-7d70-419c-96d2-6c3a4dc77ea5",
+      "publisherId": "84722833-669b-4c7d-920e-b60e43fae19a",
+      "publisherDisplayName": "Tailwind Labs",
+      "targetPlatform": "undefined",
+      "updated": true,
+      "isPreReleaseVersion": false,
+      "hasPreReleaseVersion": false,
+      "isApplicationScoped": false,
+      "isMachineScoped": false,
+      "isBuiltin": false,
+      "private": false,
+      "preRelease": false
+    }
+  },
+  {
+    "identifier": {
+      "id": "octref.vetur",
+      "uuid": "2f5dd8cb-d251-4d70-abfe-ddebcb077483"
+    },
+    "version": "0.37.3",
+    "location": {
+      "$mid": 1,
+      "path": "/c:/Users/桂桂/.trae/extensions/octref.vetur-0.37.3-universal",
+      "scheme": "file"
+    },
+    "relativeLocation": "octref.vetur-0.37.3-universal",
+    "metadata": {
+      "installedTimestamp": 1751179902281,
+      "pinned": false,
+      "source": "gallery",
+      "id": "2f5dd8cb-d251-4d70-abfe-ddebcb077483",
+      "publisherId": "c3b70842-905b-406e-8f5b-153e8de05481",
+      "publisherDisplayName": "Pine Wu",
+      "targetPlatform": "undefined",
+      "updated": true,
+      "isPreReleaseVersion": false,
+      "hasPreReleaseVersion": false,
+      "isApplicationScoped": false,
+      "isMachineScoped": false,
+      "isBuiltin": false,
+      "private": false,
+      "preRelease": false
+    }
+  },
+  {
+    "identifier": {
+      "id": "vue.volar",
+      "uuid": "a95ee795-1576-4ffa-acda-8d6e6a95c584"
+    },
+    "version": "2.2.10",
+    "location": {
+      "$mid": 1,
+      "path": "/c:/Users/桂桂/.trae/extensions/vue.volar-2.2.10-universal",
+      "scheme": "file"
+    },
+    "relativeLocation": "vue.volar-2.2.10-universal",
+    "metadata": {
+      "installedTimestamp": 1751179901880,
+      "pinned": false,
+      "source": "gallery",
+      "id": "a95ee795-1576-4ffa-acda-8d6e6a95c584",
+      "publisherId": "49983e2f-38ad-4441-beea-d678b53d0549",
+      "publisherDisplayName": "Vue",
+      "targetPlatform": "undefined",
+      "updated": true,
+      "private": false,
+      "isPreReleaseVersion": false,
+      "hasPreReleaseVersion": false,
+      "isApplicationScoped": false,
+      "isMachineScoped": false,
+      "isBuiltin": false,
+      "preRelease": false
+    }
+  },
+  {
+    "identifier": {
+      "id": "esbenp.prettier-vscode",
+      "uuid": "96fa4707-6983-4489-b7c5-d5ffdfdcce90"
+    },
+    "version": "11.0.0",
+    "location": {
+      "$mid": 1,
+      "path": "/c:/Users/桂桂/.trae/extensions/esbenp.prettier-vscode-11.0.0",
+      "scheme": "file"
+    },
+    "relativeLocation": "esbenp.prettier-vscode-11.0.0",
+    "metadata": {
+      "isApplicationScoped": false,
+      "isMachineScoped": false,
+      "isBuiltin": false,
+      "installedTimestamp": 1751179806223,
+      "pinned": false,
+      "source": "gallery",
+      "id": "96fa4707-6983-4489-b7c5-d5ffdfdcce90",
+      "publisherId": "d16f4e39-2ffb-44e3-9c0d-79d873570e3a",
+      "publisherDisplayName": "Prettier",
+      "targetPlatform": "undefined",
+      "updated": true,
+      "private": false,
+      "isPreReleaseVersion": false,
+      "hasPreReleaseVersion": false,
+      "preRelease": false
+    }
+  },
+  {
+    "identifier": { "id": "s-nlf-fh.glassit" },
+    "version": "0.2.6",
+    "location": {
+      "$mid": 1,
+      "_sep": 1,
+      "path": "C:\\Users\\桂桂\\.trae\\extensions\\s-nlf-fh.glassit-0.2.6",
+      "scheme": "file"
+    },
+    "relativeLocation": "s-nlf-fh.glassit-0.2.6",
+    "metadata": {
+      "installedTimestamp": 1751181998641,
+      "pinned": true,
+      "source": "gallery",
+      "id": "7f4f553c-204c-42fe-9b4d-7a3f11f7335b",
+      "publisherId": "f39c25eb-2c51-4821-97b3-8718f85c8e5f",
+      "publisherDisplayName": "hikarin522",
+      "targetPlatform": "undefined",
+      "updated": false,
+      "private": false,
+      "isPreReleaseVersion": false,
+      "hasPreReleaseVersion": false
+    }
+  }
+]

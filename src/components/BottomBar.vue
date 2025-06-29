@@ -29,7 +29,10 @@ const openApp = (data: any) => {
 
   if (isDrag.value) return;
   if (!data.isDefault) {
-    // window.open(data.key, "_blank");
+    window.open(data.key, "_blank");
+  } else {
+    appStore.dialog.component = data.component;
+    appStore.dialog.visible = true;
   }
 };
 </script>

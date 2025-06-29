@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full relative" @click="reset">
+  <div class="w-full h-full relative" @click="reset" @contextmenu="contextMenu">
     <div class="absolute inset-0 bg-black/30"></div>
     <video
       v-if="appStore.bgCfn.type === 'video'"
@@ -23,5 +23,9 @@ const appStore = useApp();
 
 const reset = () => {
   appStore.searchFocus = false;
+};
+
+const contextMenu = (e) => {
+  e.preventDefault();
 };
 </script>
