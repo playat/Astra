@@ -6,7 +6,7 @@ import useApp from "./app.js";
 const useSearch = defineStore("search", () => {
   const appStore = useApp();
 
-  const suList = ref([]);
+  const suList = ref<string[]>([]);
   const searchFrom = ref("bing");
   const searchText = ref("");
 

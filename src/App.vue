@@ -4,6 +4,7 @@
   <BottomBar />
   <TimeNumber />
   <SearchBar />
+  <SuList/>
   <Dialog v-model:visible="appStore.dialog.visible">
     <component :is="appStore.dialog.component" />
   </Dialog>
@@ -17,6 +18,7 @@ import CenterBar from "@/components/CenterBar.vue";
 import TimeNumber from "./components/TimeNumber.vue";
 import Dialog from "./components_ui/Dialog.vue";
 import useApp from "./store/app";
+import SuList from "./components/SuList.vue";
 
 const appStore = useApp();
 
