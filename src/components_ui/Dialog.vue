@@ -4,8 +4,12 @@
     :class="
       visible
         ? '-translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2'
-        : 'translate-0 left-0 top-full opacity-0'
+        : 'translate-0 opacity-0'
     "
+    :style="{
+      left: `${appStore.globlePosition.x}px`,
+      top: `${appStore.globlePosition.y}px`
+    }"
   >
     <div class="flex items-center justify-end">
       <img

@@ -17,8 +17,8 @@
           class="text-center absolute left-0 top-0 w-full h-full select-none placeholder:text-white placeholder:text-sm"
           :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100 flex-1'"
           @input="searchInput"
-          v-model="searchText"
-          @keydown.enter="toSearch(searchText)"
+          v-model="searchStore.searchText"
+          @keydown.enter="searchStore.toSearch"
         />
 
         <div
@@ -37,25 +37,6 @@
       />
     </div>
   </div>
-
-  <div
-    class="absolute top-1/3 w-xl backdrop-blur-6px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
-    :class="
-      appStore.searchFocus && suList.length
-        ? 'visible'
-        : 'h-0 opacity-0 invisible'
-    "
-  >
-    <div
-      v-for="item in suList"
-      :key="item"
-      class="text-sm cursor-pointer py-1.5 px-4 hover:bg-white-0.15 font-bold rounded-lg transition-all"
-      @click="toSearch(item)"
-    >
-      {{ item }}
-    </div>
-  </div>
-  <!-- </div> -->
 </template>
 
 <script setup lang="ts">
@@ -65,14 +46,14 @@ import { onMounted, onUnmounted, ref } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
 import BingSvg from "@/assets/svg/bing.svg";
 import useApp from "@/store/app";
-const searchFrom = ref("bing");
+import useSearch from "@/store/search";
 const suList = ref<string[]>([]);
 const appStore = useApp();
-const searchText = ref("");
+const searchStore = useSearch();
 const inputRef = ref();
 let timer: any;
 const searchInput = (e) => {
-  searchText.value = e.target.value;
+  searchStore.searchText = e.target.value;
   if (timer) {
     clearTimeout(timer);
     timer = null;
@@ -92,13 +73,6 @@ const searchInput = (e) => {
 const toFocus = () => {
   appStore.searchFocus = true;
   inputRef.value.focus();
-};
-
-const toSearch = (keyWord: string) => {
-  window.open(`${searchApi[searchFrom.value]}${keyWord}`);
-  searchText.value = "";
-  suList.value = [];
-  appStore.searchFocus = false;
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
