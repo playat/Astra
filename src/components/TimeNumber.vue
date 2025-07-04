@@ -1,5 +1,7 @@
 <template>
-  <div class="absolute left-1/2 top-[calc(100vh/4-58px)] -translate-x-1/2 text-white text-5xl">
+  <div
+    class="absolute left-1/2 top-[calc(100vh/4-58px)] -translate-x-1/2 text-white text-5xl select-none"
+  >
     {{ timeDisplay }}
   </div>
 </template>

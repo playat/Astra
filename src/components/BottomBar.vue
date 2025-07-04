@@ -25,8 +25,6 @@ const appStore = useApp();
 
 const isDrag = ref(false);
 const openApp = (data: any) => {
-  console.log(2);
-
   if (isDrag.value) return;
   if (!data.isDefault) {
     window.open(data.key, "_blank");

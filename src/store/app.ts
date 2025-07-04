@@ -2,6 +2,7 @@ import { getItem } from "@/utils/indexedDb.js";
 import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
 import BGicon from "@/assets/svg/bg-icon.svg";
+import BGSetting from "@/components/BGSetting.vue";
 
 const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
@@ -31,7 +32,7 @@ const useApp = defineStore("app", () => {
       isDefault: true,
       icon: BGicon,
       name: "背景设置",
-      component: () => import("@/components/BGSetting.vue"),
+      component: BGSetting,
     },
     {
       key: "https://www.mi.com/",

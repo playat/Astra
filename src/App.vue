@@ -4,7 +4,7 @@
   <BottomBar />
   <TimeNumber />
   <SearchBar />
-  <SuList/>
+  <SuList />
   <Dialog v-model:visible="appStore.dialog.visible">
     <component :is="appStore.dialog.component" />
   </Dialog>
