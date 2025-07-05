@@ -19,6 +19,8 @@ import TimeNumber from "./components/TimeNumber.vue";
 import Dialog from "./components_ui/Dialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
+import { onMounted } from "vue";
+import { getAppLsit } from "./api/app";
 
 const appStore = useApp();
 
@@ -30,4 +32,10 @@ document.addEventListener(
   },
   true
 );
+
+onMounted(() => {
+  getAppLsit().then((res) => {
+    appStore.apps = [...appStore.apps, ...res];
+  });
+});
 </script>

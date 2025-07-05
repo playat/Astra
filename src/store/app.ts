@@ -34,24 +34,6 @@ const useApp = defineStore("app", () => {
       name: "背景设置",
       component: BGSetting,
     },
-    {
-      key: "https://www.mi.com/",
-      isDefault: false,
-      icon: "https://s01.mifile.cn/favicon.ico",
-      name: "小米官网",
-    },
-    {
-      key: "https://www.doubao.com/chat/",
-      isDefault: false,
-      icon: "//lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/logo-icon.png",
-      name: "豆包",
-    },
-    {
-      key: "https://element-plus.org/zh-CN/component/overview.html",
-      isDefault: false,
-      icon: "https://element-plus.org/images/element-plus-logo-small.svg",
-      name: "Element Plus",
-    },
   ]);
   const globlePosition = reactive({
     x: 0,
