@@ -1,6 +1,6 @@
 <template>
   <div
-    class="backdrop-blur-6px bg-white-0\.15 p-2.5 rounded-xl mx-auto mb-2.5 absolute left-1/2 -translate-x-1/2 bottom-0 flex items-center gap-2"
+    class="backdrop-blur-6px bg-white-0\.15 p-2.5 rounded-xl mb-2.5 absolute left-1/2 z-20 -translate-x-1/2 bottom-0 flex gap-2 w-max"
   >
     <Draggable v-model:list="appStore.apps" v-model:is-drag="isDrag">
       <template #default="{ data }">
@@ -18,10 +18,10 @@
       </template>
     </Draggable>
     <div
-      class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-6px"
+      class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-6px flex items-center justify-center shrink-1"
       @click="addApp"
     >
-      <img :src="PlusSvg" draggable="false" referrerpolicy="no-referrer" />
+      <img :src="PlusSvg" draggable="false" />
     </div>
   </div>
 </template>

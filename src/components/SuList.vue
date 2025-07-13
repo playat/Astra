@@ -1,11 +1,11 @@
 <template>
   <div
     class="absolute top-1/4 mt-14 w-xl backdrop-blur-6px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
-    :class="
-      appStore.searchFocus && searchStore.suList.length
+    :class="[
+      appStore.searchFocus && searchStore.suList.length && !appStore.isMore
         ? 'visible'
-        : 'h-0 opacity-0 invisible'
-    "
+        : 'h-0 opacity-0 invisible',
+    ]"
   >
     <div
       v-for="item in searchStore.suList"

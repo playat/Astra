@@ -1,6 +1,6 @@
 <template>
   <BG />
-  <!-- <CenterBar /> -->
+  <CenterBar />
   <BottomBar />
   <TimeNumber />
   <SearchBar />

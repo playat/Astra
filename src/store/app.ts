@@ -39,6 +39,8 @@ const useApp = defineStore("app", () => {
     x: 0,
     y: 0,
   });
+
+  const isMore = ref(false);
   getItem("bg", "bg_img").then(
     (res: { type: "image" | "video"; imgFile: File }) => {
       if (res) {
@@ -54,6 +56,7 @@ const useApp = defineStore("app", () => {
     searchFocus,
     dialog,
     globlePosition,
+    isMore,
   };
 });
 

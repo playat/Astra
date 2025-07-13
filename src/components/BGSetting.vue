@@ -35,6 +35,7 @@ const selectBg = (type: "image" | "video") => {
         type,
       };
       setItem("bg", "bg_img", { type, imgFile: file });
+      appStore.dialog.visible = false;
     }
   };
 };

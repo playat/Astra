@@ -1,7 +1,10 @@
 <template>
   <div
     class="text-gray-300 backdrop-blur-6px absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 h-10 transition-[width background] flex items-center justify-center hover:w-xl hover:!bg-neutral-800 duration-300 bg-white-0.15 px-4 cursor-pointer"
-    :class="{ 'w-xl !bg-neutral-800': appStore.searchFocus }"
+    :class="{
+      'w-xl !bg-neutral-800': appStore.searchFocus,
+      'opacity-0 invisible': appStore.isMore,
+    }"
   >
     <div
       class="transform-[opacity] w-full flex items-center justify-between delay-200"
