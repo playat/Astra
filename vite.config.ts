@@ -22,6 +22,7 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 8989,
     proxy: {
+      "/api": env.VITE_API_URL,
       "/su": {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/su/, ""),

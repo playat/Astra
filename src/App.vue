@@ -35,7 +35,7 @@ document.addEventListener(
 
 onMounted(() => {
   getAppLsit().then((res) => {
-    appStore.apps = [...appStore.apps, ...res];
+    appStore.apps = [...appStore.apps, ...res.data];
   });
 });
 </script>

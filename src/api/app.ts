@@ -1,4 +1,4 @@
 export const getAppLsit = async () => {
-  const res = await import("../../public/app_conf.json");
-  return res.default;
+  const fetchRes = await fetch(`/api/app`, { method: "GET" });
+  return await fetchRes.json();
 };
