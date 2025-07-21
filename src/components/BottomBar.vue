@@ -1,6 +1,6 @@
 <template>
   <div
-    class="backdrop-blur-6px bg-white-0\.15 p-2.5 rounded-xl mb-2.5 absolute left-1/2 z-20 -translate-x-1/2 bottom-0 flex gap-2 w-max"
+    class="backdrop-blur-6px bg-white-0\.15 p-2.5 rounded-xl mb-2.5 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 flex gap-2 w-max"
   >
     <Draggable v-model:list="appStore.apps" v-model:is-drag="isDrag">
       <template #default="{ data }">
@@ -37,12 +37,7 @@ const appStore = useApp();
 const isDrag = ref(false);
 const openApp = (data: any) => {
   if (isDrag.value) return;
-  if (!data.isDefault) {
-    window.open(data.key, "_blank");
-  } else {
-    appStore.dialog.component = data.component;
-    appStore.dialog.visible = true;
-  }
+  appStore.openApp(data);
 };
 
 const addApp = () => {

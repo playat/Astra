@@ -50,6 +50,15 @@ const useApp = defineStore("app", () => {
     }
   );
 
+  const openApp = (data: any) => {
+    if (!data.isDefault) {
+      window.open(data.key, "_blank");
+    } else {
+      dialog.component = data.component;
+      dialog.visible = true;
+    }
+  };
+
   return {
     bgCfn,
     apps,
@@ -57,6 +66,7 @@ const useApp = defineStore("app", () => {
     dialog,
     globlePosition,
     isMore,
+    openApp,
   };
 });
 

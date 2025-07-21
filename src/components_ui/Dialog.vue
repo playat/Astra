@@ -1,16 +1,25 @@
 <template>
   <div
-    ref="dialogRef"
-    class="fixed bg-neutral-800 p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
+    class="absolute z-20 left-0 top-0 w-full h-full bg-[rgba(0,0,0,0.2)] transition-all"
+    :class="
+      appStore.dialog.visible ? 'visible opacity-100' : 'opacity-0 invisible'
+    "
+    @click="appStore.dialog.visible = false"
   >
-    <div class="flex items-center justify-end">
-      <img
-        class="w-4 h-4 cursor-pointer"
-        :src="CloseSvg"
-        @click="appStore.dialog.visible = false"
-      />
+    <div
+      ref="dialogRef"
+      @click.stop
+      class="fixed bg-[rgba(0,0,0,0.5)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
+    >
+      <div class="flex items-center justify-end">
+        <img
+          class="w-4 h-4 cursor-pointer"
+          :src="CloseSvg"
+          @click="appStore.dialog.visible = false"
+        />
+      </div>
+      <slot />
     </div>
-    <slot />
   </div>
 </template>
 
@@ -33,7 +42,7 @@ watch(
   (newVal) => {
     if (newVal) {
       from = { ...appStore.globlePosition };
-      setPosition(appStore.globlePosition.x, appStore.globlePosition.y);
+      setPosition(from.x, from.y);
       setTimeout(() => {
         dialogRef.value.classList.remove("scale-0");
         dialogRef.value.classList.add(
