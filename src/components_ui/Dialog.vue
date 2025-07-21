@@ -1,7 +1,7 @@
 <template>
   <div
     ref="dialogRef"
-    class="fixed bg-neutral-800 p-3 rounded-md flex flex-col gap-3"
+    class="fixed bg-neutral-800 p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
   >
     <div class="flex items-center justify-end">
       <img
@@ -19,29 +19,40 @@ import CloseSvg from "@/assets/svg/close.svg";
 import useApp from "@/store/app";
 import { nextTick, ref, watch } from "vue";
 
-const dialogRef = ref();
+const dialogRef = ref<HTMLElement>();
 const emits = defineEmits(["update:visible"]);
 const appStore = useApp();
-const position = ref({
-  x: 0,
-  y: 0,
-});
+let from: { x: number; y: number } = { x: 0, y: 0 };
+
+const setPosition = (x, y) => {
+  dialogRef.value.style.top = `${y}px`;
+  dialogRef.value.style.left = `${x}px`;
+};
 watch(
   () => appStore.dialog.visible,
   (newVal) => {
     if (newVal) {
-      dialogRef.value.style.top = `${appStore.globlePosition.y}px`;
-      dialogRef.value.style.left = `${appStore.globlePosition.x}px`;
-      nextTick(() => {
-        dialogRef.value.classList.add("transition-all");
-        const layout = dialogRef.value.getBoundingClientRect();
-        dialogRef.value.style.left = `${
-          window.innerWidth / 2 - layout.width / 2
-        }px`;
-        dialogRef.value.style.top = `${
-          window.innerHeight / 2 - layout.height / 2
-        }px`;
-      });
+      from = { ...appStore.globlePosition };
+      setPosition(appStore.globlePosition.x, appStore.globlePosition.y);
+      setTimeout(() => {
+        dialogRef.value.classList.remove("scale-0");
+        dialogRef.value.classList.add(
+          "transition-all",
+          "duration-300",
+          "opacity-100",
+          "scale-100"
+        );
+        setPosition(window.innerWidth / 2, window.innerHeight / 2);
+      }, 100);
+    } else {
+      dialogRef.value.classList.replace("scale-100", "scale-0");
+      dialogRef.value.classList.replace("opacity-100", "opacity-0");
+      setPosition(from.x, from.y);
+
+      setTimeout(() => {
+        dialogRef.value.classList.remove("transition-all", "duration-300");
+      }, 300);
+      from = { x: 0, y: 0 };
     }
   }
 );
