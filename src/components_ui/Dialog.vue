@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import CloseSvg from "@/assets/svg/close.svg";
 import useApp from "@/store/app";
-import { nextTick, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 const dialogRef = ref<HTMLElement>();
 const emits = defineEmits(["update:visible"]);

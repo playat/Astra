@@ -8,7 +8,7 @@
   <Dialog>
     <component :is="appStore.dialog.component" />
   </Dialog>
-  <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div>
+  <!-- <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div> -->
 
 </template>
 
