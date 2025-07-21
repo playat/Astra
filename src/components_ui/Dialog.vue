@@ -1,11 +1,7 @@
 <template>
   <div
-    class="fixed transition-all bg-neutral-800 p-3 rounded-md flex flex-col gap-3"
-    :class="
-      visible
-        ? '-translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2'
-        : 'translate-0 opacity-0 '
-    "
+    ref="dialogRef"
+    class="fixed bg-neutral-800 p-3 rounded-md flex flex-col gap-3"
   >
     <div class="flex items-center justify-end">
       <img
@@ -21,10 +17,32 @@
 <script setup lang="ts">
 import CloseSvg from "@/assets/svg/close.svg";
 import useApp from "@/store/app";
-defineProps<{
-  visible: boolean;
-}>();
+import { nextTick, ref, watch } from "vue";
 
+const dialogRef = ref();
 const emits = defineEmits(["update:visible"]);
 const appStore = useApp();
+const position = ref({
+  x: 0,
+  y: 0,
+});
+watch(
+  () => appStore.dialog.visible,
+  (newVal) => {
+    if (newVal) {
+      dialogRef.value.style.top = `${appStore.globlePosition.y}px`;
+      dialogRef.value.style.left = `${appStore.globlePosition.x}px`;
+      nextTick(() => {
+        dialogRef.value.classList.add("transition-all");
+        const layout = dialogRef.value.getBoundingClientRect();
+        dialogRef.value.style.left = `${
+          window.innerWidth / 2 - layout.width / 2
+        }px`;
+        dialogRef.value.style.top = `${
+          window.innerHeight / 2 - layout.height / 2
+        }px`;
+      });
+    }
+  }
+);
 </script>

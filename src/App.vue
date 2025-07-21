@@ -5,9 +5,11 @@
   <TimeNumber />
   <SearchBar />
   <SuList />
-  <Dialog v-model:visible="appStore.dialog.visible">
+  <Dialog>
     <component :is="appStore.dialog.component" />
   </Dialog>
+  <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div>
+
 </template>
 
 <script setup lang="ts">

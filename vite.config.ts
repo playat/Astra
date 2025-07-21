@@ -3,11 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
-const env = loadEnv("", process.cwd(), "");
-
-const resolve = (p) => {
-  return path.resolve(__dirname, p);
-};
+const env = loadEnv(process.env.NODE_ENV, process.cwd(), ""); // 第三个参数为空表示加载所有变量
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
@@ -22,7 +18,12 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 8989,
     proxy: {
-      "/api": env.VITE_API_URL,
+      "/api": {
+        target: env.VITE_API_URL,
+        rewrite(path) {
+          return path.replace(/^\/api/, "");
+        },
+      },
       "/su": {
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/su/, ""),
