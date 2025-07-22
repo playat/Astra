@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="bgRef"
     class="w-full h-full relative transition-all"
     @click="reset"
     @contextmenu="contextMenu"
@@ -26,8 +27,10 @@
 
 <script setup lang="ts">
 import useApp from "@/store/app";
+import { onMounted, ref } from "vue";
+import gsap from "gsap";
 const appStore = useApp();
-
+const bgRef = ref();
 const reset = () => {
   appStore.searchFocus = false;
   appStore.isMore = false;
@@ -37,4 +40,18 @@ const contextMenu = (e) => {
   e.preventDefault();
   appStore.isMore = true;
 };
+
+onMounted(() => {
+  gsap.fromTo(
+    bgRef.value,
+    {
+      opacity: 0,
+    },
+    {
+      opacity: 1,
+      duration: 1,
+      ease: "power2.inOut",
+    }
+  );
+});
 </script>
