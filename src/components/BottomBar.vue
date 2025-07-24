@@ -1,13 +1,14 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-6px bg-white-0\.15 p-2.5 rounded-xl mb-2.5 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 flex gap-2 w-max"
+    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 flex gap-2 w-max"
+    style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable v-model:list="appStore.apps" v-model:is-drag="isDrag">
       <template #default="{ data }">
         <div
           @click="openApp(data)"
-          class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-6px"
+          class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-20px hover:!bg-white"
         >
           <img
             class="w-full hfull"
@@ -19,7 +20,7 @@
       </template>
     </Draggable>
     <div
-      class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-6px flex items-center justify-center shrink-1"
+      class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-20px flex items-center justify-center shrink-1"
       @click="addApp"
     >
       <img :src="PlusSvg" draggable="false" />
@@ -54,7 +55,7 @@ onMounted(() => {
       y: `100%`,
       opacity: 0,
     },
-    { y: 0, opacity: 1, ease: "elastic.out(1, 0.9)" }
+    { y: 0, opacity: 1, duration: 1, ease: "elastic.out(1, 0.9)" }
   );
 });
 </script>

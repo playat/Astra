@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
 import BGicon from "@/assets/svg/bg-icon.svg";
 import BGSetting from "@/components/BGSetting.vue";
+import { getAppLsit } from "@/api/app.js";
 
 const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
@@ -35,6 +36,13 @@ const useApp = defineStore("app", () => {
       component: BGSetting,
     },
   ]);
+
+  const loadAppList = () => {
+    getAppLsit().then((res) => {
+      apps.value = [...apps.value, ...res.data];
+    });
+  };
+
   const globlePosition = reactive({
     x: 0,
     y: 0,
@@ -62,6 +70,7 @@ const useApp = defineStore("app", () => {
   return {
     bgCfn,
     apps,
+    loadAppList,
     searchFocus,
     dialog,
     globlePosition,

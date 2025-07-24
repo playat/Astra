@@ -1,7 +1,7 @@
 <template>
   <div
     ref="bgRef"
-    class="w-full h-full relative transition-all"
+    class="w-full h-full relative scale-120 bg-black"
     @click="reset"
     @contextmenu="contextMenu"
   >
@@ -19,7 +19,8 @@
       class="w-full h-full object-cover"
     />
     <div
-      class="absolute inset-0 bg-black/30 transition-all"
+      ref="bgMaskRef"
+      class="absolute inset-0 bg-black/80"
       :class="appStore.isMore ? 'backdrop-blur-6px' : ''"
     />
   </div>
@@ -30,6 +31,7 @@ import useApp from "@/store/app";
 import { onMounted, ref } from "vue";
 import gsap from "gsap";
 const appStore = useApp();
+const bgMaskRef = ref();
 const bgRef = ref();
 const reset = () => {
   appStore.searchFocus = false;
@@ -43,14 +45,25 @@ const contextMenu = (e) => {
 
 onMounted(() => {
   gsap.fromTo(
-    bgRef.value,
+    bgMaskRef.value,
     {
-      opacity: 0,
+      background: `rgba(0,0,0,0.2)`,
     },
     {
-      opacity: 1,
-      duration: 1,
-      ease: "power2.inOut",
+      background: `rgba(0,0,0,0.6)`,
+      duration: 1.5,
+    }
+  );
+  gsap.fromTo(
+    bgRef.value,
+    {
+      filter: "blur(6px)",
+    },
+    {
+      scale: "1 1",
+      filter: "blur(0px)",
+      duration: 1.5,
+      ease: "power2.out",
     }
   );
 });

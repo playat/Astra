@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex justify-center flex-wrap relative gap-x-2 overflow-hidden"
+    class="flex justify-center flex-wrap relative gap-x-3 overflow-hidden"
     @mousemove="mouseMove"
     @mouseup="mouseUp"
   >

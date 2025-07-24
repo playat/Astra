@@ -10,7 +10,7 @@
     "
   >
     <div
-      class="bg-[rgba(0,0,0,0.5)] backdrop-blur-6px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
+      class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
       v-for="item in appStore.apps"
       :key="item.key"
       @click="appStore.openApp(item)"
@@ -18,7 +18,7 @@
       <img :src="item.icon" class="w-8 h-8" />
     </div>
     <div
-      class="bg-[rgba(0,0,0,0.5)] backdrop-blur-6px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
+      class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
       @click="addApp"
     >
       <img :src="PlusSvg" class="w-8 h-8" />

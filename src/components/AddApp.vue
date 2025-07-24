@@ -10,8 +10,10 @@
 
 <script setup lang="ts">
 import { addApp } from "@/api/app";
+import useApp from "@/store/app";
 import { ref } from "vue";
 
+const appStore = useApp();
 const form = ref({
   key: "",
   icon: "",
@@ -19,9 +21,11 @@ const form = ref({
 });
 
 const confirm = () => {
-  addApp(form.value).then(res => {
-    console.log(res);
-    
-  })
+  addApp(form.value).then((res) => {
+    if (res.code === 200) {
+      appStore.dialog.visible = false;
+      appStore.loadAppList();
+    }
+  });
 };
 </script>

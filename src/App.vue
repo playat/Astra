@@ -9,7 +9,6 @@
     <component :is="appStore.dialog.component" />
   </Dialog>
   <!-- <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div> -->
-
 </template>
 
 <script setup lang="ts">
@@ -22,7 +21,6 @@ import Dialog from "./components_ui/Dialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import { onMounted } from "vue";
-import { getAppLsit } from "./api/app";
 
 const appStore = useApp();
 
@@ -36,8 +34,6 @@ document.addEventListener(
 );
 
 onMounted(() => {
-  getAppLsit().then((res) => {
-    appStore.apps = [...appStore.apps, ...res.data];
-  });
+  appStore.loadAppList();
 });
 </script>
