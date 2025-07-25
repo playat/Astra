@@ -170,6 +170,7 @@ const mouseUp = () => {
   }
   for (const key in itemRefs.value) {
     const el = itemRefs.value[key];
+    el.setAttribute("data-index", key);
     el.style.transform = "";
     el.style.transition = "";
   }
