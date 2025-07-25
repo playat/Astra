@@ -157,17 +157,17 @@ const mouseUp = () => {
   clearTimeout(isDragTimer);
   emits("update:isDrag", false);
 
-  if (initIndex.value) {
-    const curEl = itemRefs.value[initIndex.value];
-    const curIndex = Number(curEl.getAttribute("data-index"));
-    if (initIndex.value !== curIndex) {
-      const newList = [...props.list];
-      const movedItem = newList[initIndex.value];
-      newList.splice(initIndex.value, 1);
-      newList.splice(curIndex, 0, movedItem);
-      emits("update:list", newList);
-    }
+  // if (initIndex.value) {
+  const curEl = itemRefs.value[initIndex.value];
+  const curIndex = Number(curEl.getAttribute("data-index"));
+  if (initIndex.value !== curIndex) {
+    const newList = [...props.list];
+    const movedItem = newList[initIndex.value];
+    newList.splice(initIndex.value, 1);
+    newList.splice(curIndex, 0, movedItem);
+    emits("update:list", newList);
   }
+  // }
   for (const key in itemRefs.value) {
     const el = itemRefs.value[key];
     el.setAttribute("data-index", key);
