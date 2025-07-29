@@ -19,6 +19,15 @@ const useApp = defineStore("app", () => {
     visible: false,
     component: null,
   });
+  const defaultApp = [
+    {
+      key: "set_bg",
+      isDefault: true,
+      icon: BGicon,
+      name: "背景设置",
+      component: BGSetting,
+    },
+  ];
   const apps = ref<
     {
       isDefault: boolean;
@@ -27,19 +36,11 @@ const useApp = defineStore("app", () => {
       icon: string;
       component?: Component;
     }[]
-  >([
-    {
-      key: "set_bg",
-      isDefault: true,
-      icon: BGicon,
-      name: "背景设置",
-      component: BGSetting,
-    },
-  ]);
+  >([]);
 
   const loadAppList = () => {
     getAppLsit().then((res) => {
-      apps.value = [...apps.value, ...res.data];
+      apps.value = [...defaultApp, ...res.data];
     });
   };
 
