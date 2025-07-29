@@ -7,7 +7,6 @@
     style="flex-shrink: 0"
   >
     <!-- grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); -->
-    {{ isDrag }}
     <Draggable
       class="w-full !gap-5 grid"
       style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr))"
@@ -19,8 +18,6 @@
           class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
           @click="
             () => {
-              console.log(isDrag);
-
               if (!isDrag) {
                 appStore.openApp(data);
               }
