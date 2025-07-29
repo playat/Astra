@@ -1,23 +1,13 @@
 <template>
-  <div class="text-white">
-    <div class="flex items-center gap-4">
-      <button
-        @click="selectBg('image')"
-        class="cursor-pointer bg-indigo-600 text-white px-4 py-1 rounded-lg"
-      >
-        选择图片
-      </button>
-      <button
-        @click="selectBg('video')"
-        class="cursor-pointer bg-indigo-600 text-white px-4 py-1 rounded-lg"
-      >
-        选择视频
-      </button>
-    </div>
+  <div class="text-white flex flex-col gap-3">
+    <YGButton @click="selectBg('image')"> 图片 </YGButton>
+
+    <YGButton @click="selectBg('video')"> 视频 </YGButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import YGButton from "@/components_ui/YGButton.vue";
 import useApp from "@/store/app";
 import { setItem } from "@/utils/indexedDb";
 const appStore = useApp();
