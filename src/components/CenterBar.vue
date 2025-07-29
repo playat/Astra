@@ -24,7 +24,12 @@
             }
           "
         >
-          <img :draggable="false" :src="data.icon" class="w-8 h-8" />
+          <img
+            :draggable="false"
+            :src="data.icon"
+            class="w-8 h-8"
+            referrerpolicy="no-referrer"
+          />
         </div>
       </template>
     </Draggable>
