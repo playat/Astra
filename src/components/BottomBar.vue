@@ -6,17 +6,25 @@
   >
     <Draggable v-model:list="appStore.apps" v-model:is-drag="isDrag">
       <template #default="{ data }">
-        <div
-          @click="openApp(data)"
-          class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-20px hover:!bg-white"
+        <YGRightMenu
+          @option-click="optionClick($event, data)"
+          :options="[
+            { label: '修改', value: 'edit' },
+            { label: '删除', value: 'remove' },
+          ]"
         >
-          <img
-            class="w-full hfull"
-            :src="data.icon"
-            draggable="false"
-            referrerpolicy="no-referrer"
-          />
-        </div>
+          <div
+            @click="openApp(data)"
+            class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-20px hover:!bg-white"
+          >
+            <img
+              class="w-full hfull"
+              :src="data.icon"
+              draggable="false"
+              referrerpolicy="no-referrer"
+            />
+          </div>
+        </YGRightMenu>
       </template>
     </Draggable>
     <div
@@ -35,6 +43,7 @@ import PlusSvg from "@/assets/svg/plus.svg";
 import { onMounted, ref } from "vue";
 import AddApp from "./AddApp.vue";
 import gsap from "gsap";
+import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 const appStore = useApp();
 const bottomBarRef = ref();
 const isDrag = ref(false);
@@ -47,6 +56,11 @@ const addApp = () => {
   appStore.dialog.component = AddApp;
   appStore.dialog.visible = true;
 };
+
+const optionClick = (optionData, item) => {
+  console.log(optionData, item);
+  
+}
 
 onMounted(() => {
   gsap.fromTo(
