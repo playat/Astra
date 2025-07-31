@@ -13,3 +13,14 @@ export const addApp = async (data: any) => {
   });
   return await fetchRes.json();
 };
+
+export const editApp = async (data: any) => {
+  const fetchRes = await fetch(`/api/app`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return await fetchRes.json();
+};

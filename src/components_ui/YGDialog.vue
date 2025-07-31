@@ -4,7 +4,7 @@
     :class="
       appStore.dialog.visible ? 'visible opacity-100' : 'opacity-0 invisible'
     "
-    @click="appStore.dialog.visible = false"
+    @click="close"
   >
     <div
       ref="dialogRef"
@@ -15,7 +15,7 @@
         <img
           class="w-4 h-4 cursor-pointer"
           :src="CloseSvg"
-          @click="appStore.dialog.visible = false"
+          @click="close"
         />
       </div>
       <slot />
@@ -37,6 +37,12 @@ const setPosition = (x, y) => {
   dialogRef.value.style.top = `${y}px`;
   dialogRef.value.style.left = `${x}px`;
 };
+
+const close = () => {
+  appStore.dialog.visible = false
+  appStore.dialog.component.clear && appStore.dialog.component.clear()
+}
+
 watch(
   () => appStore.dialog.visible,
   (newVal) => {

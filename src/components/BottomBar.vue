@@ -41,7 +41,7 @@ import Draggable from "@/components_ui/Draggable.vue";
 import useApp from "@/store/app";
 import PlusSvg from "@/assets/svg/plus.svg";
 import { onMounted, ref } from "vue";
-import AddApp from "./AddApp.vue";
+import AddEditApp from "./AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 const appStore = useApp();
@@ -53,14 +53,20 @@ const openApp = (data: any) => {
 };
 
 const addApp = () => {
-  appStore.dialog.component = AddApp;
+  appStore.dialog.component = AddEditApp;
   appStore.dialog.visible = true;
 };
 
 const optionClick = (optionData, item) => {
   console.log(optionData, item);
-  
-}
+  if (optionData.value === "edit") {
+    // AddEditApp.expose.setForm(data)
+    appStore.dialog.component = AddEditApp;
+    appStore.dialog.visible = true;
+  }
+  if (optionData.valur === "remove") {
+  }
+};
 
 onMounted(() => {
   gsap.fromTo(
