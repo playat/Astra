@@ -5,9 +5,9 @@
   <TimeNumber />
   <SearchBar />
   <SuList />
-  <Dialog>
+  <YGDialog>
     <component :is="appStore.dialog.component" />
-  </Dialog>
+  </YGDialog>
   <!-- <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div> -->
 </template>
 
@@ -17,7 +17,7 @@ import SearchBar from "@/components/SearchBar.vue";
 import BG from "@/components/BG.vue";
 import CenterBar from "@/components/CenterBar.vue";
 import TimeNumber from "./components/TimeNumber.vue";
-import Dialog from "./components_ui/Dialog.vue";
+import YGDialog from "./components_ui/YGDialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import { onMounted } from "vue";
