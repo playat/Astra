@@ -12,13 +12,9 @@
       class="fixed bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
     >
       <div class="flex items-center justify-end">
-        <img
-          class="w-4 h-4 cursor-pointer"
-          :src="CloseSvg"
-          @click="close"
-        />
+        <img class="w-4 h-4 cursor-pointer" :src="CloseSvg" @click="close" />
       </div>
-      <slot />
+      <component :is="appStore.dialog.component" ref="contentRef" />
     </div>
   </div>
 </template>
@@ -29,6 +25,7 @@ import useApp from "@/store/app";
 import { ref, watch } from "vue";
 
 const dialogRef = ref<HTMLElement>();
+const contentRef = ref();
 const emits = defineEmits(["update:visible"]);
 const appStore = useApp();
 let from: { x: number; y: number } = { x: 0, y: 0 };
@@ -39,9 +36,9 @@ const setPosition = (x, y) => {
 };
 
 const close = () => {
-  appStore.dialog.visible = false
-  appStore.dialog.component.clear && appStore.dialog.component.clear()
-}
+  appStore.dialog.visible = false;
+  contentRef.value.clear();
+};
 
 watch(
   () => appStore.dialog.visible,

@@ -17,8 +17,11 @@ import { addApp, editApp } from "@/api/app";
 import YGButton from "@/components_ui/YGButton.vue";
 import YGInput from "@/components_ui/YGInput.vue";
 import useApp from "@/store/app";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
+const props = defineProps<{
+  formData: any;
+}>();
 const appStore = useApp();
 const form = ref({
   id: "",
@@ -55,11 +58,11 @@ const confirm = () => {
   }
 };
 
-const setForm = (data: any) => {
-  form.value.id = data.key;
-  form.value.icon = data.icon;
-  form.value.key = data.key;
-  form.value.name = data.name;
+const setForm = () => {
+  form.value.id = props.formData.key;
+  form.value.icon = props.formData.icon;
+  form.value.key = props.formData.key;
+  form.value.name = props.formData.name;
 };
 
 const clear = () => {
@@ -69,8 +72,13 @@ const clear = () => {
   form.value.key = "";
 };
 
+onMounted(() => {
+  if (props.formData) {
+    setForm();
+  }
+});
+
 defineExpose({
-  setForm,
   clear,
 });
 </script>

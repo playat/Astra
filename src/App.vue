@@ -5,9 +5,7 @@
   <TimeNumber />
   <SearchBar />
   <SuList />
-  <YGDialog>
-    <component :is="appStore.dialog.component" />
-  </YGDialog>
+  <YGDialog />
   <!-- <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div> -->
 </template>
 
