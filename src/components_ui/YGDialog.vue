@@ -9,7 +9,7 @@
     <div
       ref="dialogRef"
       @click.stop
-      class="fixed bg-[#1f2937] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
+      class="fixed bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
     >
       <div class="flex items-center justify-end">
         <img

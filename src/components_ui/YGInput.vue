@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex text-sm gap-2.5 items-center bg-[#374151] rounded-lg py-2.5 px-4"
+    class="flex text-sm gap-2.5 items-center bg-[var(--yg-bg-color-shallow)] rounded-lg py-2.5 px-4"
   >
     <slot name="perfix" />
     <input

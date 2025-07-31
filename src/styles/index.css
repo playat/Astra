@@ -7,6 +7,13 @@
   overflow: hidden;
 }
 
+body {
+  --yg-bg-color-shallow: #374151;
+  --yg-bg-color: #1f2937;
+  --yg-color: #8e6ff7;
+  --yg-color-dark: #7953f5;
+}
+
 input {
   outline: none;
 }
@@ -55,3 +62,5 @@ input {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+
