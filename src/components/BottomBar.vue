@@ -4,7 +4,11 @@
     class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 flex gap-2 w-max"
     style="background: rgba(255, 255, 255, 0.1)"
   >
-    <Draggable v-model:list="appStore.apps" v-model:is-drag="isDrag">
+    <Draggable
+      v-if="appStore.apps.length"
+      v-model:list="appStore.apps"
+      v-model:is-drag="isDrag"
+    >
       <template #default="{ data }">
         <YGRightMenu
           @option-click="optionClick($event, data)"

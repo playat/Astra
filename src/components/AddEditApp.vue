@@ -73,6 +73,8 @@ const clear = () => {
 };
 
 onMounted(() => {
+  console.log("mounted");
+  
   if (props.formData) {
     setForm();
   }
