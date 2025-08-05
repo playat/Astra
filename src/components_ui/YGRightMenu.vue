@@ -7,7 +7,7 @@
       @blur="optionBoxBlur"
       @focus="() => console.log('focus')"
       :class="showOption ? 'visible opacity-100' : 'invisible opacity-0'"
-      class="transition-all absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+10px)] bg-[var(--yg-bg-color)] rounded-lg"
+      class="transition-all focus-visible:outline-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+10px)] bg-[var(--yg-bg-color)] rounded-lg"
     >
       <div
         class="hover:!text-[var(--yg-color)] transition-all text-white text-nowrap cursor-pointer text-xs py-1 px-4"
@@ -40,7 +40,7 @@ const contextMenu = (e) => {
   console.log(optionBoxRef.value);
   setTimeout(() => {
     optionBoxRef.value.focus();
-  }, 500);
+  }, 30);
 };
 
 const optionBoxBlur = () => {
