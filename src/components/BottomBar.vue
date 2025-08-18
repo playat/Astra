@@ -1,7 +1,7 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 flex gap-2 w-max"
+    class="backdrop-blur-20px max-w-4/5 px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 gap-2 overflow-x-scroll scrollbar-none"
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable
