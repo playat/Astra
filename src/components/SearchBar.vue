@@ -79,7 +79,7 @@ const toFocus = () => {
 const handleKeydown = (e: KeyboardEvent) => {
   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
 
-  if (isLetterOrNumber && !appStore.searchFocus) {
+  if (isLetterOrNumber && !appStore.searchFocus && !appStore.dialog.visible) {
     appStore.searchFocus = true;
     inputRef.value.focus();
   }
