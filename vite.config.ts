@@ -24,11 +24,7 @@ export default defineConfig({
         rewrite(path) {
           return path.replace(/^\/api/, "");
         },
-      },
-      "/su": {
-        changeOrigin: true,
-        target: env.VITE_SEARCH_SU_API
-      },
+      }
     },
   },
   build: {

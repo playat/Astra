@@ -66,7 +66,7 @@ const searchInput = (e) => {
       wd: e.target.value,
       cb: "SUJsonP",
     });
-    searchStore.suList = res.s;
+    searchStore.suList = res.data.s;
     clearTimeout(timer);
     timer = null;
   }, 100);
