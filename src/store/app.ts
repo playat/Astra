@@ -1,9 +1,8 @@
 import { getItem } from "@/utils/indexedDb.js";
 import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
-import BGicon from "@/assets/svg/bg-icon.svg";
-import BGSetting from "@/components/BGSetting.vue";
 import { getAppLsit } from "@/api/app.js";
+import { sysComponents } from "@/config/index.js";
 
 const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
@@ -19,15 +18,7 @@ const useApp = defineStore("app", () => {
     visible: false,
     component: null,
   });
-  const defaultApp = [
-    {
-      key: "set_bg",
-      isDefault: true,
-      icon: BGicon,
-      name: "背景设置",
-      component: BGSetting,
-    },
-  ];
+
   const apps = ref<
     {
       isDefault: boolean;
@@ -40,7 +31,7 @@ const useApp = defineStore("app", () => {
 
   const loadAppList = () => {
     getAppLsit().then((res) => {
-      apps.value = [...defaultApp, ...res.data];
+      apps.value = res.data;
     });
   };
 
@@ -63,7 +54,7 @@ const useApp = defineStore("app", () => {
     if (!data.isDefault) {
       window.open(data.key, "_blank");
     } else {
-      dialog.component = data.component;
+      dialog.component = sysComponents[data.component];
       dialog.visible = true;
     }
   };

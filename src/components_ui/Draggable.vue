@@ -25,7 +25,7 @@
       }"
       class="absolute pointer-events-none bg-transparent"
     >
-      <slot :data="curItem" />
+      <slot :data="curItem" :index="-1" />
     </div>
   </div>
 </template>

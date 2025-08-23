@@ -26,32 +26,21 @@
         >
           <img
             :draggable="false"
-            :src="data.icon"
+            :src="data.isDefault ? sysIcons[data.icon] : data.icon"
             class="w-8 h-8"
             referrerpolicy="no-referrer"
           />
         </div>
       </template>
     </Draggable>
-
-    <!-- <div
-      class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
-      @click="addApp"
-    >
-      <img :src="PlusSvg" class="w-8 h-8" />
-    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
 import useApp from "@/store/app";
-import AddEditApp from "./AddEditApp.vue";
 import Draggable from "@/components_ui/Draggable.vue";
 import { ref } from "vue";
+import { sysIcons } from "@/config";
 const appStore = useApp();
 const isDrag = ref(false);
-const addApp = () => {
-  appStore.dialog.component = AddEditApp;
-  appStore.dialog.visible = true;
-};
 </script>
