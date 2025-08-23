@@ -6,7 +6,7 @@
     </div>
     <div>
       <div class="text-sm">应用名称</div>
-      <YGInput v-model:value="form.name" placeholder="网页URL" class="mt-2" />
+      <YGInput v-model:value="form.name" placeholder="网页名称" class="mt-2" />
     </div>
     <YGButton @click="confirm" :loading="addLoading"> 确定 </YGButton>
   </div>

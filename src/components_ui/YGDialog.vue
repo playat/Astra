@@ -37,6 +37,7 @@ const setPosition = (x, y) => {
 
 const close = () => {
   appStore.dialog.visible = false;
+  appStore.dialog.component = null;
   contentRef.value.clear();
 };
 
