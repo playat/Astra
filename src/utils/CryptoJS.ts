@@ -11,11 +11,12 @@ export const generateAesKey = () => {
 // 加密数据
 export const encryptData = (data: { [key: string]: any }) => {
   const aesKey = generateAesKey();
+  const iv = CryptoJS.lib.WordArray.random(16);
   // 用AES加密数据
   const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(data), aesKey, {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
-    iv: CryptoJS.enc.Utf8.parse("1234567890abcdef"),
+    iv
   }).toString();
 
   // 用RSA加密AES密钥
