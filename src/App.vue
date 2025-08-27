@@ -6,7 +6,10 @@
   <SearchBar />
   <SuList />
   <YGDialog />
-  <!-- <div class="fixed left-0 top-0">{{ appStore.globlePosition }}</div> -->
+  <div class="fixed left-0 top-0 bg-black w-full h-full z-50 p-28">
+    <YGInput v-model:value="pwd" class="w-96" />
+    <YGButton @click="loginFn">登录</YGButton>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,9 +21,15 @@ import TimeNumber from "./components/TimeNumber.vue";
 import YGDialog from "./components_ui/YGDialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+import YGInput from "./components_ui/YGInput.vue";
+import YGButton from "./components_ui/YGButton.vue";
+import { getPublicKey, login } from "./api/app";
+import { encryptData } from "./utils/CryptoJS";
 
 const appStore = useApp();
+
+const pwd = ref("666");
 
 document.addEventListener(
   "mousedown",
@@ -31,7 +40,19 @@ document.addEventListener(
   true
 );
 
+let publicKey = "";
+const loadPublicKey = () => {
+  getPublicKey().then((res) => {
+    publicKey = res.data;
+  });
+};
+
+const loginFn = () => {
+  login(encryptData({ pwd: pwd.value }, publicKey)).then((res) => {});
+};
+
 onMounted(() => {
-  appStore.loadAppList();
+  // appStore.loadAppList();
+  loadPublicKey();
 });
 </script>

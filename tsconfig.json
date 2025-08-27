@@ -20,7 +20,7 @@
     "paths": {
       "@/*": ["src/*"],
     },
-    "types": ["node", "vite/client", "jsencrypt"]
+    "types": ["node", "vite/client"]
   },
   "include": [
     "src/**/*.ts",

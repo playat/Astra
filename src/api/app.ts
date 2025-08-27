@@ -24,3 +24,21 @@ export const editApp = async (data: any) => {
   });
   return await fetchRes.json();
 };
+
+export const login = async (data: any) => {
+  const fetchRes = await fetch(`/api/white/login`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return await fetchRes.json();
+};
+
+export const getPublicKey = async () => {
+  const fetchRes = await fetch(`/api/white/public_key`, {
+    method: "GET",
+  });
+  return await fetchRes.json();
+};
