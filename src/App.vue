@@ -48,7 +48,9 @@ const loadPublicKey = () => {
 };
 
 const loginFn = () => {
-  login(encryptData({ pwd: pwd.value }, publicKey)).then((res) => {});
+  encryptData({ pwd: pwd.value }, publicKey).then((encryptRes) => {
+    login(encryptRes).then((res) => {});
+  });
 };
 
 onMounted(() => {

@@ -50,6 +50,7 @@ import SearchSvg from "@/assets/svg/search.svg";
 import BingSvg from "@/assets/svg/bing.svg";
 import useApp from "@/store/app";
 import useSearch from "@/store/search";
+import { hasFocusDom } from "@/utils/hasFocusDom";
 const suList = ref<string[]>([]);
 const appStore = useApp();
 const searchStore = useSearch();
@@ -77,6 +78,7 @@ const toFocus = () => {
 };
 
 const handleKeydown = (e: KeyboardEvent) => {
+  if (hasFocusDom()) return;
   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
 
   if (isLetterOrNumber && !appStore.searchFocus && !appStore.dialog.visible) {

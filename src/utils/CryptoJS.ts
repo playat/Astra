@@ -18,12 +18,10 @@ export const rsaEncrypt = async (
   publicKey: string
 ): Promise<string> => {
   // 将PEM格式的公钥转换为ArrayBuffer
-  console.log("原始publicKey", publicKey);
 
   const pemHeader = "-----BEGIN PUBLIC KEY-----";
   const pemFooter = "-----END PUBLIC KEY-----";
   const pemContents = publicKey.replace(pemHeader, "").replace(pemFooter, "");
-  console.log(pemContents);
 
   const binaryDerString = window.atob(pemContents);
   const binaryDer = new Uint8Array(binaryDerString.length);
@@ -56,11 +54,12 @@ export const rsaEncrypt = async (
   );
 
   // 将加密后的数据转换为Base64字符串
-  return window.btoa(String.fromCharCode(...new Uint8Array(encryptedData)));
+  const key = window.btoa(String.fromCharCode(...new Uint8Array(encryptedData)))
+  return key;
 };
 
 // 加密数据
-export const encryptData = (
+export const encryptData = async (
   data: { [key: string]: any },
   publicKey: string
 ) => {
@@ -80,7 +79,7 @@ export const encryptData = (
   // 用RSA加密AES密钥
   // const encrypt = new JSEncrypt();
   // encrypt.setPublicKey(publicKey);
-  const encryptedAesKey = rsaEncrypt(aesKey, publicKey);
+  const encryptedAesKey = await rsaEncrypt(aesKey, publicKey);
 
   return {
     data: encryptedData,
