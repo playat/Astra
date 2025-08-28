@@ -2,17 +2,23 @@
   <div class="box">
     <div class="grid-bg" />
     <!-- <div class="py-6 px-8 bg-[rgba(15,23,42,0.7)] rounded-md"> -->
-    <div class="py-6 px-8 rounded-md" style="background-color: rgba(30, 58, 138, 0.1)">
+    <div
+      class="py-6 px-8 rounded-md"
+      style="background-color: rgba(30, 58, 138, 0.1)"
+    >
       <div class="text-white">Enter Password</div>
-      <input
-        v-model="pwd"
-        type="password"
-        class="password-input"
-        placeholder=""
-        autocomplete="off"
-        autocorrect="off"
-        spellcheck="false"
-      />
+      <div class="pb-5 overflow-hidden">
+        <input
+          v-model="pwd"
+          type="password"
+          class="password-input"
+          placeholder=""
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          @keydown.enter="loginFn"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -96,7 +102,7 @@ onMounted(() => {
 
 .password-input:focus {
   border-color: rgba(59, 130, 246, 1);
-  box-shadow: 0 13px 5px -5px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 5px 3px rgba(59, 130, 246, 0.5);
 }
 
 .password-input::placeholder {
