@@ -1,12 +1,11 @@
 <template>
   <div class="box">
     <div class="grid-bg" />
-    <div
-      class="py-6 px-8 bg-[rgb(15 23 42 / 70%)] rounded-md"
-      style="filter: blur(10px);"
-    >
-      <div class="text-white">Enter Your Password</div>
+    <!-- <div class="py-6 px-8 bg-[rgba(15,23,42,0.7)] rounded-md"> -->
+    <div class="py-6 px-8 rounded-md" style="background-color: rgba(30, 58, 138, 0.1)">
+      <div class="text-white">Enter Password</div>
       <input
+        v-model="pwd"
         type="password"
         class="password-input"
         placeholder=""
@@ -81,7 +80,7 @@ onMounted(() => {
 .password-input {
   width: 370px;
   height: 46px;
-  background-color: rgb(30 41 59 / 50%);
+  background-color: #1e293b80;
   border-bottom: 2px solid rgba(59, 130, 246, 0.5);
   padding: 0 20px;
   font-size: 18px;
