@@ -68,7 +68,7 @@ onMounted(() => {
 
 .password-input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 5px 20px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 5px 8px rgba(59, 130, 246, 0.5);
 }
 
 .password-input::placeholder {
