@@ -1,14 +1,17 @@
 <template>
   <div class="box">
     <div class="grid-bg" />
-    <input
-      type="password"
-      class="password-input"
-      placeholder=""
-      autocomplete="off"
-      autocorrect="off"
-      spellcheck="false"
-    />
+    <div class="py-6 px-8 bg-[rgb(15 23 42 / 70%)] rounded-md">
+      <div class="text-white">Enter Your Password</div>
+      <input
+        type="password"
+        class="password-input"
+        placeholder=""
+        autocomplete="off"
+        autocorrect="off"
+        spellcheck="false"
+      />
+    </div>
   </div>
 </template>
 
@@ -74,11 +77,12 @@ onMounted(() => {
 
 .password-input {
   width: 370px;
-  height: 56px;
-  background-color: rgba(15, 23, 42, 0.7);
+  height: 46px;
+  background-color: rgb(30 41 59 / 50%);
   border-bottom: 2px solid rgba(59, 130, 246, 0.5);
   padding: 0 20px;
   font-size: 18px;
+  margin-top: 8px;
   color: #e2e8f0;
   outline: none;
   text-align: center;
@@ -90,7 +94,7 @@ onMounted(() => {
 
 .password-input:focus {
   border-color: rgba(59, 130, 246, 1);
-  box-shadow: 0 20px 20px rgba(59, 130, 246, 0.5);
+  box-shadow: 0 13px 5px -5px rgba(59, 130, 246, 0.5);
 }
 
 .password-input::placeholder {
