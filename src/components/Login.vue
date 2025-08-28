@@ -1,7 +1,10 @@
 <template>
   <div class="box">
     <div class="grid-bg" />
-    <div class="py-6 px-8 bg-[rgb(15 23 42 / 70%)] rounded-md">
+    <div
+      class="py-6 px-8 bg-[rgb(15 23 42 / 70%)] rounded-md"
+      style="filter: blur(10px);"
+    >
       <div class="text-white">Enter Your Password</div>
       <input
         type="password"
