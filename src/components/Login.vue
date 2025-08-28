@@ -14,7 +14,7 @@
           v-model="pwd"
           type="password"
           class="password-input relative w-[370px] h-[46px] bg-[#1e293b80] border-b-2 border-[#3b82f680] px-5 text-lg mt-2 text-[#e2e8f0] text-center transition-all"
-          placeholder="8989"
+          placeholder="ENTER PWD"
           autocomplete="off"
           autocorrect="off"
           spellcheck="false"
@@ -27,9 +27,11 @@
 
 <script lang="ts" setup>
 import { getPublicKey, login } from "@/api/app";
+import useApp from "@/store/app";
 import { encryptData } from "@/utils/CryptoJS";
 import { onMounted, ref } from "vue";
 
+const appStore = useApp();
 const pwd = ref("");
 let publicKey = "";
 const loadPublicKey = () => {
@@ -40,7 +42,11 @@ const loadPublicKey = () => {
 
 const loginFn = () => {
   encryptData({ pwd: pwd.value }, publicKey).then((encryptRes) => {
-    login(encryptRes).then((res) => {});
+    login(encryptRes).then((res) => {
+      if (res.data.token) {
+        appStore.setToken(res.data.token);
+      }
+    });
   });
 };
 

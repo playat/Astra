@@ -61,6 +61,11 @@ const useApp = defineStore("app", () => {
     }
   };
 
+  const setToken = (val: string) => {
+    token.value = val;
+    localStorage.setItem("token", val);
+  };
+
   return {
     bgCfn,
     apps,
@@ -71,6 +76,7 @@ const useApp = defineStore("app", () => {
     isMore,
     openApp,
     token,
+    setToken,
   };
 });
 
