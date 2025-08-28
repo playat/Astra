@@ -5,6 +5,8 @@ import { getAppLsit } from "@/api/app.js";
 import { sysComponents } from "@/config/index.js";
 
 const useApp = defineStore("app", () => {
+  const token = ref("");
+  token.value = localStorage.getItem("token");
   const bgCfn = reactive<{
     url: string;
     type: "image" | "video" | undefined;
@@ -68,6 +70,7 @@ const useApp = defineStore("app", () => {
     globlePosition,
     isMore,
     openApp,
+    token,
   };
 });
 
