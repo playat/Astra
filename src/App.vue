@@ -1,5 +1,5 @@
 <template>
-  <template v-if="appStore.token">
+  <!-- <template v-if="appStore.token">
     <BG />
     <CenterBar />
     <BottomBar />
@@ -9,7 +9,8 @@
     <YGDialog />
   </template>
 
-  <Login v-else />
+  <Login v-else /> -->
+  <YGFixed/>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +24,7 @@ import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
 import { onMounted } from "vue";
+import YGFixed from "./components_ui/YGFixed.vue";
 
 const appStore = useApp();
 
