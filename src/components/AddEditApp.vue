@@ -35,22 +35,18 @@ const confirm = () => {
   addLoading.value = true;
   if (form.value.id) {
     editApp(form.value)
-      .then((res) => {
-        if (res.code === 200) {
-          appStore.dialog.visible = false;
-          appStore.loadAppList();
-        }
+      .then(() => {
+        appStore.dialog.visible = false;
+        appStore.loadAppList();
       })
       .finally(() => {
         addLoading.value = false;
       });
   } else {
     addApp(form.value)
-      .then((res) => {
-        if (res.code === 200) {
-          appStore.dialog.visible = false;
-          appStore.loadAppList();
-        }
+      .then(() => {
+        appStore.dialog.visible = false;
+        appStore.loadAppList();
       })
       .finally(() => {
         addLoading.value = false;
@@ -74,7 +70,7 @@ const clear = () => {
 
 onMounted(() => {
   console.log("mounted");
-  
+
   if (props.formData) {
     setForm();
   }

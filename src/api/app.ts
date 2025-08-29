@@ -1,44 +1,55 @@
-export const getAppLsit = async () => {
-  const fetchRes = await fetch(`/api/app`, { method: "GET" });
-  return await fetchRes.json();
+import { _fetch } from "@/utils/_fetch.js";
+
+/**
+ * 获取应用列表
+ * @returns
+ */
+export const getAppLsit = () => {
+  return _fetch(`/app`, { method: "GET" });
 };
 
-export const addApp = async (data: any) => {
-  const fetchRes = await fetch(`/api/app`, {
+/**
+ * 添加应用
+ * @param data 应用数据
+ * @returns
+ */
+export const addApp = (data: any) => {
+  return _fetch(`/app`, {
     method: "POST",
     body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
-  return await fetchRes.json();
 };
 
-export const editApp = async (data: any) => {
-  const fetchRes = await fetch(`/api/app`, {
+/**
+ * 编辑应用
+ * @param data 应用数据
+ * @returns
+ */
+export const editApp = (data: any) => {
+  return _fetch(`/app`, {
     method: "PUT",
     body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
-  return await fetchRes.json();
 };
 
-export const login = async (data: any) => {
-  const fetchRes = await fetch(`/api/white/login`, {
+/**
+ * 登录系统
+ * @param data 登录数据
+ * @returns
+ */
+export const login = (data: any) => {
+  return _fetch(`/white/login`, {
     method: "POST",
     body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
-  return await fetchRes.json();
 };
 
+/**
+ * 获取公钥
+ * @returns
+ */
 export const getPublicKey = async () => {
-  const fetchRes = await fetch(`/api/white/public_key`, {
+  return _fetch(`/white/public_key`, {
     method: "GET",
   });
-  return await fetchRes.json();
 };
