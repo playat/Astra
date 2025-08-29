@@ -4,7 +4,7 @@ interface FetchOption extends RequestInit {
 
 const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
   init.headers = {
-    "X-auth": localStorage.getItem("token") || "",
+    "X-Auth": localStorage.getItem("token") || "",
     "Content-Type": "application/json",
   };
 

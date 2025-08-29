@@ -22,6 +22,7 @@ import YGDialog from "./components_ui/YGDialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
+import { onMounted } from "vue";
 
 const appStore = useApp();
 
@@ -33,4 +34,8 @@ document.addEventListener(
   },
   true
 );
+
+onMounted(() => {
+  appStore.loadAppList();
+});
 </script>

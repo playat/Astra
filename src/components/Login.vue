@@ -45,6 +45,7 @@ const loginFn = () => {
     login(encryptRes).then((res) => {
       if (res.data.token) {
         appStore.setToken(res.data.token);
+        appStore.loadAppList()
       }
     });
   });

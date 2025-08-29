@@ -32,6 +32,7 @@ const useApp = defineStore("app", () => {
   >([]);
 
   const loadAppList = () => {
+    if (!token.value) return;
     getAppLsit().then((res) => {
       apps.value = res.data;
     });
