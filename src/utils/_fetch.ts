@@ -3,12 +3,15 @@ interface FetchOption extends RequestInit {
 }
 
 const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
-  init.headers["auth"] = localStorage.getItem("token");
-  init.headers["Content-Type"] = "application/json";
-  let initUrl = url;
+  init.headers = {
+    "X-auth": localStorage.getItem("token") || "",
+    "Content-Type": "application/json",
+  };
+
+  let initUrl = `/api${url}`;
   if (init.params) {
     const paramsInstance = new URLSearchParams(init.params);
-    initUrl = `/api${url}?${paramsInstance.toString()}`;
+    initUrl = `${url}?${paramsInstance.toString()}`;
     delete init.params;
   }
   return {

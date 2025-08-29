@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPublicKey, login } from "@/api/app";
+import { getPublicKey, login } from "@/api/white";
 import useApp from "@/store/app";
 import { encryptData } from "@/utils/CryptoJS";
 import { onMounted, ref } from "vue";
