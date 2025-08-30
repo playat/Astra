@@ -1,4 +1,3 @@
-import CryptoJS from "crypto-js";
 import forge from "node-forge";
 // 导入浏览器原生加密API类型
 type AlgorithmIdentifier = Algorithm | string;
@@ -65,36 +64,32 @@ export const encryptData = async (
   data: { [key: string]: any },
   publicKey: string
 ) => {
-  const aesKey = CryptoJS.lib.WordArray.random(16).toString();
-  const iv = CryptoJS.lib.WordArray.random(16);
-  // 用AES加密数据
-  const encryptedData = CryptoJS.AES.encrypt(
-    JSON.stringify(data),
-    CryptoJS.enc.Utf8.parse(aesKey),
-    {
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7,
-      iv,
-    }
-  ).toString();
+  // 1. 生成 AES 密钥和 IV
+  const aesKey = forge.random.getBytesSync(32); // 256位 = 32字节
+
+  const iv = forge.random.getBytesSync(16); // 128位 = 16字节（AES固定）
+  // 2. AES-CBC 加密数据
+  const cipher = forge.cipher.createCipher("AES-CBC", aesKey);
+  cipher.start({ iv: iv });
+  cipher.update(forge.util.createBuffer(JSON.stringify(data), "utf8"));
+  cipher.finish();
+  const encryptedData = forge.util.encode64(cipher.output.getBytes());
+
+  // 3. 转换 IV 为十六进制（用于传输）
+  const ivHex = forge.util.bytesToHex(iv);
 
   // 用RSA加密AES密钥
   const publicKeyInstence = forge.pki.publicKeyFromPem(publicKey);
-  const ciphertext = publicKeyInstence.encrypt(
-    encodeURIComponent(aesKey),
-    "RSA-OAEP",
-    {
+  const ciphertext = publicKeyInstence.encrypt(aesKey, "RSA-OAEP", {
+    md: forge.md.sha256.create(),
+    mgf1: {
       md: forge.md.sha256.create(),
-      mgf1: {
-        md: forge.md.sha256.create(),
-      },
-    }
-  );
-  console.log(ciphertext);
+    },
+  });
 
   return {
     data: encryptedData,
     key: forge.util.encode64(ciphertext),
-    iv: iv.toString(CryptoJS.enc.Hex),
+    iv: ivHex,
   };
 };
