@@ -1,5 +1,5 @@
 import CryptoJS from "crypto-js";
-
+import forge from "node-forge";
 // 导入浏览器原生加密API类型
 type AlgorithmIdentifier = Algorithm | string;
 type KeyUsage =
@@ -12,7 +12,7 @@ type KeyUsage =
   | "wrapKey"
   | "unwrapKey";
 
-// RSA加密函数
+// RSA加密函数（原生支持 需https）
 export const rsaEncrypt = async (
   data: string,
   publicKey: string
@@ -54,7 +54,9 @@ export const rsaEncrypt = async (
   );
 
   // 将加密后的数据转换为Base64字符串
-  const key = window.btoa(String.fromCharCode(...new Uint8Array(encryptedData)))
+  const key = window.btoa(
+    String.fromCharCode(...new Uint8Array(encryptedData))
+  );
   return key;
 };
 
@@ -77,13 +79,22 @@ export const encryptData = async (
   ).toString();
 
   // 用RSA加密AES密钥
-  // const encrypt = new JSEncrypt();
-  // encrypt.setPublicKey(publicKey);
-  const encryptedAesKey = await rsaEncrypt(aesKey, publicKey);
+  const publicKeyInstence = forge.pki.publicKeyFromPem(publicKey);
+  const ciphertext = publicKeyInstence.encrypt(
+    encodeURIComponent(aesKey),
+    "RSA-OAEP",
+    {
+      md: forge.md.sha256.create(),
+      mgf1: {
+        md: forge.md.sha256.create(),
+      },
+    }
+  );
+  console.log(ciphertext);
 
   return {
     data: encryptedData,
-    key: encryptedAesKey,
+    key: forge.util.encode64(ciphertext),
     iv: iv.toString(CryptoJS.enc.Hex),
   };
 };
