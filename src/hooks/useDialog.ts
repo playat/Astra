@@ -1,21 +1,22 @@
-import { Component, ref, VNode } from "vue"
+import { Component, ref, VNode } from "vue";
 
-const visible = ref(false)
-
-const content = ref<Component>(null)
-
-export const open = (options: {
-  content: Component
-}) => {
-  visible.value = true
-  content.value = options.content
+interface DialogOption {
+  component: VNode;
+  onClose?: () => void;
+  onConfirm?: () => void;
 }
+export const visible = ref(false);
+export const component = ref<Component>(null);
 
+const useDialog = () => {
+  const open = (option: DialogOption) => {
+    component.value = option.component;
+    visible.value = true;
+  };
 
-const dialog = {
-  open,
-  visible,
-  content
-}
+  return {
+    open,
+  };
+};
 
-export default dialog
+export default useDialog;

@@ -1,9 +1,7 @@
 <template>
   <div
     class="absolute z-20 left-0 top-0 w-full h-full bg-[rgba(0,0,0,0.2)] transition-all"
-    :class="
-      appStore.dialog.visible ? 'visible opacity-100' : 'opacity-0 invisible'
-    "
+    :class="visible ? 'visible opacity-100' : 'opacity-0 invisible'"
     @click="close"
   >
     <div
@@ -14,7 +12,7 @@
       <div class="flex items-center justify-end">
         <img class="w-4 h-4 cursor-pointer" :src="CloseSvg" @click="close" />
       </div>
-      <component :is="appStore.dialog.component" ref="contentRef" />
+      <component :is="component" ref="contentRef" />
     </div>
   </div>
 </template>
@@ -23,10 +21,10 @@
 import CloseSvg from "@/assets/svg/close.svg";
 import useApp from "@/store/app";
 import { ref, watch } from "vue";
+import { component, visible } from "@/hooks/useDialog";
 
 const dialogRef = ref<HTMLElement>();
 const contentRef = ref();
-const emits = defineEmits(["update:visible"]);
 const appStore = useApp();
 let from: { x: number; y: number } = { x: 0, y: 0 };
 
@@ -36,37 +34,34 @@ const setPosition = (x, y) => {
 };
 
 const close = () => {
-  appStore.dialog.visible = false;
-  appStore.dialog.component = null;
-  contentRef.value.clear();
+  visible.value = false;
+  component.value = null;
+  contentRef.value.clear && contentRef.value.clear();
 };
 
-watch(
-  () => appStore.dialog.visible,
-  (newVal) => {
-    if (newVal) {
-      from = { ...appStore.globlePosition };
-      setPosition(from.x, from.y);
-      setTimeout(() => {
-        dialogRef.value.classList.remove("scale-0");
-        dialogRef.value.classList.add(
-          "transition-all",
-          "duration-300",
-          "opacity-100",
-          "scale-100"
-        );
-        setPosition(window.innerWidth / 2, window.innerHeight / 2);
-      }, 100);
-    } else {
-      dialogRef.value.classList.replace("scale-100", "scale-0");
-      dialogRef.value.classList.replace("opacity-100", "opacity-0");
-      setPosition(from.x, from.y);
+watch(visible, (newVal) => {
+  if (newVal) {
+    from = { ...appStore.globlePosition };
+    setPosition(from.x, from.y);
+    setTimeout(() => {
+      dialogRef.value.classList.remove("scale-0");
+      dialogRef.value.classList.add(
+        "transition-all",
+        "duration-300",
+        "opacity-100",
+        "scale-100"
+      );
+      setPosition(window.innerWidth / 2, window.innerHeight / 2);
+    }, 100);
+  } else {
+    dialogRef.value.classList.replace("scale-100", "scale-0");
+    dialogRef.value.classList.replace("opacity-100", "opacity-0");
+    setPosition(from.x, from.y);
 
-      setTimeout(() => {
-        dialogRef.value.classList.remove("transition-all", "duration-300");
-      }, 300);
-      from = { x: 0, y: 0 };
-    }
+    setTimeout(() => {
+      dialogRef.value.classList.remove("transition-all", "duration-300");
+    }, 300);
+    from = { x: 0, y: 0 };
   }
-);
+});
 </script>

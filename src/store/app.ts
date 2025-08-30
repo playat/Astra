@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
 import { getAppLsit } from "@/api/app.js";
 import { sysComponents } from "@/config/index.js";
+import useDialog from "@/hooks/useDialog.js";
 
 const useApp = defineStore("app", () => {
   const token = ref("");
@@ -57,8 +58,11 @@ const useApp = defineStore("app", () => {
     if (!data.isDefault) {
       window.open(data.key, "_blank");
     } else {
-      dialog.component = sysComponents[data.component];
-      dialog.visible = true;
+      useDialog().open({
+        component: sysComponents[data.component],
+      });
+      // dialog.component = sysComponents[data.component];
+      // dialog.visible = true;
     }
   };
 

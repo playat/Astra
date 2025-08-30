@@ -1,22 +1,28 @@
 <template>
   <div
-    class="fixed bg-gray-400 h-96 w-96"
+    v-if="visible"
+    class="fixed bg-gray-400 rounded-md z-[9999]"
     :style="{
       top: `${top}px`,
       left: `${left}px`,
     }"
-    @mousedown="mousedown"
     @mousemove="mousemove"
-    @mouseup="mouseUp"
     ref="fixedRef"
   >
-    <slot />
+    <div
+      class="h-5 border-b p-3 cursor-move"
+      @mousedown="mousedown"
+      @mouseup="mouseUp"
+    ></div>
+    <div class="p-3">
+      <component :is="component" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-
+import { nextTick, ref, watch } from "vue";
+import { visible, component } from "@/hooks/useFixed";
 const fixedRef = ref<HTMLElement>();
 
 const isDown = ref(false);
@@ -44,23 +50,29 @@ const rect = {
 const mousedown = (e: MouseEvent) => {
   isDown.value = true;
   baseRect = fixedRef.value.getBoundingClientRect();
-  console.log(baseRect);
 
   baseClientX = e.clientX;
   baseClientY = e.clientY;
-  
 };
 const mousemove = (e: MouseEvent) => {
   if (isDown.value) {
-    const lastX = baseRect.top + (e.clientX - baseClientX);
-    const lastY = baseRect.left + (e.clientY - baseClientY);
+    const lastX = baseRect.left + (e.clientX - baseClientX);
+    const lastY = baseRect.top + (e.clientY - baseClientY);
+    if (lastY < 0) {
+      top.value = 0;
+    } else if (lastY > rect.height) {
+      top.value = rect.height;
+    } else {
+      top.value = lastY;
+    }
 
-    // if (lastY > 0 && lastY <= rect.height) {
-    top.value = lastY;
-    // }
-    // if (lastX > 0 && lastX <= rect.width) {
-    left.value = lastX;
-    // }
+    if (lastX < 0) {
+      left.value = 0;
+    } else if (lastX > rect.width) {
+      left.value = rect.width;
+    } else {
+      left.value = lastX;
+    }
   }
 };
 
@@ -68,10 +80,13 @@ const mouseUp = (e: MouseEvent) => {
   isDown.value = false;
 };
 
-onMounted(() => {
-  const fixedRect = fixedRef.value.getBoundingClientRect();
-
-  rect.width = window.innerWidth - fixedRect.width;
-  rect.height = window.innerHeight - fixedRect.height;
+watch(visible, (newVal) => {
+  if (newVal) {
+    nextTick(() => {
+      const fixedRect = fixedRef.value.getBoundingClientRect();
+      rect.width = window.innerWidth - fixedRect.width;
+      rect.height = window.innerHeight - fixedRect.height;
+    });
+  }
 });
 </script>
