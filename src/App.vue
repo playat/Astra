@@ -6,14 +6,15 @@
     <TimeNumber />
     <SearchBar />
     <SuList />
-
-    <YGDialog />
     <YGFixed />
+    <YGDialog />
   </template>
 
   <Login v-else />
+  <!-- <Login /> -->
+  <!-- <YGFixed />
 
-  <!-- <YGButton class="fixed left-10 top-10" @click="testChart">
+  <YGButton class="fixed left-10 top-10" @click="testChart">
     测试图表
   </YGButton> -->
 </template>

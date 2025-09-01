@@ -42,9 +42,9 @@ const processIntervalData = (dateList: any) => {
 
 // 创建图表
 const createChart = async () => {
-  const dateList = await getPhysiology({});
+  const dateList = await getPhysiology();
   // 只取最近6个数据进行处理
-  const chartData = processIntervalData(dateList);
+  const chartData = processIntervalData(dateList.data);
   console.log(chartData);
 
   if (chartContainer.value) {
