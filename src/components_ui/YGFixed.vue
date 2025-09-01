@@ -1,23 +1,27 @@
 <template>
   <div
-    v-if="visible"
-    class="fixed bg-black-0.5 rounded-md z-[9999]"
-    :style="{
-      top: `${top}px`,
-      left: `${left}px`,
-    }"
+    class="absolute z-20 left-0 top-0 w-full h-full bg-[rgba(0,0,0,0.2)] transition-all"
+    :class="visible ? 'visible opacity-100' : 'opacity-0 invisible'"
     @mousemove="mousemove"
-    ref="fixedRef"
   >
     <div
-      class="h-5 border-b p-3 cursor-move flex items-center"
-      @mousedown="mousedown"
-      @mouseup="mouseUp"
+      class="absolute bg-black-0.5 rounded-md z-[9999]"
+      :style="{
+        top: `${top}px`,
+        left: `${left}px`,
+      }"
+      ref="fixedRef"
     >
-      <img :src="MoveSvg" alt="" class="w-3 h-3" />
-    </div>
-    <div class="p-3">
-      <component :is="component" />
+      <div
+        class="h-5 border-b px-1 cursor-move flex items-center select-none"
+        @mousedown="mousedown"
+        @mouseup="mouseUp"
+      >
+        <img :src="MoveSvg" alt="" class="w-3 h-3" />
+      </div>
+      <div class="p-3">
+        <component :is="component" />
+      </div>
     </div>
   </div>
 </template>

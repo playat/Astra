@@ -1,13 +1,12 @@
 import { Component, ref, VNode } from "vue";
 
-export const component = ref<Component>(null);
-export const visible = ref(false);
-
 interface FixedOption {
-  component: VNode;
+  component: Component;
   onClose?: () => void;
 }
 
+export const visible = ref(false);
+export const component = ref<Component>(null);
 const useFixed = () => {
   const open = (option: FixedOption) => {
     component.value = option.component;

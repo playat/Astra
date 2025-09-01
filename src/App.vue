@@ -7,14 +7,15 @@
     <SearchBar />
     <SuList />
 
-    <!-- <YGButton class="fixed left-10 top-10" @click="testChart">
-      测试图表
-    </YGButton> -->
     <YGDialog />
     <YGFixed />
   </template>
 
   <Login v-else />
+
+  <!-- <YGButton class="fixed left-10 top-10" @click="testChart">
+    测试图表
+  </YGButton> -->
 </template>
 
 <script setup lang="ts">
@@ -30,8 +31,8 @@ import Login from "./components/Login.vue";
 import { onMounted } from "vue";
 import YGFixed from "./components_ui/YGFixed.vue";
 import useFixed from "./hooks/useFixed";
-// import Chart from "./components/Chart.vue";
-// import YGButton from "./components_ui/YGButton.vue";
+import Chart from "@/components/Chart.vue";
+import YGButton from "./components_ui/YGButton.vue";
 
 const fixed = useFixed();
 const appStore = useApp();
@@ -45,11 +46,11 @@ document.addEventListener(
   true
 );
 
-// const testChart = () => {
-//   fixed.open({
-//     component: Chart,
-//   });
-// };
+const testChart = () => {
+  fixed.open({
+    component: Chart,
+  });
+};
 
 onMounted(() => {
   appStore.loadAppList();

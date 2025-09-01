@@ -59,8 +59,38 @@ input {
 .backdrop-blur-6px {
   backdrop-filter: blur(6px);
 }
+
+/* 删除滚动条 */
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
 
+* {
+  /* 滚动条宽度和高度 */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 
+  /* 滚动条轨道 */
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  /* 滚动条滑块 */
+  &::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  }
+
+  /* 鼠标悬停在滑块上 */
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* 滚动条角落 */
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
