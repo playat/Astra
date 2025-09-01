@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="visible"
-    class="fixed bg-gray-400 rounded-md z-[9999]"
+    class="fixed bg-black-0.5 rounded-md z-[9999]"
     :style="{
       top: `${top}px`,
       left: `${left}px`,
@@ -10,10 +10,12 @@
     ref="fixedRef"
   >
     <div
-      class="h-5 border-b p-3 cursor-move"
+      class="h-5 border-b p-3 cursor-move flex items-center"
       @mousedown="mousedown"
       @mouseup="mouseUp"
-    ></div>
+    >
+      <img :src="MoveSvg" alt="" class="w-3 h-3" />
+    </div>
     <div class="p-3">
       <component :is="component" />
     </div>
@@ -23,6 +25,7 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
 import { visible, component } from "@/hooks/useFixed";
+import MoveSvg from "@/assets/svg/move.svg";
 const fixedRef = ref<HTMLElement>();
 
 const isDown = ref(false);
