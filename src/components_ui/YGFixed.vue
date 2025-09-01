@@ -13,11 +13,22 @@
       ref="fixedRef"
     >
       <div
-        class="h-5 border-b px-1 cursor-move flex items-center select-none"
+        class="h-5 border-b px-1 flex justify-between cursor-move items-center select-none"
         @mousedown="mousedown"
         @mouseup="mouseUp"
       >
         <img :src="MoveSvg" alt="" class="w-3 h-3" />
+        <img
+          :src="CloseSvg"
+          alt=""
+          class="w-3 h-3 cursor-pointer"
+          @click.stop="
+            () => {
+              visible = false;
+              component = null;
+            }
+          "
+        />
       </div>
       <div class="p-3">
         <component :is="component" />
@@ -30,11 +41,12 @@
 import { nextTick, ref, watch } from "vue";
 import { visible, component } from "@/hooks/useFixed";
 import MoveSvg from "@/assets/svg/move.svg";
+import CloseSvg from "@/assets/svg/close.svg";
 const fixedRef = ref<HTMLElement>();
 
 const isDown = ref(false);
-const top = ref(0);
-const left = ref(0);
+const top = ref(50);
+const left = ref(50);
 let baseClientX = 0;
 let baseClientY = 0;
 let baseRect: DOMRect = {
