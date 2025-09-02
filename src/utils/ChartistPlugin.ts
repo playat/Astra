@@ -23,7 +23,7 @@ export const ctLabelPlugin = function (labels) {
 };
 
 // 封装一个通用的"显示数值"插件
-export function ctValuePlugin(options: any = {}) {
+export function ctValuePlugin() {
   return function (chart) {
     chart.on("draw", function (context: any) {
       if (context.type === "point") {
@@ -33,7 +33,7 @@ export function ctValuePlugin(options: any = {}) {
 
         // // 3. 获取当前数据点的数值（context.raw 即原始数据值）
         const value = context.element._node.attributes["ct:value"].value;
-        console.log([context], x, y, value);
+        // console.log([context], x, y, value);
 
         // // 4. 创建 SVG 文本元素（用于显示数值）
         const textElement = document.createElementNS(

@@ -5,7 +5,7 @@
     </div>
 
     <div class="absolute top-3 right-3">
-      <YGButton>记录</YGButton>
+      <YGButton @click="add">记录</YGButton>
     </div>
   </div>
 </template>
@@ -16,10 +16,11 @@ import { LineChart, plugins } from "chartist";
 import { getPhysiology } from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
-
+import AddPhysiology from "./AddPhysiology.vue";
+import useDialog from "@/hooks/useDialog";
 const chartContainer = ref(null);
 let chartInstance = null;
-
+const dialog = useDialog();
 const processIntervalData = (dateList: any) => {
   const labels = [];
   const series = [];
@@ -81,16 +82,16 @@ const createChart = async () => {
         left: 40,
         right: 40,
       },
-      plugins: [
-        ctLabelPlugin(chartData.labels),
-        ctValuePlugin({
-          offsetY: 12, // 数值与节点的垂直距离
-          className: "custom-value", // 自定义样式类
-          formatter: (value) => value + "万", // 格式化数值（加单位）
-        }),
-      ],
+      plugins: [ctLabelPlugin(chartData.labels), ctValuePlugin()],
     });
   }
+};
+
+// 打开添加记录对话框
+const add = () => {
+  dialog.open({
+    component: AddPhysiology,
+  });
 };
 
 // 在组件挂载后创建图表

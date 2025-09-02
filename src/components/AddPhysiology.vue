@@ -1,38 +1,37 @@
 <template>
-  <div class="form-container">
-    <form @submit.prevent="handleSubmit" class="flex flex-col gap-3">
-      <div class="form-item">
-        <label for="happen" class="text-sm text-white">发生事件：</label>
-        <YGInput
-          v-model:value="formData.happen"
-          placeholder="请输入发生的事件"
-          class="mt-2"
-        />
-      </div>
-      <YGButton type="submit">提交</YGButton>
-    </form>
+  <div class="text-white w-96 flex flex-col gap-3">
+    <div>
+      <div class="text-sm">时间</div>
+      <YGInput
+        v-model:value="form.happen"
+        placeholder="请输入时间"
+        class="mt-2"
+      />
+    </div>
+    <YGButton @click="confirm" :loading="loading"> 确定 </YGButton>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import YGInput from "@/components_ui/YGInput.vue";
+import { addPhysiology } from "@/api/physiology";
 import YGButton from "@/components_ui/YGButton.vue";
+import YGInput from "@/components_ui/YGInput.vue";
+import { ref } from "vue";
 
-const formData = ref({
+const form = ref({
   happen: "",
 });
 
-const handleSubmit = () => {
-  // 处理表单提交
-  console.log("提交的数据:", formData.value);
+const loading = ref(false);
+const emits = defineEmits(["success"]);
+const confirm = () => {
+  loading.value = true;
+  addPhysiology(form.value)
+    .then(() => {
+      emits("success");
+    })
+    .finally(() => {
+      loading.value = false;
+    });
 };
 </script>
-
-<style scoped>
-.form-container {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-}
-</style>

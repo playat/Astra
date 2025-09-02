@@ -1,7 +1,7 @@
 import { Component, ref, VNode } from "vue";
 
 interface DialogOption {
-  component: VNode;
+  component: Component;
   onClose?: () => void;
   onConfirm?: () => void;
 }
