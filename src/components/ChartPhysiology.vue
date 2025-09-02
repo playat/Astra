@@ -1,6 +1,12 @@
 <template>
-  <div class="w-[700px] overflow-x-scroll">
-    <div ref="chartContainer"></div>
+  <div class="w-[700px] relative">
+    <div class="overflow-x-scroll">
+      <div ref="chartContainer" />
+    </div>
+
+    <div class="absolute top-3 right-3">
+      <YGButton>记录</YGButton>
+    </div>
   </div>
 </template>
 
@@ -8,7 +14,8 @@
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import { LineChart, plugins } from "chartist";
 import { getPhysiology } from "@/api/physiology";
-import { ctLabelPlugin } from "@/utils/ChartistPlugin";
+import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
+import YGButton from "@/components_ui/YGButton.vue";
 
 const chartContainer = ref(null);
 let chartInstance = null;
@@ -74,7 +81,14 @@ const createChart = async () => {
         left: 40,
         right: 40,
       },
-      plugins: [ctLabelPlugin(chartData.labels)],
+      plugins: [
+        ctLabelPlugin(chartData.labels),
+        ctValuePlugin({
+          offsetY: 12, // 数值与节点的垂直距离
+          className: "custom-value", // 自定义样式类
+          formatter: (value) => value + "万", // 格式化数值（加单位）
+        }),
+      ],
     });
   }
 };

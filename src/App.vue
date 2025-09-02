@@ -14,7 +14,7 @@
 
   <div
     class="fixed left-10 bottom-10 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
-    @click="testChart"
+    @click="openChartPhysiology"
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
@@ -41,7 +41,7 @@ import Login from "./components/Login.vue";
 import { onMounted } from "vue";
 import YGFixed from "./components_ui/YGFixed.vue";
 import useFixed from "./hooks/useFixed";
-import Chart from "@/components/Chart.vue";
+import ChartPhysiology from "@/components/ChartPhysiology.vue";
 
 import YGButton from "./components_ui/YGButton.vue";
 
@@ -57,9 +57,9 @@ document.addEventListener(
   true
 );
 
-const testChart = () => {
+const openChartPhysiology = () => {
   fixed.open({
-    component: Chart,
+    component: ChartPhysiology,
   });
 };
 
