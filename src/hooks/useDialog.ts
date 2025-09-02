@@ -16,6 +16,9 @@ const useDialog = () => {
 
   return {
     open,
+    close: () => {
+      visible.value = false;
+    },
   };
 };
 

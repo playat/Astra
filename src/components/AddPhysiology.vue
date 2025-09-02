@@ -25,12 +25,16 @@ const form = ref({
 const loading = ref(false);
 const emits = defineEmits(["success"]);
 const confirm = () => {
+  if (!form.value.happen) {
+    return;
+  }
   loading.value = true;
   addPhysiology(form.value)
     .then(() => {
       emits("success");
     })
     .finally(() => {
+      form.value.happen = "";
       loading.value = false;
     });
 };

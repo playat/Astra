@@ -12,10 +12,12 @@ export const ctLabelPlugin = function (labels) {
         // el.style.textAlign = "center";
         el.style.height = "auto";
         const labelArr = labels[index].split(" ~ ");
+        const start = labelArr[0].split("-");
+        const end = labelArr[1].split("-");
         el.innerHTML = `
-          <p style="height: 1rem;">${labelArr[0]}</p>
+          <p style="height: 1rem;">${start[0]}-<span style="font-weight: bold;color: var(--yg-color)">${start[1]}</span>-${start[2]}</p>
           <p style="height: 1rem;">至</p>
-          <p style="height: 1rem;">${labelArr[1]}</p>
+          <p style="height: 1rem;">${end[0]}-<span style="font-weight: bold;color: var(--yg-color)">${end[1]}</span>-${end[2]}</p>
         `;
       });
     });

@@ -1,6 +1,6 @@
 <template>
   <div class="w-[700px] relative">
-    <div class="overflow-x-scroll">
+    <div class="overflow-x-scroll" ref="boxRef">
       <div ref="chartContainer" />
     </div>
 
@@ -11,8 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue";
-import { LineChart, plugins } from "chartist";
+import { ref, onMounted, h, nextTick } from "vue";
+import { LineChart } from "chartist";
 import { getPhysiology } from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
@@ -21,6 +21,7 @@ import useDialog from "@/hooks/useDialog";
 const chartContainer = ref(null);
 let chartInstance = null;
 const dialog = useDialog();
+const boxRef = ref(null);
 const processIntervalData = (dateList: any) => {
   const labels = [];
   const series = [];
@@ -51,9 +52,9 @@ const processIntervalData = (dateList: any) => {
 // 创建图表
 const createChart = async () => {
   const dateList = await getPhysiology();
+
   // 只取最近6个数据进行处理
   const chartData = processIntervalData(dateList.data);
-  console.log(chartData);
 
   if (chartContainer.value) {
     // 销毁已存在的图表实例
@@ -84,18 +85,36 @@ const createChart = async () => {
       },
       plugins: [ctLabelPlugin(chartData.labels), ctValuePlugin()],
     });
+
+    setTimeout(() => {
+      boxRef.value.scrollTo({
+        left: boxRef.value.scrollWidth,
+        behavior: "smooth",
+      });
+    }, 100);
   }
 };
 
 // 打开添加记录对话框
 const add = () => {
   dialog.open({
-    component: AddPhysiology,
+    component: h(AddPhysiology, {
+      onSuccess() {
+        createChart();
+        dialog.close();
+      },
+    }),
   });
 };
 
 // 在组件挂载后创建图表
-onMounted(createChart);
+onMounted(() => {
+  // 滚动到最右侧
+  // nextTick(() => {
+  //   boxRef.value.scrollLeft = boxRef.value.scrollWidth;
+  // });
+  createChart();
+});
 </script>
 
 <style scoped>
