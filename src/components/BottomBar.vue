@@ -97,6 +97,19 @@ const appBlur = (e) => {
 };
 
 onMounted(() => {
+  console.log(window.innerWidth);
+  // 读取视口宽度后
+  // 计算视口宽度可以放下多少个图标 
+  // 图标宽: 2.5rem、
+  // 间距: 0.75rem、
+  // 外部padding
+  const iconWidth = 2.5;
+  const padding = 0.5;
+  const spacing = 0.5;
+  const viewportWidth = window.innerWidth;
+  const iconCount = Math.floor(viewportWidth / (iconWidth + padding + spacing));
+  console.log(iconCount);
+  
   gsap.fromTo(
     bottomBarRef.value,
     {
