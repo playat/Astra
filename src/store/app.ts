@@ -17,10 +17,6 @@ const useApp = defineStore("app", () => {
   });
 
   const searchFocus = ref(false);
-  const dialog = reactive({
-    visible: false,
-    component: null,
-  });
 
   const apps = ref<
     {
@@ -76,7 +72,6 @@ const useApp = defineStore("app", () => {
     apps,
     loadAppList,
     searchFocus,
-    dialog,
     globlePosition,
     isMore,
     openApp,

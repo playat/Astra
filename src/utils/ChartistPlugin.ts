@@ -35,7 +35,6 @@ export function ctValuePlugin() {
 
         // // 3. 获取当前数据点的数值（context.raw 即原始数据值）
         const value = context.element._node.attributes["ct:value"].value;
-        // console.log([context], x, y, value);
 
         // // 4. 创建 SVG 文本元素（用于显示数值）
         const textElement = document.createElementNS(

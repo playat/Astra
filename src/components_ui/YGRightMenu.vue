@@ -5,7 +5,6 @@
       tabindex="0"
       ref="optionBoxRef"
       @blur="optionBoxBlur"
-      @focus="() => console.log('focus')"
       :class="showOption ? 'visible opacity-100' : 'invisible opacity-0'"
       class="transition-all focus-visible:outline-none absolute left-1/2 -translate-x-1/2 bottom-[calc(100%+10px)] bg-[var(--yg-bg-color)] rounded-lg"
     >
@@ -37,14 +36,12 @@ const showOption = ref(false);
 
 const contextMenu = (e) => {
   showOption.value = true;
-  console.log(optionBoxRef.value);
   setTimeout(() => {
     optionBoxRef.value.focus();
   }, 30);
 };
 
 const optionBoxBlur = () => {
-  console.log("blur");
   showOption.value = false;
 };
 </script>

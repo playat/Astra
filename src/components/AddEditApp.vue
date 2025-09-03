@@ -26,7 +26,8 @@ import { onMounted, ref } from "vue";
 const props = defineProps<{
   formData: any;
 }>();
-const appStore = useApp();
+const emit = defineEmits(["success"]);
+
 const form = ref({
   id: "",
   key: "",
@@ -40,8 +41,7 @@ const confirm = () => {
   if (form.value.id) {
     editApp(form.value)
       .then(() => {
-        appStore.dialog.visible = false;
-        appStore.loadAppList();
+        emit("success");
       })
       .finally(() => {
         addLoading.value = false;
@@ -49,8 +49,7 @@ const confirm = () => {
   } else {
     addApp(form.value)
       .then(() => {
-        appStore.dialog.visible = false;
-        appStore.loadAppList();
+        emit("success");
       })
       .finally(() => {
         addLoading.value = false;
@@ -73,8 +72,6 @@ const clear = () => {
 };
 
 onMounted(() => {
-  console.log("mounted");
-
   if (props.formData) {
     setForm();
   }

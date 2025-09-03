@@ -55,7 +55,9 @@ import AddEditApp from "./AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
+import useDialog from "@/hooks/useDialog";
 
+const dialog = useDialog();
 const appStore = useApp();
 const bottomBarRef = ref();
 const isDrag = ref(false);
@@ -66,8 +68,15 @@ const openApp = (data: any) => {
 
 const optionClick = (optionData, item) => {
   if (optionData.value === "edit") {
-    appStore.dialog.component = h(AddEditApp, { formData: item });
-    appStore.dialog.visible = true;
+    dialog.open({
+      component: h(AddEditApp, {
+        formData: item,
+        onSuccess() {
+          appStore.loadAppList();
+          dialog.close();
+        },
+      }),
+    });
   }
   if (optionData.valur === "remove") {
   }
@@ -99,7 +108,7 @@ const appBlur = (e) => {
 onMounted(() => {
   console.log(window.innerWidth);
   // 读取视口宽度后
-  // 计算视口宽度可以放下多少个图标 
+  // 计算视口宽度可以放下多少个图标
   // 图标宽: 2.5rem、
   // 间距: 0.75rem、
   // 外部padding
@@ -109,7 +118,7 @@ onMounted(() => {
   const viewportWidth = window.innerWidth;
   const iconCount = Math.floor(viewportWidth / (iconWidth + padding + spacing));
   console.log(iconCount);
-  
+
   gsap.fromTo(
     bottomBarRef.value,
     {
