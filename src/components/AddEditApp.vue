@@ -8,6 +8,10 @@
       <div class="text-sm">应用名称</div>
       <YGInput v-model:value="form.name" placeholder="网页名称" class="mt-2" />
     </div>
+    <div>
+      <div class="text-sm">应用图标</div>
+      <YGInput v-model:value="form.icon" placeholder="图标URL" class="mt-2" />
+    </div>
     <YGButton @click="confirm" :loading="addLoading"> 确定 </YGButton>
   </div>
 </template>
