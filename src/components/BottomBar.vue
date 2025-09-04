@@ -1,12 +1,12 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px max-w-4/5 px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 gap-2 scrollbar-none"
+    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 gap-2 scrollbar-none"
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable
       v-if="appStore.apps.length"
-      v-model:list="appStore.apps"
+      v-model:list="viewAppList"
       v-model:is-drag="isDrag"
     >
       <template #default="{ data }">
@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import Draggable from "@/components_ui/Draggable.vue";
 import useApp from "@/store/app";
-import { h, onMounted, ref } from "vue";
+import { computed, h, onMounted, ref } from "vue";
 import AddEditApp from "./AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
@@ -104,20 +104,27 @@ const appBlur = (e) => {
     ease: "power2.out",
   });
 };
+const appCount = ref(0);
 
+const viewAppList = computed(() => {
+  return appStore.apps.slice(0, appCount.value);
+});
 onMounted(() => {
-  console.log(window.innerWidth);
+  // 获取根元素的字体大小
+  const fontSize = parseFloat(
+    getComputedStyle(document.documentElement).fontSize
+  );
   // 读取视口宽度后
   // 计算视口宽度可以放下多少个图标
-  // 图标宽: 2.5rem、
-  // 间距: 0.75rem、
-  // 外部padding
-  const iconWidth = 2.5;
-  const padding = 0.5;
-  const spacing = 0.5;
-  const viewportWidth = window.innerWidth;
-  const iconCount = Math.floor(viewportWidth / (iconWidth + padding + spacing));
-  console.log(iconCount);
+  // 图标宽: 2.5rem
+  // 间距: 0.75rem
+  // 外部padding: 2rem
+  // 视口宽度 window.innerWidth
+  // 2.5n + 0.75n - 0.75 ≤ W - 2
+  appCount.value = Math.round(
+    ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
+  );
+  // console.log("可渲染的图标数", appCount.value);
 
   gsap.fromTo(
     bottomBarRef.value,
