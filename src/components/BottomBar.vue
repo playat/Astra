@@ -109,7 +109,8 @@ const appCount = ref(0);
 const viewAppList = computed(() => {
   return appStore.apps.slice(0, appCount.value);
 });
-onMounted(() => {
+
+const initCount = () => {
   // 获取根元素的字体大小
   const fontSize = parseFloat(
     getComputedStyle(document.documentElement).fontSize
@@ -124,8 +125,15 @@ onMounted(() => {
   appCount.value = Math.round(
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
-  // console.log("可渲染的图标数", appCount.value);
+};
 
+onMounted(() => {
+  initCount();
+
+  // 监听视口宽度变化
+  window.addEventListener("resize", () => {
+    initCount();
+  });
   gsap.fromTo(
     bottomBarRef.value,
     {
