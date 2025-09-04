@@ -14,7 +14,7 @@ body {
   --yg-color-dark: #7953f5;
 }
 
-input {
+input, textarea {
   outline: none;
 }
 

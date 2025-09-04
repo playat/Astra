@@ -4,6 +4,14 @@
   >
     <slot name="perfix" />
     <input
+      v-if="type === 'default' || !type"
+      :placeholder="placeholder"
+      :value="value"
+      @input="$emit('update:value', ($event.target as HTMLInputElement).value)"
+      class="bg-transparent border-none w-full text-white"
+    />
+    <textarea
+      v-if="type === 'textarea'"
       :placeholder="placeholder"
       :value="value"
       :type="type"
@@ -14,12 +22,12 @@
 </template>
 
 <script setup lang="ts">
-import { InputTypeHTMLAttribute } from 'vue';
+import { InputTypeHTMLAttribute } from "vue";
 
 defineProps<{
   value: string | number;
   placeholder?: string;
-  type?: InputTypeHTMLAttribute
+  type?: "default" | "textarea";
 }>();
 
 const emits = defineEmits(["update:value"]);
