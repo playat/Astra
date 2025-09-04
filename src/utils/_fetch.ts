@@ -11,7 +11,7 @@ const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
   let initUrl = `/api${url}`;
   if (init.params) {
     const paramsInstance = new URLSearchParams(init.params);
-    initUrl = `${url}?${paramsInstance.toString()}`;
+    initUrl = `${initUrl}?${paramsInstance.toString()}`;
     delete init.params;
   }
   return {
