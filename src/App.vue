@@ -7,7 +7,6 @@
     <SearchBar />
     <SuList />
     <YGFixed />
-    <YGDialog />
   </template>
 
   <Login v-else />
@@ -34,7 +33,6 @@ import SearchBar from "@/components/SearchBar.vue";
 import BG from "@/components/BG.vue";
 import CenterBar from "@/components/CenterBar.vue";
 import TimeNumber from "./components/TimeNumber.vue";
-import YGDialog from "./components_ui/YGDialog.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
@@ -42,8 +40,6 @@ import { onMounted } from "vue";
 import YGFixed from "./components_ui/YGFixed.vue";
 import useFixed from "./hooks/useFixed";
 import ChartPhysiology from "@/components/ChartPhysiology.vue";
-
-import YGButton from "./components_ui/YGButton.vue";
 
 const fixed = useFixed();
 const appStore = useApp();
