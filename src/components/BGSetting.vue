@@ -11,6 +11,7 @@ import YGButton from "@/components_ui/YGButton.vue";
 import useApp from "@/store/app";
 import { setItem } from "@/utils/indexedDb";
 const appStore = useApp();
+const emits = defineEmits(["close"]);
 const selectBg = (type: "image" | "video") => {
   const input = document.createElement("input");
   input.type = "file";
@@ -25,7 +26,7 @@ const selectBg = (type: "image" | "video") => {
         type,
       };
       setItem("bg", "bg_img", { type, imgFile: file });
-      appStore.dialog.visible = false;
+      emits("close");
     }
   };
 };

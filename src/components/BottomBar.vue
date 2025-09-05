@@ -18,6 +18,7 @@
           ]"
         >
           <div
+            ref="appRef"
             @click="openApp(data)"
             class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer relative select-none backdrop-blur-20px hover:!bg-white"
             @mouseenter="appFocus($event)"
@@ -57,6 +58,7 @@ import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
 import useDialog from "@/hooks/useDialog";
 
+const appRef = ref();
 const dialog = useDialog();
 const appStore = useApp();
 const bottomBarRef = ref();
@@ -141,6 +143,6 @@ onMounted(() => {
       opacity: 0,
     },
     { y: 0, opacity: 1, duration: 1, ease: "elastic.out(1, 0.9)" }
-  );
+  )
 });
 </script>

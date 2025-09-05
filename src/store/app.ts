@@ -57,8 +57,6 @@ const useApp = defineStore("app", () => {
       useDialog().open({
         component: sysComponents[data.component],
       });
-      // dialog.component = sysComponents[data.component];
-      // dialog.visible = true;
     }
   };
 
