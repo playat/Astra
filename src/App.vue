@@ -17,13 +17,10 @@
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
-  <!-- <Login /> -->
-  <!-- <YGFixed />
 
-  
-  <YGButton class="fixed left-10 top-10" @click="testChart">
-    测试图表
-  </YGButton> -->
+  <div class="fixed left-0 top-0 z-10 bg-white w-full h-full">
+    <YGButton class="fixed left-10 top-10" @click="test"> 测试对话框 </YGButton>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -39,11 +36,14 @@ import Login from "./components/Login.vue";
 import { onMounted } from "vue";
 import YGFixed from "./components_ui/YGFixed.vue";
 import useFixed from "./hooks/useFixed";
-import ChartPhysiology from "@/components/ChartPhysiology.vue";
+import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
+import YGButton from "./components_ui/YGButton.vue";
+import useDialog from "./hooks/useDialog";
+import BgSetting from "./components_system/BGSetting.vue";
 
 const fixed = useFixed();
 const appStore = useApp();
-
+const dialog = useDialog();
 document.addEventListener(
   "mousedown",
   (event) => {
@@ -56,6 +56,12 @@ document.addEventListener(
 const openChartPhysiology = () => {
   fixed.open({
     component: ChartPhysiology,
+  });
+};
+
+const test = () => {
+  dialog.open({
+    component: BgSetting,
   });
 };
 

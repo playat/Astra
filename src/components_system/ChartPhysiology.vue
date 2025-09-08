@@ -16,7 +16,7 @@ import { LineChart } from "chartist";
 import { getPhysiology } from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
-import AddPhysiology from "./AddPhysiology.vue";
+import AddPhysiology from "../components_system/AddPhysiology.vue";
 import useDialog from "@/hooks/useDialog";
 const chartContainer = ref(null);
 let chartInstance = null;

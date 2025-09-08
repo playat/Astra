@@ -6,8 +6,8 @@ export default searchApi;
 
 import PlusIcon from "@/assets/svg/plus.svg";
 import BGicon from "@/assets/svg/bg-icon.svg";
-import BGSetting from "@/components/BGSetting.vue";
-import AddEditApp from "@/components/AddEditApp.vue";
+import BGSetting from "@/components_system/BGSetting.vue";
+import AddEditApp from "@/components_system/AddEditApp.vue";
 
 // 系统图标配置
 export const sysIcons = {

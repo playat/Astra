@@ -1,36 +1,37 @@
 import YGDialog from "@/components_ui/YGDialog.vue";
-import { Component, h, ref, render, VNode } from "vue";
+import { App, Component, createApp, h } from "vue";
 
 interface DialogOption {
-  component: VNode;
+  component: Component;
   onClose?: () => void;
   onConfirm?: () => void;
 }
 
 class Dailog {
-  private component = ref<VNode>(null);
-  private visible = ref(false);
-  private dialogComponent = null;
+  private dialogComponent: App = null;
   close = () => {
-    this.component.value = null;
-    this.visible.value = false;
-    // 从DOM中移除对话框组件
-    render(null, document.body);
+    this.dialogComponent.unmount();
     this.dialogComponent = null;
   };
 
   open = (option: DialogOption) => {
-    this.component.value = option.component;
-    this.visible.value = true;
-    this.dialogComponent = h(
-      YGDialog,
-      {
-        visible: this.visible.value,
-        onClose: this.close,
+    const defaultProps = {
+      onClose: this.close,
+    };
+    // 2. 创建独立的Vue应用实例
+    this.dialogComponent = createApp({
+      render() {
+        // 用h函数渲染目标组件，并传递props
+        return h(YGDialog, defaultProps, {
+          default: () => h(option.component),
+        });
       },
-      this.component.value
-    );
-    render(this.dialogComponent, document.body);
+    });
+
+    // 1. 创建临时容器（仅用于初始挂载，之后会被移除）
+    const tempContainer = document.createElement("div");
+    this.dialogComponent.mount(tempContainer);
+    document.body.appendChild(tempContainer.firstElementChild);
   };
 }
 

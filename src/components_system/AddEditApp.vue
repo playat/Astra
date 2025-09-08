@@ -10,7 +10,12 @@
     </div>
     <div>
       <div class="text-sm">应用图标</div>
-      <YGInput v-model:value="form.icon" placeholder="图标URL" class="mt-2" type="textarea" />
+      <YGInput
+        v-model:value="form.icon"
+        placeholder="图标URL"
+        class="mt-2"
+        type="textarea"
+      />
     </div>
     <YGButton @click="confirm" :loading="addLoading"> 确定 </YGButton>
   </div>
@@ -24,7 +29,7 @@ import useApp from "@/store/app";
 import { onMounted, ref } from "vue";
 
 const props = defineProps<{
-  formData: any;
+  formData?: any;
 }>();
 const emit = defineEmits(["success"]);
 

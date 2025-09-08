@@ -52,7 +52,7 @@
 import Draggable from "@/components_ui/Draggable.vue";
 import useApp from "@/store/app";
 import { computed, h, onMounted, ref } from "vue";
-import AddEditApp from "./AddEditApp.vue";
+import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
