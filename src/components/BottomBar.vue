@@ -57,6 +57,7 @@ import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
 import Dialog from "@/components_ui/Dialog";
+import { deleteApp } from "@/api/app";
 
 const appRef = ref();
 const appStore = useApp();
@@ -81,6 +82,9 @@ const optionClick = (optionData, item) => {
     });
   }
   if (optionData.valur === "remove") {
+    deleteApp(item?.id).then(() => {
+      appStore.loadAppList();
+    });
   }
 };
 

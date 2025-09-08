@@ -52,6 +52,7 @@ import { sysIcons } from "@/config";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import AddEditApp from "@/components_system/AddEditApp.vue";
 import Dialog from "@/components_ui/Dialog";
+import { deleteApp } from "@/api/app";
 const appStore = useApp();
 const isDrag = ref(false);
 
@@ -69,6 +70,9 @@ const optionClick = (optionData, item) => {
     });
   }
   if (optionData.valur === "remove") {
+    deleteApp(item?.id).then(() => {
+      appStore.loadAppList();
+    });
   }
 };
 </script>

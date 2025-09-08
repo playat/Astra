@@ -31,3 +31,14 @@ export const editApp = (data: any) => {
     body: JSON.stringify(data),
   });
 };
+
+/**
+ * 删除应用
+ * @param id 应用ID
+ * @returns
+ */
+export const deleteApp = (id: string) => {
+  return _fetch(`/app/${id}`, {
+    method: "DELETE",
+  });
+};
