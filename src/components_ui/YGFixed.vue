@@ -5,7 +5,7 @@
     @mousemove="mousemove"
   >
     <div
-      class="absolute bg-black-0.5 rounded-md z-[9999]"
+      class="absolute bg-black-0.5 rounded-md"
       :style="{
         top: `${top}px`,
         left: `${left}px`,
@@ -105,6 +105,7 @@ const mouseUp = (e: MouseEvent) => {
 // });
 
 const visibleFn = () => {
+  visible.value = true;
   nextTick(() => {
     const fixedRect = fixedRef.value.getBoundingClientRect();
     rect.width = window.innerWidth - fixedRect.width;

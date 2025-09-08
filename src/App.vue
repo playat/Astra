@@ -6,7 +6,6 @@
     <TimeNumber />
     <SearchBar />
     <SuList />
-    <YGFixed />
   </template>
 
   <Login v-else />
@@ -34,7 +33,6 @@ import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
 import { onMounted } from "vue";
-import YGFixed from "./components_ui/YGFixed.vue";
 import useFixed from "./hooks/useFixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 import YGButton from "./components_ui/YGButton.vue";
@@ -60,7 +58,7 @@ const openChartPhysiology = () => {
 };
 
 const test = () => {
-  dialog.open({
+  fixed.open({
     component: BgSetting,
   });
 };
