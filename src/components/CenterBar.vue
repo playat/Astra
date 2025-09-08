@@ -14,23 +14,31 @@
       v-model:is-drag="isDrag"
     >
       <template #default="{ data }">
-        <div
-          class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
-          @click="
-            () => {
-              if (!isDrag) {
-                appStore.openApp(data);
-              }
-            }
-          "
+        <YGRightMenu
+          @option-click="optionClick($event, data)"
+          :options="[
+            { label: '修改', value: 'edit' },
+            { label: '删除', value: 'remove' },
+          ]"
         >
-          <img
-            :draggable="false"
-            :src="data.isDefault ? sysIcons[data.icon] : data.icon"
-            class="w-8 h-8"
-            referrerpolicy="no-referrer"
-          />
-        </div>
+          <div
+            class="bg-[rgba(0,0,0,0.5)] backdrop-blur-20px w-20 h-20 inline-flex p-5 rounded-lg cursor-pointer mx-auto items-center justify-center"
+            @click="
+              () => {
+                if (!isDrag) {
+                  appStore.openApp(data);
+                }
+              }
+            "
+          >
+            <img
+              :draggable="false"
+              :src="data.isDefault ? sysIcons[data.icon] : data.icon"
+              class="w-8 h-8"
+              referrerpolicy="no-referrer"
+            />
+          </div>
+        </YGRightMenu>
       </template>
     </Draggable>
   </div>
@@ -39,8 +47,28 @@
 <script setup lang="ts">
 import useApp from "@/store/app";
 import Draggable from "@/components_ui/Draggable.vue";
-import { ref } from "vue";
+import { h, ref } from "vue";
 import { sysIcons } from "@/config";
+import YGRightMenu from "@/components_ui/YGRightMenu.vue";
+import AddEditApp from "@/components_system/AddEditApp.vue";
+import Dialog from "@/components_ui/Dialog";
 const appStore = useApp();
 const isDrag = ref(false);
+
+const optionClick = (optionData, item) => {
+  if (optionData.value === "edit") {
+    const dialog = new Dialog();
+    dialog.open({
+      component: h(AddEditApp, {
+        formData: item,
+        onSuccess() {
+          appStore.loadAppList();
+          dialog.close();
+        },
+      }),
+    });
+  }
+  if (optionData.valur === "remove") {
+  }
+};
 </script>
