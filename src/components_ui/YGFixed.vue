@@ -22,28 +22,23 @@
           :src="CloseSvg"
           alt=""
           class="w-3 h-3 cursor-pointer"
-          @click.stop="
-            () => {
-              visible = false;
-              component = null;
-            }
-          "
+          @click.stop="hiddenFn"
         />
       </div>
       <div class="p-3">
-        <component :is="component" />
+        <slot />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
-import { visible, component } from "@/hooks/useFixed";
+import { nextTick, onMounted, ref } from "vue";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
 const fixedRef = ref<HTMLElement>();
 
+const visible = ref(false);
 const isDown = ref(false);
 const top = ref(50);
 const left = ref(50);
@@ -99,13 +94,27 @@ const mouseUp = (e: MouseEvent) => {
   isDown.value = false;
 };
 
-watch(visible, (newVal) => {
-  if (newVal) {
-    nextTick(() => {
-      const fixedRect = fixedRef.value.getBoundingClientRect();
-      rect.width = window.innerWidth - fixedRect.width;
-      rect.height = window.innerHeight - fixedRect.height;
-    });
-  }
-});
+// watch(visible, (newVal) => {
+//   if (newVal) {
+//     nextTick(() => {
+//       const fixedRect = fixedRef.value.getBoundingClientRect();
+//       rect.width = window.innerWidth - fixedRect.width;
+//       rect.height = window.innerHeight - fixedRect.height;
+//     });
+//   }
+// });
+
+const visibleFn = () => {
+  nextTick(() => {
+    const fixedRect = fixedRef.value.getBoundingClientRect();
+    rect.width = window.innerWidth - fixedRect.width;
+    rect.height = window.innerHeight - fixedRect.height;
+  });
+};
+
+const hiddenFn = () => {
+  visible.value = false;
+};
+
+onMounted(visibleFn);
 </script>
