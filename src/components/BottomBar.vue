@@ -56,10 +56,9 @@ import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
-import useDialog from "@/hooks/useDialog";
+import Dialog from "@/components_ui/Dialog";
 
 const appRef = ref();
-const dialog = useDialog();
 const appStore = useApp();
 const bottomBarRef = ref();
 const isDrag = ref(false);
@@ -70,6 +69,7 @@ const openApp = (data: any) => {
 
 const optionClick = (optionData, item) => {
   if (optionData.value === "edit") {
+    const dialog = new Dialog();
     dialog.open({
       component: h(AddEditApp, {
         formData: item,
@@ -143,6 +143,6 @@ onMounted(() => {
       opacity: 0,
     },
     { y: 0, opacity: 1, duration: 1, ease: "elastic.out(1, 0.9)" }
-  )
+  );
 });
 </script>

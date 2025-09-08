@@ -17,10 +17,9 @@ import { getPhysiology } from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
 import AddPhysiology from "../components_system/AddPhysiology.vue";
-import useDialog from "@/hooks/useDialog";
+import Dialog from "@/components_ui/Dialog";
 const chartContainer = ref(null);
 let chartInstance = null;
-const dialog = useDialog();
 const boxRef = ref(null);
 const processIntervalData = (dateList: any) => {
   const labels = [];
@@ -97,6 +96,7 @@ const createChart = async () => {
 
 // 打开添加记录对话框
 const add = () => {
+  const dialog = new Dialog();
   dialog.open({
     component: h(AddPhysiology, {
       onSuccess() {

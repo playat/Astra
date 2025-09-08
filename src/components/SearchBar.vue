@@ -51,7 +51,7 @@ import BingSvg from "@/assets/svg/bing.svg";
 import useApp from "@/store/app";
 import useSearch from "@/store/search";
 import { hasFocusDom } from "@/utils/hasFocusDom";
-import useDialog from "@/hooks/useDialog";
+import useDialog from "@/components_ui/Dialog";
 const suList = ref<string[]>([]);
 const dialog = useDialog();
 const appStore = useApp();

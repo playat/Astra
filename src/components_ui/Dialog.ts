@@ -25,8 +25,4 @@ class Dailog extends BaseCover {
   }
 }
 
-const useDialog = () => {
-  return new Dailog();
-};
-
-export default useDialog;
+export default Dailog;

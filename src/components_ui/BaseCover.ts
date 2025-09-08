@@ -1,7 +1,7 @@
 // 功能：提供open和close接口
 // 基础属性 component
 
-import { App, createApp } from "vue";
+import { App } from "vue";
 
 /**
  * 全屏覆盖型组件接口

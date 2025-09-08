@@ -33,15 +33,13 @@ import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
 import { onMounted } from "vue";
-import useFixed from "./hooks/useFixed";
+import Fixed from "./components_ui/Fixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
-import YGButton from "./components_ui/YGButton.vue";
-import useDialog from "./hooks/useDialog";
+// import YGButton from "./components_ui/YGButton.vue";
+import Dialog from "./components_ui/Dialog";
 import BgSetting from "./components_system/BGSetting.vue";
 
-const fixed = useFixed();
 const appStore = useApp();
-const dialog = useDialog();
 document.addEventListener(
   "mousedown",
   (event) => {
@@ -52,13 +50,13 @@ document.addEventListener(
 );
 
 const openChartPhysiology = () => {
-  fixed.open({
+  new Fixed().open({
     component: ChartPhysiology,
   });
 };
 
 const test = () => {
-  fixed.open({
+  new Dialog().open({
     component: BgSetting,
   });
 };

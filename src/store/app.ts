@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
 import { getAppLsit } from "@/api/app.js";
 import { sysComponents } from "@/config/index.js";
-import useDialog from "@/hooks/useDialog.js";
+import Dialog from "@/components_ui/Dialog.js";
 
 const useApp = defineStore("app", () => {
   const token = ref("");
@@ -54,7 +54,7 @@ const useApp = defineStore("app", () => {
     if (!data.isDefault) {
       window.open(data.key, "_blank");
     } else {
-      useDialog().open({
+      new Dialog().open({
         component: sysComponents[data.component],
       });
     }

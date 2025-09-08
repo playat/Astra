@@ -125,8 +125,4 @@ class Fixed extends BaseCover {
   }
 }
 
-const useFixed = () => {
-  return new Fixed();
-};
-
-export default useFixed;
+export default Fixed;
