@@ -17,9 +17,9 @@
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
 
-  <div class="fixed left-0 top-0 z-10 bg-white w-full h-full">
-    <YGButton class="fixed left-10 top-10" @click="test"> 测试对话框 </YGButton>
-  </div>
+  <!-- <div class="fixed left-0 top-0 z-10 bg-white w-full h-full">
+    <YGButton class="fixed left-10 top-10" @click="test">  </YGButton>
+  </div> -->
 </template>
 
 <script setup lang="ts">
