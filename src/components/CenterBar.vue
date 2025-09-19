@@ -8,6 +8,7 @@
   >
     <!-- grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); -->
     <Draggable
+      v-if="appStore.apps.length"
       class="w-full !gap-5 grid"
       style="grid-template-columns: repeat(auto-fill, minmax(80px, 1fr))"
       v-model:list="appStore.apps"
@@ -41,6 +42,7 @@
         </YGRightMenu>
       </template>
     </Draggable>
+    <YGLoading v-else />
   </div>
 </template>
 
@@ -53,6 +55,7 @@ import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import AddEditApp from "@/components_system/AddEditApp.vue";
 import Dialog from "@/components_ui/Dialog";
 import { deleteApp } from "@/api/app";
+import YGLoading from "@/components_ui/YGLoading.vue";
 const appStore = useApp();
 const isDrag = ref(false);
 

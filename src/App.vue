@@ -1,7 +1,7 @@
 <template>
   <template v-if="appStore.token">
     <BG />
-    <CenterBar />
+    <!-- <CenterBar /> -->
     <BottomBar />
     <TimeNumber />
     <SearchBar />

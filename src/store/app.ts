@@ -27,12 +27,16 @@ const useApp = defineStore("app", () => {
       component?: Component;
     }[]
   >([]);
-
+  const loadAppLoading = ref(false);
   const loadAppList = () => {
-    if (!token.value) return;
-    getAppLsit().then((res) => {
-      apps.value = res.data;
-    });
+    loadAppLoading.value = true;
+    getAppLsit()
+      .then((res) => {
+        apps.value = res.data;
+      })
+      .finally(() => {
+        loadAppLoading.value = false;
+      });
   };
 
   const globlePosition = reactive({
@@ -40,7 +44,7 @@ const useApp = defineStore("app", () => {
     y: 0,
   });
 
-  const isMore = ref(false);
+  const isMore = ref(false); // 是否打开抽屉
   getItem("bg", "bg_img").then(
     (res: { type: "image" | "video"; imgFile: File }) => {
       if (res) {
@@ -66,6 +70,7 @@ const useApp = defineStore("app", () => {
   };
 
   return {
+    loadAppLoading,
     bgCfn,
     apps,
     loadAppList,

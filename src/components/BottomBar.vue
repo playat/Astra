@@ -1,7 +1,7 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute left-1/2 z-10 -translate-x-1/2 bottom-0 gap-2 scrollbar-none"
+    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute bottom-0 left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none"
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable
@@ -39,25 +39,21 @@
         </YGRightMenu>
       </template>
     </Draggable>
-    <!-- <div
-      class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer select-none backdrop-blur-20px flex items-center justify-center shrink-1"
-      @click="addApp"
-    >
-      <img :src="PlusSvg" draggable="false" />
-    </div> -->
+    <YGLoading v-else />
   </div>
 </template>
 
 <script setup lang="ts">
 import Draggable from "@/components_ui/Draggable.vue";
 import useApp from "@/store/app";
-import { computed, h, onMounted, ref } from "vue";
+import { computed, h, onMounted, ref, watch } from "vue";
 import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import { sysIcons } from "@/config";
 import Dialog from "@/components_ui/Dialog";
 import { deleteApp } from "@/api/app";
+import YGLoading from "@/components_ui/YGLoading.vue";
 
 const appRef = ref();
 const appStore = useApp();
@@ -132,6 +128,21 @@ const initCount = () => {
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
 };
+
+watch(
+  () => appStore.isMore,
+  (newVal) => {
+    if (newVal) {
+      gsap.to(bottomBarRef.value, {
+        top: "25%",
+        bottom: "",
+        width: "90%",
+        duration: 0.5,
+        ease: "elastic.out(1, 0.9)",
+      });
+    }
+  }
+);
 
 onMounted(() => {
   initCount();
