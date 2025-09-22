@@ -1,7 +1,6 @@
 <template>
   <template v-if="appStore.token">
     <BG />
-    <!-- <CenterBar /> -->
     <BottomBar />
     <TimeNumber />
     <SearchBar />
@@ -27,7 +26,6 @@ import ShenLiSvg from "@/assets/svg/shen_li.svg";
 import BottomBar from "@/components/BottomBar.vue";
 import SearchBar from "@/components/SearchBar.vue";
 import BG from "@/components/BG.vue";
-import CenterBar from "@/components/CenterBar.vue";
 import TimeNumber from "./components/TimeNumber.vue";
 import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
