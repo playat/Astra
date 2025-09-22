@@ -1,11 +1,11 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px px-4 py-3 rounded-xl mb-4 absolute bottom-0 left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none"
+    class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none"
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable
-      v-if="appStore.apps.length"
+      v-if="appStore.apps.length && !appStore.isMore"
       v-model:list="viewAppList"
       v-model:is-drag="isDrag"
     >
@@ -17,29 +17,41 @@
             { label: '删除', value: 'remove' },
           ]"
         >
-          <div
-            ref="appRef"
-            @click="openApp(data)"
-            class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer relative select-none backdrop-blur-20px hover:!bg-white"
+          <AppItem
+            :data="data"
             @mouseenter="appFocus($event)"
             @mouseleave="appBlur($event)"
-          >
-            <div
-              class="app-name pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 text-nowrap text-sm text-white py-2 opacity-0 px-4 rounded-md bg-[var(--yg-bg-color)]"
-            >
-              {{ data.name }}
-            </div>
-            <img
-              class="w-full h-full"
-              :src="data.isDefault ? sysIcons[data.icon] : data.icon"
-              draggable="false"
-              referrerpolicy="no-referrer"
-            />
-          </div>
+            @click="openApp(data)"
+          />
         </YGRightMenu>
       </template>
     </Draggable>
-    <YGLoading v-else />
+    <YGLoading v-if="!appStore.apps.length" />
+    <div
+      v-if="appStore.isMore"
+      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden"
+      style="
+        grid-template-columns: repeat(auto-fill, 40px);
+        grid-auto-rows: 40px;
+      "
+    >
+      <YGRightMenu
+        v-for="data in viewAppList"
+        :key="data.key"
+        @option-click="optionClick($event, data)"
+        :options="[
+          { label: '修改', value: 'edit' },
+          { label: '删除', value: 'remove' },
+        ]"
+      >
+        <AppItem
+          :data="data"
+          @click="openApp(data)"
+          @mouseenter="appFocus($event)"
+          @mouseleave="appBlur($event)"
+        />
+      </YGRightMenu>
+    </div>
   </div>
 </template>
 
@@ -50,12 +62,11 @@ import { computed, h, onMounted, ref, watch } from "vue";
 import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
-import { sysIcons } from "@/config";
 import Dialog from "@/components_ui/Dialog";
 import { deleteApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
+import AppItem from "./AppItem.vue";
 
-const appRef = ref();
 const appStore = useApp();
 const bottomBarRef = ref();
 const isDrag = ref(false);
@@ -134,12 +145,44 @@ watch(
   (newVal) => {
     if (newVal) {
       gsap.to(bottomBarRef.value, {
-        top: "25%",
-        bottom: "",
+        top: "28%",
         width: "90%",
         duration: 0.5,
-        ease: "elastic.out(1, 0.9)",
+        height: "70%",
+        ease: "elastic.out(0.7, 0.9)",
       });
+      appCount.value = appStore.apps.length;
+    } else {
+      gsap.to(bottomBarRef.value, {
+        width: "auto",
+        height: "auto",
+        top: "calc(100% - 78px)",
+        duration: 0.5,
+        ease: "elastic.out(0.7, 0.9)",
+      });
+      initCount();
+    }
+  }
+);
+
+watch(
+  () => appStore.apps,
+  (newVal) => {
+    if (newVal.length) {
+      gsap.fromTo(
+        bottomBarRef.value,
+        {
+          y: `100%`,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          delay: 0.2,
+          opacity: 1,
+          duration: 1,
+          ease: "elastic.out(1, 0.9)",
+        }
+      );
     }
   }
 );
@@ -151,13 +194,5 @@ onMounted(() => {
   window.addEventListener("resize", () => {
     initCount();
   });
-  gsap.fromTo(
-    bottomBarRef.value,
-    {
-      y: `100%`,
-      opacity: 0,
-    },
-    { y: 0, opacity: 1, duration: 1, ease: "elastic.out(1, 0.9)" }
-  );
 });
 </script>
