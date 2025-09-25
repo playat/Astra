@@ -122,6 +122,7 @@ class Fixed extends BaseCover {
     this._left.value = 50;
     this._rect.width = 0;
     this._rect.height = 0;
+    super.close();
   }
 }
 
