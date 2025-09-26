@@ -28,9 +28,11 @@
 <script lang="ts" setup>
 import { getPublicKey, login } from "@/api/white";
 import useApp from "@/store/app";
+import useAuthStore from "@/store/auth";
 import { encryptData } from "@/utils/CryptoJS";
 import { onMounted, ref } from "vue";
 
+const authStore = useAuthStore();
 const appStore = useApp();
 const pwd = ref("");
 let publicKey = "";
@@ -44,8 +46,8 @@ const loginFn = () => {
   encryptData({ pwd: pwd.value }, publicKey).then((encryptRes) => {
     login(encryptRes).then((res) => {
       if (res.data.token) {
-        appStore.setToken(res.data.token);
-        appStore.loadAppList()
+        authStore.setToken(res.data.token);
+        appStore.loadAppList();
       }
     });
   });
