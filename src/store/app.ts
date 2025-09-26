@@ -6,8 +6,6 @@ import { sysComponents } from "@/config/index.js";
 import Dialog from "@/components_ui/Dialog.js";
 
 const useApp = defineStore("app", () => {
-  const token = ref("");
-  token.value = localStorage.getItem("token");
   const bgCfn = reactive<{
     url: string;
     type: "image" | "video" | undefined;
@@ -64,11 +62,6 @@ const useApp = defineStore("app", () => {
     }
   };
 
-  const setToken = (val: string) => {
-    token.value = val;
-    localStorage.setItem("token", val);
-  };
-
   return {
     loadAppLoading,
     bgCfn,
@@ -78,8 +71,6 @@ const useApp = defineStore("app", () => {
     globlePosition,
     isMore,
     openApp,
-    token,
-    setToken,
   };
 });
 

@@ -1,5 +1,5 @@
 <template>
-  <template v-if="appStore.token">
+  <template v-if="authStore.token">
     <BG />
     <BottomBar />
     <TimeNumber />
@@ -36,8 +36,10 @@ import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 // import YGButton from "./components_ui/YGButton.vue";
 import Dialog from "./components_ui/Dialog";
 import BgSetting from "./components_system/BGSetting.vue";
+import useAuthStore from "./store/auth";
 
 const appStore = useApp();
+const authStore = useAuthStore();
 document.addEventListener(
   "mousedown",
   (event) => {

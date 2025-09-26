@@ -1,10 +1,12 @@
+import useAuthStore from "@/store/auth.js";
+
 interface FetchOption extends RequestInit {
   params?: { [key: string]: any };
 }
 
 const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
   init.headers = {
-    "X-Auth": localStorage.getItem("token") || "",
+    "X-Auth": localStorage.getItem("X-Auth") || "",
     "Content-Type": "application/json",
   };
 
@@ -24,9 +26,11 @@ const nextFilter = (jsonRes: { [key: string]: any }) => {
   const { code, msg } = jsonRes;
   if (code === 200) {
     return jsonRes;
-  } else {
-    throw new Error(msg);
   }
+  if (code === 401) {
+    useAuthStore().clear();
+  }
+  throw new Error(msg);
 };
 
 export const _fetch = async (url: RequestInfo | URL, init: FetchOption) => {
