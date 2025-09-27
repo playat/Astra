@@ -38,7 +38,7 @@ const visibleFn = () => {
   from = { ...appStore.globlePosition };
   setPosition(from.x, from.y);
   setTimeout(() => {
-    dialogRef.value.classList.remove("scale-0");
+    dialogRef.value.classList.remove("scale-50");
     dialogRef.value.classList.add(
       "transition-all",
       "duration-300",
@@ -51,7 +51,7 @@ const visibleFn = () => {
 
 const hiddenFn = () => {
   visible.value = false;
-  dialogRef.value.classList.replace("scale-100", "scale-0");
+  dialogRef.value.classList.replace("scale-100", "scale-50");
   dialogRef.value.classList.replace("opacity-100", "opacity-0");
   setPosition(from.x, from.y);
   setTimeout(() => {
