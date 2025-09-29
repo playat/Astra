@@ -146,7 +146,6 @@ watch(
     if (newVal) {
       gsap.to(bottomBarRef.value, {
         top: "28%",
-        width: "90%",
         duration: 0.5,
         height: "70%",
         ease: "elastic.out(0.7, 0.9)",
@@ -154,7 +153,6 @@ watch(
       appCount.value = appStore.apps.length;
     } else {
       gsap.to(bottomBarRef.value, {
-        width: "auto",
         height: "auto",
         top: "calc(100% - 78px)",
         duration: 0.5,
