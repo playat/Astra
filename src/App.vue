@@ -10,7 +10,7 @@
   <Login v-else />
 
   <div
-    class="fixed left-8 bottom-8 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
+    class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
     @click="openChartPhysiology"
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
