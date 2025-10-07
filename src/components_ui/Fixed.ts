@@ -26,24 +26,32 @@ class Fixed extends BaseCover {
     this.mousemove = this.mousemove.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
     this.close = this.close.bind(this);
+    document.removeEventListener("mousemove", this.mousemove);
+    document.removeEventListener("touchmove", this.mousemove);
     // 避免重复绑定事件监听器
-    if (!document.onmousemove) {
-      document.addEventListener("mousemove", this.mousemove);
-      document.addEventListener("touchmove", this.mousemove);
-    }
+    // if (!document.onmousemove) {
+    document.addEventListener("mousemove", this.mousemove);
+    // }
+    // if(!document.ontouchmove) {
+    document.addEventListener("touchmove", this.mousemove);
+    // }
   }
 
-  mousedown(e: MouseEvent) {
+  mousedown(e: MouseEvent & TouchEvent) {
+    e.preventDefault();
+    const target = e.type === "touchstart" ? e.touches[0] : e;
     this._isDown = true;
     this._baseRect = this._fixedRef.value.getBoundingClientRect();
-    this._baseClientX = e.clientX;
-    this._baseClientY = e.clientY;
+    this._baseClientX = target.clientX;
+    this._baseClientY = target.clientY;
   }
 
-  mousemove = (e: MouseEvent) => {
+  mousemove = (e: MouseEvent & TouchEvent) => {
+    e.stopPropagation();
     if (this._isDown) {
-      const lastX = this._baseRect.left + (e.clientX - this._baseClientX);
-      const lastY = this._baseRect.top + (e.clientY - this._baseClientY);
+      const target = e.type === "touchmove" ? e.touches[0] : e;
+      const lastX = this._baseRect.left + (target.clientX - this._baseClientX);
+      const lastY = this._baseRect.top + (target.clientY - this._baseClientY);
       // if (lastY < 0) {
       //   this._top.value = 0;
       // } else if (lastY > this._rect.height) {
@@ -90,7 +98,7 @@ class Fixed extends BaseCover {
                   onMousedown: this.mousedown,
                   onMouseup: this.mouseUp,
                   onTouchstart: this.mousedown,
-                  onTouchmove: this.mousemove,
+                  onTouchend: this.mouseUp,
                 },
                 [
                   h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
@@ -99,6 +107,7 @@ class Fixed extends BaseCover {
                     alt: "",
                     className: "w-3 h-3 cursor-pointer",
                     onClick: close,
+                    onTouchend: close,
                   }),
                 ]
               ),
