@@ -1,7 +1,7 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none"
+    class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <Draggable
@@ -27,6 +27,7 @@
       </template>
     </Draggable>
     <YGLoading v-if="!appStore.apps.length" />
+    <!-- 抽屉 -->
     <div
       v-if="appStore.isMore"
       class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden"
@@ -34,6 +35,11 @@
         grid-template-columns: repeat(auto-fill, 40px);
         grid-auto-rows: 40px;
       "
+      :style="{
+        width: appStore.isMore
+          ? `${appCountTemp * 2.5 + (appCountTemp - 1)}rem`
+          : 'auto',
+      }"
     >
       <YGRightMenu
         v-for="data in viewAppList"
@@ -118,7 +124,7 @@ const appBlur = (e) => {
   });
 };
 const appCount = ref(0);
-
+const appCountTemp = ref(0);
 const viewAppList = computed(() => {
   return appStore.apps.slice(0, appCount.value);
 });
@@ -135,7 +141,7 @@ const initCount = () => {
   // 外部padding: 2rem
   // 视口宽度 window.innerWidth
   // 2.5n + 0.75n - 0.75 ≤ W - 2
-  appCount.value = Math.round(
+  appCountTemp.value = appCount.value = Math.round(
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
 };

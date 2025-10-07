@@ -29,6 +29,7 @@ class Fixed extends BaseCover {
     // 避免重复绑定事件监听器
     if (!document.onmousemove) {
       document.addEventListener("mousemove", this.mousemove);
+      document.addEventListener("touchmove", this.mousemove);
     }
   }
 
@@ -43,21 +44,21 @@ class Fixed extends BaseCover {
     if (this._isDown) {
       const lastX = this._baseRect.left + (e.clientX - this._baseClientX);
       const lastY = this._baseRect.top + (e.clientY - this._baseClientY);
-      if (lastY < 0) {
-        this._top.value = 0;
-      } else if (lastY > this._rect.height) {
-        this._top.value = this._rect.height;
-      } else {
-        this._top.value = lastY;
-      }
+      // if (lastY < 0) {
+      //   this._top.value = 0;
+      // } else if (lastY > this._rect.height) {
+      //   this._top.value = this._rect.height;
+      // } else {
+      this._top.value = lastY;
+      // }
 
-      if (lastX < 0) {
-        this._left.value = 0;
-      } else if (lastX > this._rect.width) {
-        this._left.value = this._rect.width;
-      } else {
-        this._left.value = lastX;
-      }
+      // if (lastX < 0) {
+      //   this._left.value = 0;
+      // } else if (lastX > this._rect.width) {
+      //   this._left.value = this._rect.width;
+      // } else {
+      this._left.value = lastX;
+      // }
     }
   };
   mouseUp(e: MouseEvent) {
@@ -88,6 +89,8 @@ class Fixed extends BaseCover {
                     "h-5 border-b px-1 flex justify-between cursor-move items-center select-none",
                   onMousedown: this.mousedown,
                   onMouseup: this.mouseUp,
+                  onTouchstart: this.mousedown,
+                  onTouchmove: this.mousemove,
                 },
                 [
                   h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
