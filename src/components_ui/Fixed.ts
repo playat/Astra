@@ -101,7 +101,6 @@ class Fixed extends BaseCover {
                   onTouchend: this.mouseUp,
                 },
                 [
-                  h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
                   h("img", {
                     src: CloseSvg,
                     alt: "",
@@ -109,6 +108,7 @@ class Fixed extends BaseCover {
                     onClick: close,
                     onTouchend: close,
                   }),
+                  h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
                 ]
               ),
               h("div", { className: "p-3" }, h(option.component)),
