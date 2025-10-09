@@ -113,7 +113,7 @@ class Fixed extends BaseCover {
               ),
               h(
                 "div",
-                { className: "p-3 max-w-11/12 min-w-96" },
+                { className: "p-3 max-w-11/12 min-w-[300px]" },
                 h(option.component)
               ),
             ]
