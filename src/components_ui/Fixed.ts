@@ -111,7 +111,11 @@ class Fixed extends BaseCover {
                   h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
                 ]
               ),
-              h("div", { className: "p-3" }, h(option.component)),
+              h(
+                "div",
+                { className: "p-3 max-w-11/12 min-w-96" },
+                h(option.component)
+              ),
             ]
           );
       },

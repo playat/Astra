@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[700px] relative">
+  <div class="relative">
     <div class="overflow-x-scroll" ref="boxRef">
       <div ref="chartContainer" />
     </div>

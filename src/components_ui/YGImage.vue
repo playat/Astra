@@ -17,6 +17,8 @@ defineProps<{
   src: string;
 }>();
 
-const;
+const load = () => {
+  
+}
 const isOK = ref(false);
 </script>

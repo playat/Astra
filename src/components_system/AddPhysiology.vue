@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white w-96 flex flex-col gap-3">
+  <div class="text-white flex flex-col gap-3">
     <div>
       <div class="text-sm">时间</div>
       <YGInput

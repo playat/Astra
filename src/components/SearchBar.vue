@@ -35,8 +35,9 @@
 
       <img
         :src="SearchSvg"
-        class="w-5 h-5"
+        class="w-5 h-5 cursor-pointer"
         :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100'"
+        @click="searchStore.toSearch"
       />
     </div>
   </div>
@@ -79,7 +80,7 @@ const toFocus = () => {
 const handleKeydown = (e: KeyboardEvent) => {
   if (hasFocusDom()) return;
   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
-  
+
   if (isLetterOrNumber && !appStore.searchFocus) {
     appStore.searchFocus = true;
     inputRef.value.focus();

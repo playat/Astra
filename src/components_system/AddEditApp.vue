@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white w-96 flex flex-col gap-3">
+  <div class="text-white flex flex-col gap-3">
     <div>
       <div class="text-sm">应用地址</div>
       <YGInput v-model:value="form.key" placeholder="网页URL" class="mt-2" />

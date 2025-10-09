@@ -7,7 +7,7 @@
     <div
       ref="dialogRef"
       @click.stop
-      class="fixed bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
+      class="fixed min-w-96 max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2"
     >
       <div class="flex items-center justify-end">
         <img class="w-4 h-4 cursor-pointer" :src="CloseSvg" @click="hiddenFn" />
