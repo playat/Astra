@@ -50,7 +50,7 @@ const isError = ref(false);
 
 const clearLoading = () => {
   setTimeout(() => {
-    // loading.value = false;
+    loading.value = false;
   }, 500);
 };
 
