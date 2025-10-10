@@ -20,7 +20,7 @@
       <img v-else :src="imgErrorSvg" class="w-4/5" />
     </div>
     <div
-      class="left-0 top-1/2 -translate-y-1/2 absolute w-10 h-10 transition-all"
+      class="left-0 top-1/2 -translate-y-1/2 absolute transition-all"
       :class="loading ? 'opacity-100 visible' : 'opacity-0 invisible'"
     >
       <YGImageLoading />
