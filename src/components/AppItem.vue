@@ -8,12 +8,12 @@
     >
       {{ data.name }}
     </div>
-    <img
+    <!-- <img
       class="w-full h-full"
       :src="data.isDefault ? sysIcons[data.icon] : data.icon"
       draggable="false"
       referrerpolicy="no-referrer"
-    />
+    /> -->
     <YGImage
       class="w-full h-full"
       :src="data.isDefault ? sysIcons[data.icon] : data.icon"
