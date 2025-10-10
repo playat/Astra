@@ -15,7 +15,7 @@
       referrerpolicy="no-referrer"
     /> -->
     <YGImage
-      class="w-full h-full"
+      class="w-full h-full left-0 top-0"
       :src="data.isDefault ? sysIcons[data.icon] : data.icon"
       draggable="false"
       referrerpolicy="no-referrer"
