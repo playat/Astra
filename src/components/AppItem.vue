@@ -19,7 +19,15 @@
       :src="data.isDefault ? sysIcons[data.icon] : data.icon"
       draggable="false"
       referrerpolicy="no-referrer"
-    />
+    >
+      <template #error>
+        <div
+          class="flex items-center justify-center text-xl font-bold text-white"
+        >
+          {{ data.name.charAt(0) }}
+        </div>
+      </template>
+    </YGImage>
   </div>
 </template>
 
