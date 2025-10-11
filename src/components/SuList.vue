@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute top-1/4 mt-14 w-xl backdrop-blur-20px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
+    class="absolute top-1/4 mt-14 w-xl max-w-4/5 backdrop-blur-20px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
     :class="[
       appStore.searchFocus && searchStore.suList.length && !appStore.isMore
         ? 'visible'

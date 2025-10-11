@@ -4,6 +4,14 @@
     class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
   >
+    <!-- 应用名称展示 -->
+    <div
+      ref="appNameViewRef"
+      style="background: rgba(255, 255, 255, 0.1)"
+      class="absolute backdrop-blur-20px top-0 opacity-0 left-1/2 -translate-x-1/2 rounded-xl py-1 px-4 text-white pointer-events-none"
+    >
+      {{ hoverApp?.name || 909090 }}
+    </div>
     <Draggable
       v-if="appStore.apps.length && !appStore.isMore"
       v-model:list="viewAppList"
@@ -19,18 +27,19 @@
         >
           <AppItem
             :data="data"
-            @mouseenter="appFocus($event)"
-            @mouseleave="appBlur($event)"
+            @mouseenter="boxAppFocus(data)"
+            @mouseleave="boxAppBlur"
             @click="openApp(data)"
           />
         </YGRightMenu>
       </template>
     </Draggable>
     <YGLoading v-if="!appStore.apps.length" />
+
     <!-- 抽屉 -->
     <div
       v-if="appStore.isMore"
-      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden relative"
+      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden"
       style="
         grid-template-columns: repeat(auto-fill, 40px);
         grid-auto-rows: 40px;
@@ -41,12 +50,6 @@
           : 'auto',
       }"
     >
-      <div
-        ref="appNameViewRef"
-        class="absolute backdrop-blur-20px top-0 left-1/2 -translate-x-1/2 rounded-xl"
-      >
-        {{ hoverApp.value?.name }}
-      </div>
       <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
@@ -109,28 +112,26 @@ const optionClick = (optionData, item) => {
   }
 };
 
-const appFocus = (e) => {
-  // 获取当前悬浮的应用数据
-  const currentApp = e.target.children[0];
-  gsap.to(currentApp, {
-    opacity: 1,
-    top: "-52px",
-    duration: 0.2,
-    ease: "power2.out",
-  });
-};
+// const appFocus = (e) => {
+//   // 获取当前悬浮的应用数据
+//   const currentApp = e.target.children[0];
+//   gsap.to(currentApp, {
+//     opacity: 1,
+//     duration: 0.2,
+//     ease: "power2.out",
+//   });
+// };
 
-const appBlur = (e) => {
-  const currentApp = e.target.children[0];
-  // 获取对应的 DOM 元素
-  // 隐藏应用名称提示
-  gsap.to(currentApp, {
-    opacity: 0,
-    top: 0,
-    duration: 0.5,
-    ease: "power2.out",
-  });
-};
+// const appBlur = (e) => {
+//   const currentApp = e.target.children[0];
+//   // 获取对应的 DOM 元素
+//   // 隐藏应用名称提示
+//   gsap.to(currentApp, {
+//     opacity: 0,
+//     duration: 0.2,
+//     ease: "power2.out",
+//   });
+// };
 
 const hoverApp = ref(null);
 
@@ -153,7 +154,7 @@ const boxAppBlur = () => {
   gsap.to(appNameViewRef.value, {
     opacity: 0,
     top: 0,
-    duration: 0.5,
+    duration: 0.2,
     ease: "power2.out",
   });
 };
@@ -186,7 +187,7 @@ watch(
   (newVal) => {
     if (newVal) {
       gsap.to(bottomBarRef.value, {
-        top: "28%",
+        top: "30%",
         duration: 0.5,
         height: "70%",
         ease: "elastic.out(0.7, 0.9)",
