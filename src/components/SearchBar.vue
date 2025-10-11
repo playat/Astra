@@ -58,19 +58,23 @@ const inputRef = ref();
 let timer: any;
 const searchInput = (e) => {
   searchStore.searchText = e.target.value;
-  if (timer) {
-    clearTimeout(timer);
-    timer = null;
+  if (searchStore.searchText) {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(async () => {
+      const res = await suSearch({
+        wd: e.target.value,
+        cb: "SUJsonP",
+      });
+      searchStore.suList = res.data.s;
+      clearTimeout(timer);
+      timer = null;
+    }, 100);
+  } else {
+    searchStore.suList = [];
   }
-  timer = setTimeout(async () => {
-    const res = await suSearch({
-      wd: e.target.value,
-      cb: "SUJsonP",
-    });
-    searchStore.suList = res.data.s;
-    clearTimeout(timer);
-    timer = null;
-  }, 100);
 };
 const toFocus = () => {
   appStore.searchFocus = true;
