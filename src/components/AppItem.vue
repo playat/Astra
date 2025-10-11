@@ -22,7 +22,10 @@
     >
       <template #error>
         <div
-          class="flex items-center justify-center text-xl font-bold text-white"
+          class="flex items-center justify-center text-xl font-bold text-white rounded-lg"
+          :style="{
+            backgroundColor: getInvertColor(getRandomLightColor()),
+          }"
         >
           {{ data.name.charAt(0) }}
         </div>
@@ -34,6 +37,7 @@
 <script setup lang="ts">
 import YGImage from "@/components_ui/YGImage.vue";
 import { sysIcons } from "@/config";
+import { getInvertColor, getRandomLightColor } from "@/utils/color";
 
 defineProps<{
   data: any;
