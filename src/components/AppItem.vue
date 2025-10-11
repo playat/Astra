@@ -22,7 +22,7 @@
     >
       <template #error>
         <div
-          class="flex items-center justify-center text-xl font-bold text-white rounded-lg w-full h-full"
+          class="flex items-center justify-center text-xl font-bold text-white rounded-md w-full h-full"
           :style="{
             backgroundColor: getInvertColor(getRandomLightColor()),
           }"

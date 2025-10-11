@@ -13,7 +13,7 @@
       }"
     />
     <div
-      class="left-0 top-0 flex items-center justify-center bg-white absolute w-full h-full transition-all"
+      class="left-0 top-0 flex items-center justify-center bg-transparent absolute w-full h-full transition-all"
       :class="isError ? 'opacity-100 visible' : 'opacity-0 invisible'"
     >
       <slot v-if="$slots.error" name="error" />
