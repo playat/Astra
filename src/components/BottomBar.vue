@@ -30,7 +30,7 @@
     <!-- 抽屉 -->
     <div
       v-if="appStore.isMore"
-      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden"
+      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden relative"
       style="
         grid-template-columns: repeat(auto-fill, 40px);
         grid-auto-rows: 40px;
@@ -41,6 +41,12 @@
           : 'auto',
       }"
     >
+      <div
+        ref="appNameViewRef"
+        class="absolute backdrop-blur-20px top-0 left-1/2 -translate-x-1/2 rounded-xl"
+      >
+        {{ hoverApp.value?.name }}
+      </div>
       <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
@@ -53,8 +59,8 @@
         <AppItem
           :data="data"
           @click="openApp(data)"
-          @mouseenter="appFocus($event)"
-          @mouseleave="appBlur($event)"
+          @mouseenter="boxAppFocus(data)"
+          @mouseleave="boxAppBlur"
         />
       </YGRightMenu>
     </div>
@@ -76,6 +82,8 @@ import AppItem from "./AppItem.vue";
 const appStore = useApp();
 const bottomBarRef = ref();
 const isDrag = ref(false);
+const appNameViewRef = ref();
+
 const openApp = (data: any) => {
   if (isDrag.value) return;
   appStore.openApp(data);
@@ -123,6 +131,33 @@ const appBlur = (e) => {
     ease: "power2.out",
   });
 };
+
+const hoverApp = ref(null);
+
+const boxAppFocus = (data) => {
+  hoverApp.value = data;
+  // const currentApp = data.children[0];
+  gsap.to(appNameViewRef.value, {
+    opacity: 1,
+    top: "-52px",
+    duration: 0.2,
+    ease: "power2.out",
+  });
+};
+
+const boxAppBlur = () => {
+  hoverApp.value = null;
+  // const currentApp = data.children[0];
+  // 获取对应的 DOM 元素
+  // 隐藏应用名称提示
+  gsap.to(appNameViewRef.value, {
+    opacity: 0,
+    top: 0,
+    duration: 0.5,
+    ease: "power2.out",
+  });
+};
+
 const appCount = ref(0);
 const appCountTemp = ref(0);
 const viewAppList = computed(() => {
