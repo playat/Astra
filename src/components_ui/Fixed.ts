@@ -1,4 +1,12 @@
-import { Component, createApp, h, ref } from "vue";
+import {
+  Component,
+  createApp,
+  h,
+  nextTick,
+  onMounted,
+  onUpdated,
+  ref,
+} from "vue";
 import BaseCover from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -80,7 +88,7 @@ class Fixed extends BaseCover {
           h(
             "div",
             {
-              className: "fixed bg-black-0.5 rounded-md z-50",
+              className: "fixed bg-black-0.5 rounded-md z-50 w-max",
               style: {
                 top: `${_top.value}px`,
                 left: `${_left.value}px`,
@@ -111,11 +119,12 @@ class Fixed extends BaseCover {
                   h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
                 ]
               ),
-              h(
-                "div",
-                { className: "p-3 max-w-11/12 min-w-[300px]" },
-                h(option.component)
-              ),
+              h(option.component),
+              // h(
+              //   "div",
+              //   { className: "p-3 w-[300px]" },
+
+              // ),
             ]
           );
       },
@@ -124,9 +133,12 @@ class Fixed extends BaseCover {
     const componentDom = super.open(com) as HTMLElement;
     this._fixedRef.value = componentDom;
 
-    const fixedRect = this._fixedRef.value.getBoundingClientRect();
-    this._rect.width = window.innerWidth - fixedRect.width;
-    this._rect.height = window.innerHeight - fixedRect.height;
+    // this._rect.width = window.innerWidth - fixedRect.width;
+    // this._rect.height = window.innerHeight - fixedRect.height;
+    setTimeout(() => {
+      const fixedRect = this._fixedRef.value.getBoundingClientRect();
+      this._left.value = window.innerWidth / 2 - fixedRect.width / 2;
+    }, 100);
   };
 
   close() {
@@ -135,9 +147,10 @@ class Fixed extends BaseCover {
     this._baseRect = undefined;
     this._isDown = false;
     this._top.value = 50;
-    this._left.value = 50;
-    this._rect.width = 0;
-    this._rect.height = 0;
+    this._left.value =
+      window.innerWidth / 2 - this._fixedRef.value.offsetWidth / 2;
+    // this._rect.width = 0;
+    // this._rect.height = 0;
     super.close();
   }
 }

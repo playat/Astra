@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative max-w-[90vw]">
     <div class="overflow-x-scroll" ref="boxRef">
       <div ref="chartContainer" />
     </div>
@@ -18,6 +18,7 @@ import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
 import AddPhysiology from "../components_system/AddPhysiology.vue";
 import Dialog from "@/components_ui/Dialog";
+
 const chartContainer = ref(null);
 let chartInstance = null;
 const boxRef = ref(null);

@@ -10,6 +10,7 @@
       :class="loading ? 'opacity-0' : 'opacity-100'"
       :style="{
         objectFit: fit,
+        opacity: isError ? 0 : 1,
       }"
     />
     <div
