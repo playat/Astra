@@ -88,7 +88,7 @@ class Fixed extends BaseCover {
           h(
             "div",
             {
-              className: "fixed bg-black-0.5 rounded-md z-50 w-max",
+              className: "fixed bg-black-0.5 rounded-md z-20 w-max",
               style: {
                 top: `${_top.value}px`,
                 left: `${_left.value}px`,

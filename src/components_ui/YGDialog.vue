@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute z-20 left-0 top-0 w-full h-full bg-[rgba(0,0,0,0.2)] transition-all"
+    class="absolute z-30 left-0 top-0 w-full h-full bg-[rgba(0,0,0,0.2)] transition-all"
     :class="visible ? 'visible opacity-100' : 'opacity-0 invisible'"
     @click="emits('close')"
   >
