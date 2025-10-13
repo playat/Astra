@@ -52,9 +52,11 @@
     >
       <!-- 导出按钮 -->
       <div
-        class="absolute -right-4 -top-4 rounded-full bg-black"
+        class="absolute -right-4 -top-4 p-3 rounded-full bg-black box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
         @click="exportData"
-      ></div>
+      >
+        <img :src="ExportSvg" class="w-8 h-8" />
+      </div>
       <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
@@ -86,6 +88,7 @@ import Dialog from "@/components_ui/Dialog";
 import { deleteApp, exportApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
+import ExportSvg from "@/assets/svg/export.svg";
 
 const appStore = useApp();
 const bottomBarRef = ref();
