@@ -1,11 +1,12 @@
 <template>
-  <div class="relative max-w-[90vw]">
+  <div class="relative max-w-[90vw] p-3">
     <div class="overflow-x-scroll" ref="boxRef">
       <div ref="chartContainer" />
     </div>
 
-    <div class="absolute top-3 right-3">
+    <div class="mt-4 flex items-center gap-4 justify-end">
       <YGButton @click="add">记录</YGButton>
+      <YGButton @click="exportData" :loading="exportLoading">导出</YGButton>
     </div>
   </div>
 </template>
@@ -13,7 +14,7 @@
 <script setup lang="ts">
 import { ref, onMounted, h, nextTick } from "vue";
 import { LineChart } from "chartist";
-import { getPhysiology } from "@/api/physiology";
+import { exportPhysiology, getPhysiology } from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
 import AddPhysiology from "../components_system/AddPhysiology.vue";
@@ -107,13 +108,25 @@ const add = () => {
     }),
   });
 };
-
+const exportLoading = ref(false);
+const exportData = () => {
+  exportLoading.value = true;
+  exportPhysiology()
+    .then((res: { filename: string; blob: Blob }) => {
+      // 下载文件
+      const url = window.URL.createObjectURL(new Blob([res.blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", res.filename);
+      link.click();
+      window.URL.revokeObjectURL(url);
+    })
+    .finally(() => {
+      exportLoading.value = false;
+    });
+};
 // 在组件挂载后创建图表
 onMounted(() => {
-  // 滚动到最右侧
-  // nextTick(() => {
-  //   boxRef.value.scrollLeft = boxRef.value.scrollWidth;
-  // });
   createChart();
 });
 </script>

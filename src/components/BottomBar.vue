@@ -39,7 +39,7 @@
     <!-- 抽屉 -->
     <div
       v-if="appStore.isMore"
-      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden"
+      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden relative"
       style="
         grid-template-columns: repeat(auto-fill, 40px);
         grid-auto-rows: 40px;
@@ -50,6 +50,11 @@
           : 'auto',
       }"
     >
+      <!-- 导出按钮 -->
+      <div
+        class="absolute -right-4 -top-4 rounded-full bg-black"
+        @click="exportData"
+      ></div>
       <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
@@ -78,7 +83,7 @@ import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import Dialog from "@/components_ui/Dialog";
-import { deleteApp } from "@/api/app";
+import { deleteApp, exportApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 
@@ -132,7 +137,23 @@ const optionClick = (optionData, item) => {
 //     ease: "power2.out",
 //   });
 // };
-
+const exportLoading = ref(false);
+const exportData = () => {
+  exportLoading.value = true;
+  exportApp()
+    .then((res: { filename: string; blob: Blob }) => {
+      // 下载文件
+      const url = window.URL.createObjectURL(new Blob([res.blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", res.filename);
+      link.click();
+      window.URL.revokeObjectURL(url);
+    })
+    .finally(() => {
+      exportLoading.value = false;
+    });
+};
 const hoverApp = ref(null);
 
 const boxAppFocus = (data) => {

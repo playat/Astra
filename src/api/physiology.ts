@@ -12,3 +12,10 @@ export const addPhysiology = async (data: any) => {
     body: JSON.stringify(data),
   });
 };
+
+export const exportPhysiology = async () => {
+  return _fetch(`/physiology/export`, {
+    method: "POST",
+    isFile: true,
+  });
+};

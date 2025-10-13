@@ -42,3 +42,13 @@ export const deleteApp = (id: string) => {
     method: "DELETE",
   });
 };
+
+/**
+ * 导出应用
+ * @returns
+ */
+export const exportApp = async () => {
+  return _fetch(`/app/export`, {
+    method: "POST",
+  });
+};

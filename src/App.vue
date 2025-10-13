@@ -15,7 +15,6 @@
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
-  <!-- <YGImage class="w-10 h-10" :src="url" /> -->
 </template>
 
 <script setup lang="ts">
@@ -30,9 +29,6 @@ import Login from "./components/Login.vue";
 import { onMounted } from "vue";
 import Fixed from "./components_ui/Fixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
-// import YGButton from "./components_ui/YGButton.vue";
-import Dialog from "./components_ui/Dialog";
-import BgSetting from "./components_system/BGSetting.vue";
 import useAuthStore from "./store/auth";
 
 const appStore = useApp();
@@ -52,11 +48,7 @@ const openChartPhysiology = () => {
   });
 };
 
-const test = () => {
-  new Dialog().open({
-    component: BgSetting,
-  });
-};
+const test = () => {};
 
 onMounted(() => {
   appStore.loadAppList();

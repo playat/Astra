@@ -2,6 +2,7 @@ import useAuthStore from "@/store/auth.js";
 
 interface FetchOption extends RequestInit {
   params?: { [key: string]: any };
+  isFile?: boolean;
 }
 
 const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
@@ -37,6 +38,15 @@ export const _fetch = async (url: RequestInfo | URL, init: FetchOption) => {
   const { initUrl, initOption } = fontFilter(url, init);
   try {
     const fetchRes = await fetch(initUrl, initOption);
+    if (initOption.isFile) {
+      return {
+        filename: fetchRes.headers
+          .get("Content-Disposition")
+          ?.replaceAll(/\"/g, "")
+          .split("=")[1],
+        blob: fetchRes.blob(),
+      };
+    }
     const jsonRes = await fetchRes.json();
     return nextFilter(jsonRes);
   } catch (err) {
