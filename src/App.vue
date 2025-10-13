@@ -1,5 +1,5 @@
 <template>
-  <!-- <template v-if="authStore.token">
+  <template v-if="authStore.token">
     <BG />
     <BottomBar />
     <TimeNumber />
@@ -7,7 +7,7 @@
     <SuList />
   </template>
 
-  <Login v-else /> -->
+  <Login v-else />
 
   <BGSetting />
 

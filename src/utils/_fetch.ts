@@ -44,7 +44,7 @@ export const _fetch = async (url: RequestInfo | URL, init: FetchOption) => {
           .get("Content-Disposition")
           ?.replaceAll(/\"/g, "")
           .split("=")[1],
-        blob: fetchRes.blob(),
+        blob: await fetchRes.blob(),
       };
     }
     const jsonRes = await fetchRes.json();

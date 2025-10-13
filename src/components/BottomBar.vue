@@ -4,6 +4,14 @@
     class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
   >
+    <!-- 导出按钮 -->
+    <div
+      v-if="appStore.isMore"
+      class="absolute -right-4 -top-4 p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+      @click="exportData"
+    >
+      <img :src="ExportSvg" class="w-5 h-5" />
+    </div>
     <!-- 应用名称展示 -->
     <div
       ref="appNameViewRef"
@@ -50,13 +58,6 @@
           : 'auto',
       }"
     >
-      <!-- 导出按钮 -->
-      <div
-        class="absolute -right-4 -top-4 p-3 rounded-full bg-black box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-        @click="exportData"
-      >
-        <img :src="ExportSvg" class="w-8 h-8" />
-      </div>
       <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
@@ -213,7 +214,7 @@ watch(
       gsap.to(bottomBarRef.value, {
         top: "30%",
         duration: 0.5,
-        height: "70%",
+        height: "68%",
         ease: "elastic.out(0.7, 0.9)",
       });
       appCount.value = appStore.apps.length;
