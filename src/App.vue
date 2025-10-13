@@ -1,5 +1,5 @@
 <template>
-  <template v-if="authStore.token">
+  <!-- <template v-if="authStore.token">
     <BG />
     <BottomBar />
     <TimeNumber />
@@ -7,7 +7,9 @@
     <SuList />
   </template>
 
-  <Login v-else />
+  <Login v-else /> -->
+
+  <BGSetting />
 
   <div
     class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
@@ -21,6 +23,7 @@
 import ShenLiSvg from "@/assets/svg/shen_li.svg";
 import BottomBar from "@/components/BottomBar.vue";
 import SearchBar from "@/components/SearchBar.vue";
+import BGSetting from "@/components_system/BGSetting.vue";
 import BG from "@/components/BG.vue";
 import TimeNumber from "./components/TimeNumber.vue";
 import useApp from "./store/app";

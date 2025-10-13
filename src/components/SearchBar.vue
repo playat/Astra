@@ -86,8 +86,8 @@ const handleKeydown = (e: KeyboardEvent) => {
   const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(e.key);
 
   if (isLetterOrNumber && !appStore.searchFocus) {
-    appStore.searchFocus = true;
     inputRef.value.focus();
+    appStore.searchFocus = true;
   }
 };
 

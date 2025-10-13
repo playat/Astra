@@ -9,9 +9,11 @@ const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
     url: string;
     type: "image" | "video" | undefined;
+    file?: File;
   }>({
     url: "",
     type: undefined,
+    file: undefined,
   });
 
   const searchFocus = ref(false);
@@ -46,6 +48,7 @@ const useApp = defineStore("app", () => {
   getItem("bg", "bg_img").then(
     (res: { type: "image" | "video"; imgFile: File }) => {
       if (res) {
+        bgCfn.file = res.imgFile;
         bgCfn.url = URL.createObjectURL(res.imgFile);
         bgCfn.type = res.type;
       }
