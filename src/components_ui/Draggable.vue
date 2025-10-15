@@ -3,6 +3,8 @@
     class="flex justify-center relative gap-3"
     @mousemove="mouseMove"
     @mouseup="mouseUp"
+    @touchstart="mouseMove"
+    @touchend="mouseUp"
   >
     <div
       :ref="(el) => setItems(index, el)"
@@ -154,8 +156,11 @@ const mouseMove = (e) => {
 };
 
 const mouseUp = () => {
-  clearTimeout(isDragTimer);
-  emits("update:isDrag", false);
+  const clearTimer = setTimeout(() => {
+    clearTimeout(isDragTimer);
+    emits("update:isDrag", false);
+    clearTimeout(clearTimer);
+  }, 300);
 
   // if (initIndex.value) {
   const curEl = itemRefs.value[initIndex.value];

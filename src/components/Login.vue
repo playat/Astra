@@ -5,7 +5,7 @@
     <div class="grid-bg absolute left-0 top-0 w-[200%] h-[200%]" />
     <!-- <div class="py-6 px-8 bg-[rgba(15,23,42,0.7)] rounded-md"> -->
     <div
-      class="py-6 px-8 rounded-md"
+      class="py-6 px-8 rounded-md w-[370px] max-w-11/12"
       style="background-color: rgba(30, 58, 138, 0.1)"
     >
       <div class="text-[#e2e8f0]">Enter Password</div>
@@ -13,7 +13,7 @@
         <input
           v-model="pwd"
           type="password"
-          class="password-input relative w-[370px] h-[46px] bg-[#1e293b80] border-b-2 border-[#3b82f680] px-5 text-lg mt-2 text-[#e2e8f0] text-center transition-all"
+          class="password-input relative w-full h-[46px] bg-[#1e293b80] border-b-2 border-[#3b82f680] px-5 text-lg mt-2 text-[#e2e8f0] text-center transition-all"
           placeholder="ENTER PWD"
           autocomplete="off"
           autocorrect="off"
