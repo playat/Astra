@@ -19,3 +19,10 @@ export const exportPhysiology = async () => {
     isFile: true,
   });
 };
+
+export const importPhysiology = async (data: FormData) => {
+  return _fetch(`/physiology/import`, {
+    method: "POST",
+    body: data,
+  });
+};

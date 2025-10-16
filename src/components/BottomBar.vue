@@ -5,12 +5,22 @@
     style="background: rgba(255, 255, 255, 0.1)"
   >
     <!-- 导出按钮 -->
-    <div
-      v-if="appStore.isMore"
-      class="absolute -right-4 -top-4 p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-      @click="exportData"
-    >
-      <img :src="ExportSvg" class="w-5 h-5" />
+    <div class="absolute -right-4 -top-4 flex flex-col gap-3">
+      <div
+        v-if="appStore.isMore"
+        class="p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+        @click="exportData"
+      >
+        <img :src="exportLoading ? LoadingSvg : ExportSvg" class="w-5 h-5" />
+      </div>
+
+      <div
+        v-if="appStore.isMore"
+        class="p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+        @click="importData"
+      >
+        <img :src="importLoading ? LoadingSvg : ImportSvg" class="w-5 h-5" />
+      </div>
     </div>
     <!-- 应用名称展示 -->
     <div
@@ -86,10 +96,12 @@ import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import Dialog from "@/components_ui/Dialog";
-import { deleteApp, exportApp } from "@/api/app";
+import { deleteApp, exportApp, importApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 import ExportSvg from "@/assets/svg/export.svg";
+import ImportSvg from "@/assets/svg/import.svg";
+import LoadingSvg from "@/assets/svg/loading.svg";
 
 const appStore = useApp();
 const bottomBarRef = ref();
@@ -143,6 +155,7 @@ const optionClick = (optionData, item) => {
 // };
 const exportLoading = ref(false);
 const exportData = () => {
+  if (exportLoading.value) return;
   exportLoading.value = true;
   exportApp()
     .then((res: { filename: string; blob: Blob }) => {
@@ -157,6 +170,29 @@ const exportData = () => {
     .finally(() => {
       exportLoading.value = false;
     });
+};
+const importLoading = ref(false);
+const importData = () => {
+  if (importLoading.value) return;
+  importLoading.value = true;
+  // 创建隐藏的文件输入元素
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.style.display = "none";
+
+  input.onchange = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    importApp(formData).then(() => {
+      appStore.loadAppList();
+      importLoading.value = false;
+    });
+  };
+
+  input.click();
 };
 const hoverApp = ref(null);
 

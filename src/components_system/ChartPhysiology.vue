@@ -7,6 +7,7 @@
     <div class="mt-4 flex items-center gap-4 justify-end">
       <YGButton @click="add">记录</YGButton>
       <YGButton @click="exportData" :loading="exportLoading">导出</YGButton>
+      <YGButton @click="importData" :loading="importLoading">导入</YGButton>
     </div>
   </div>
 </template>
@@ -14,7 +15,11 @@
 <script setup lang="ts">
 import { ref, onMounted, h, nextTick } from "vue";
 import { LineChart } from "chartist";
-import { exportPhysiology, getPhysiology } from "@/api/physiology";
+import {
+  exportPhysiology,
+  getPhysiology,
+  importPhysiology,
+} from "@/api/physiology";
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
 import AddPhysiology from "../components_system/AddPhysiology.vue";
@@ -54,7 +59,7 @@ const processIntervalData = (dateList: any) => {
 const createChart = async () => {
   const dateList = await getPhysiology();
 
-  // 只取最近6个数据进行处理
+  // 格式化数据
   const chartData = processIntervalData(dateList.data);
 
   if (chartContainer.value) {
@@ -125,6 +130,29 @@ const exportData = () => {
       exportLoading.value = false;
     });
 };
+
+const importLoading = ref(false);
+const importData = () => {
+  importLoading.value = true;
+  // 创建隐藏的文件输入元素
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json";
+  input.style.display = "none";
+
+  input.onchange = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    importPhysiology(formData).then(() => {
+      importLoading.value = false;
+      createChart();
+    });
+  };
+  input.click();
+};
+
 // 在组件挂载后创建图表
 onMounted(() => {
   createChart();

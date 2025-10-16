@@ -53,3 +53,14 @@ export const exportApp = async () => {
     isFile: true,
   });
 };
+/**
+ * 导入应用列表
+ * @param data
+ * @returns
+ */
+export const importApp = async (data: FormData) => {
+  return _fetch(`/app/import`, {
+    method: "POST",
+    body: data,
+  });
+};
