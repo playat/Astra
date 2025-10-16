@@ -64,3 +64,14 @@ export const importApp = async (data: FormData) => {
     body: data,
   });
 };
+/**
+ * 排序应用
+ * @param data
+ * @returns
+ */
+export const sortApp = async (data: { fromIndex: number; toIndex: number }) => {
+  return _fetch(`/app/sort`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};

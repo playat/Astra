@@ -38,7 +38,7 @@ const props = defineProps<{
   list: any[];
   isDrag: boolean;
 }>();
-const emits = defineEmits(["update:list", "update:isDrag"]);
+const emits = defineEmits(["update:list", "update:isDrag", "dropEnd"]);
 const initIndex = ref();
 const positions = ref([]);
 const top = ref(0);
@@ -156,15 +156,18 @@ const mouseMove = (e) => {
 };
 
 const mouseUp = () => {
+  const curEl = itemRefs.value[initIndex.value];
+  const curIndex = Number(curEl.getAttribute("data-index"));
+
   const clearTimer = setTimeout(() => {
     clearTimeout(isDragTimer);
     emits("update:isDrag", false);
+    emits("dropEnd", { fromIndex: initIndex.value, toIndex: curIndex });
     clearTimeout(clearTimer);
   }, 300);
 
   // if (initIndex.value) {
-  const curEl = itemRefs.value[initIndex.value];
-  const curIndex = Number(curEl.getAttribute("data-index"));
+
   if (initIndex.value !== curIndex) {
     const newList = [...props.list];
     const movedItem = newList[initIndex.value];

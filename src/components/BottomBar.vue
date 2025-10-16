@@ -4,7 +4,7 @@
     class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
   >
-    <!-- 导出按钮 -->
+    <!-- 导入、导出按钮 -->
     <div class="absolute -right-4 -top-4 flex flex-col gap-3">
       <div
         v-if="appStore.isMore"
@@ -34,6 +34,7 @@
       v-if="appStore.apps.length && !appStore.isMore"
       v-model:list="viewAppList"
       v-model:is-drag="isDrag"
+      @drop-end="dropEnd"
     >
       <template #default="{ data }">
         <YGRightMenu
@@ -52,7 +53,7 @@
         </YGRightMenu>
       </template>
     </Draggable>
-    <YGLoading v-if="!appStore.apps.length" />
+    <YGLoading v-if="!appStore.apps.length || sortLoading" />
 
     <!-- 抽屉 -->
     <div
@@ -96,7 +97,7 @@ import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import Dialog from "@/components_ui/Dialog";
-import { deleteApp, exportApp, importApp } from "@/api/app";
+import { deleteApp, exportApp, importApp, sortApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 import ExportSvg from "@/assets/svg/export.svg";
@@ -133,26 +134,15 @@ const optionClick = (optionData, item) => {
   }
 };
 
-// const appFocus = (e) => {
-//   // 获取当前悬浮的应用数据
-//   const currentApp = e.target.children[0];
-//   gsap.to(currentApp, {
-//     opacity: 1,
-//     duration: 0.2,
-//     ease: "power2.out",
-//   });
-// };
-
-// const appBlur = (e) => {
-//   const currentApp = e.target.children[0];
-//   // 获取对应的 DOM 元素
-//   // 隐藏应用名称提示
-//   gsap.to(currentApp, {
-//     opacity: 0,
-//     duration: 0.2,
-//     ease: "power2.out",
-//   });
-// };
+const sortLoading = ref(false);
+const dropEnd = ({ fromIndex, toIndex }) => {
+  sortLoading.value = true;
+  sortApp({ fromIndex, toIndex })
+    .then(() => {})
+    .finally(() => {
+      sortLoading.value = false;
+    });
+};
 const exportLoading = ref(false);
 const exportData = () => {
   if (exportLoading.value) return;
