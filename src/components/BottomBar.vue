@@ -126,7 +126,7 @@ const optionClick = (optionData, item) => {
       }),
     });
   }
-  if (optionData.valur === "remove") {
+  if (optionData.value === "remove") {
     deleteApp(item?.id).then(() => {
       appStore.loadAppList();
     });
