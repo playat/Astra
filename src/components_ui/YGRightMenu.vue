@@ -1,7 +1,7 @@
 <template>
   <div class="relative" @contextmenu.prevent="contextMenu">
     <slot />
-    <div
+    <!-- <div
       tabindex="0"
       ref="optionBoxRef"
       @blur="optionBoxBlur"
@@ -16,29 +16,70 @@
       >
         {{ item.label }}
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from "vue";
+import { createApp, h, nextTick, ref } from "vue";
+import BaseCover from "./BaseCover";
 
-defineProps<{
+const props = defineProps<{
   options: {
     label: string;
     value?: string;
   }[];
 }>();
-defineEmits(["optionClick"]);
+const emits = defineEmits(["optionClick"]);
 
 const optionBoxRef = ref();
 const showOption = ref(false);
 
 const contextMenu = (e) => {
-  showOption.value = true;
-  setTimeout(() => {
-    optionBoxRef.value.focus();
-  }, 30);
+  const x = e.clientX;
+  const y = e.clientY;
+  const baseCover = new BaseCover();
+  const com = createApp({
+    setup: () => {
+      return () =>
+        h(
+          "div",
+          {
+            tabindex: 0,
+            ref: optionBoxRef,
+            onBlur: optionBoxBlur,
+            class: [
+              "transition-all focus-visible:outline-none absolute bottom-[calc(100%+10px)] bg-[var(--yg-bg-color)] rounded-lg",
+              showOption.value ? "visible opacity-100" : "invisible opacity-0",
+            ],
+            style: {
+              left: x,
+              top: y,
+            },
+          },
+          props.options.map((item, index) =>
+            h(
+              "div",
+              {
+                key: index,
+                class:
+                  "hover:!text-[var(--yg-color)] transition-all text-white text-nowrap cursor-pointer text-xs py-1 px-4",
+                onClick: (e) => {
+                  e.stopPropagation();
+                  emits("optionClick", item);
+                },
+              },
+              item.label
+            )
+          )
+        );
+    },
+  });
+  baseCover.open(com);
+  // showOption.value = true;
+  // setTimeout(() => {
+  //   optionBoxRef.value.focus();
+  // }, 30);
 };
 
 const optionBoxBlur = () => {
