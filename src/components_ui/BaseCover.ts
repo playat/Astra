@@ -15,6 +15,7 @@ export default class BaseCover {
   close() {
     this._component.unmount();
     this._component = null;
+    this._mask.classList.replace("visible", "invisible");
   }
 
   /**
@@ -32,7 +33,7 @@ export default class BaseCover {
         "left-0",
         "w-full",
         "h-full",
-        "bg-[rgba(0,0,0,0.5)]",
+        "bg-[rgba(0,0,0,0.2)]",
         "invisible"
       );
       this._mask.id = "_mask";

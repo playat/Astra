@@ -53,8 +53,8 @@ const contextMenu = (e) => {
               showOption.value ? "visible opacity-100" : "invisible opacity-0",
             ],
             style: {
-              left: x,
-              top: y,
+              left: `${x}px`,
+              top: `${y}px`,
             },
           },
           props.options.map((item, index) =>
