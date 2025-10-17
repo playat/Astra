@@ -27,7 +27,7 @@ const contextMenu = (e) => {
           "div",
           {
             class: [
-              "transition-all focus-visible:outline-none absolute bottom-[calc(100%+10px)] bg-[var(--yg-bg-color)] rounded-lg",
+              "transition-all focus-visible:outline-none absolute bg-[var(--yg-bg-color)] rounded-lg",
             ],
             style: {
               left: `${x}px`,
