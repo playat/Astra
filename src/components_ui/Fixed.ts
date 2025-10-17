@@ -1,12 +1,4 @@
-import {
-  Component,
-  createApp,
-  h,
-  nextTick,
-  onMounted,
-  onUpdated,
-  ref,
-} from "vue";
+import { Component, createApp, h, ref } from "vue";
 import BaseCover from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -81,9 +73,9 @@ class Fixed extends BaseCover {
     this._isDown = false;
   }
   open = (option: FixedOption) => {
+    const { _top, _left, close } = this;
     const com = createApp({
       setup: () => {
-        const { _top, _left, close } = this;
         return () =>
           h(
             "div",
