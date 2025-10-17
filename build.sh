@@ -58,7 +58,7 @@ else
 fi
 
 # 移动dist目录到目标位置
-echo -e "正在移动dist目录到 \033[32m $TARGET_DIR \033[0m"
+echo -e "\033[32m 正在移动dist目录到 $TARGET_DIR \033[0m"
 # 使用mv命令，如果目标目录已存在dist，则覆盖
 mv -f dist "$TARGET_DIR"/
 
