@@ -37,6 +37,7 @@ export default class BaseCover {
         "invisible"
       );
       this._mask.id = "_mask";
+      this._mask.addEventListener("click", this.close);
       document.body.appendChild(this._mask);
     }
     this._mask.classList.replace("invisible", "visible");
