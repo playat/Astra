@@ -41,12 +41,12 @@ export default class BaseCover {
       this._mask.addEventListener("click", this.close);
       document.body.appendChild(this._mask);
     }
-    this._mask.classList.replace("invisible", "visible");
+    this.close(); // 先关闭上一个弹窗
 
+    this._mask.classList.replace("invisible", "visible");
     this._component = app;
     this._component.mount(this._mask);
     const componentDom = this._mask.firstElementChild;
-    // document.body.appendChild(componentDom);
     return componentDom;
   }
 }
