@@ -85,7 +85,6 @@ class Dailog extends BaseCover {
                 "div",
                 {
                   class: "flex items-center justify-end",
-                  default: () => h(option.component),
                 },
                 [
                   h("img", {
@@ -95,6 +94,7 @@ class Dailog extends BaseCover {
                   }),
                 ]
               ),
+              h(option.component),
             ]
           );
       },
