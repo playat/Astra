@@ -9,7 +9,7 @@
 
   <Login v-else />
 
-  <BGSetting />
+  <!-- <BGSetting /> -->
 
   <div
     class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"

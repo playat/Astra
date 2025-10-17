@@ -34,7 +34,8 @@ export default class BaseCover {
         "w-full",
         "h-full",
         "bg-[rgba(0,0,0,0.2)]",
-        "invisible"
+        "invisible",
+        "z-[1000]"
       );
       this._mask.id = "_mask";
       this._mask.addEventListener("click", this.close);
