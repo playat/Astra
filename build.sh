@@ -3,7 +3,7 @@
 set -e
 
 # 定义目标目录（可修改为你的目标路径）
-TARGET_DIR="/usr/share/nginx/html/TABS/"
+TARGET_DIR="/usr/share/nginx/html/TABS"
 
 echo -e "\033[33m -------------------启动前端构建部署------------------- \033[0m"
 echo -e "目标路径：\033[33m $TARGET_DIR \033[0m"
