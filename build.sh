@@ -28,6 +28,11 @@ echo -e "\033[33m 准备目录... \033[0m"
 mkdir -p "$TARGET_DIR"
 echo -e "\033[32m 准备完成 \033[0m"
 
+# 移除原有的版本
+echo -e "\033[33m 移除上一个版本... \033[0m"
+rm -rf "$TARGET_DIR/dist"
+echo -e "\033[32m 移除完成 \033[0m"
+
 # 移动dist目录到目标位置
 echo -e "\033[32m 部署中... \033[0m"
 mv -f dist "$TARGET_DIR"
