@@ -41,10 +41,14 @@ class Dailog extends BaseCover {
     this.setPosition(this.from.x, this.from.y);
     setTimeout(() => {
       this._dialogRef.value.classList.remove("transition-all", "duration-300");
-      this.close(this._key);
+      this.close();
     }, 300);
     this.from = { x: 0, y: 0 };
   };
+
+  close() {
+    super.close(this._key);
+  }
 
   createCom(option: DialogOption) {
     onMounted(this.visibleFn);
