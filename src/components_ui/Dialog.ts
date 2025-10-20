@@ -1,5 +1,4 @@
-import YGDialog from "@/components_ui/YGDialog.vue";
-import { Component, createApp, h, onMounted, ref } from "vue";
+import { Component, createApp, createVNode, h, onMounted, ref } from "vue";
 import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -8,7 +7,7 @@ interface DialogOption {
 }
 
 class Dailog extends BaseCover {
-
+  private _key;
   private visible = ref(false);
   private from: { x: number; y: number } = { x: 0, y: 0 };
   private _dialogRef = ref();
@@ -42,50 +41,50 @@ class Dailog extends BaseCover {
     this.setPosition(this.from.x, this.from.y);
     setTimeout(() => {
       this._dialogRef.value.classList.remove("transition-all", "duration-300");
-      this.close();
+      this.close(this._key);
     }, 300);
     this.from = { x: 0, y: 0 };
   };
 
-  open(option: DialogOption) {
-    const { visible, _dialogRef, hiddenFn, visibleFn } = this;
-    const com = createApp({
-      setup: () => {
-        onMounted(visibleFn);
-        return () =>
+  createCom(option: DialogOption) {
+    onMounted(this.visibleFn);
+    return () =>
+      h(
+        "div",
+        {
+          ref: (el: HTMLElement) => {
+            this._dialogRef.value = el;
+          },
+          class: [
+            "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
+            this.visible ? "visible opacity-100" : "opacity-0 invisible",
+          ],
+          onClick: (e) => e.stopPropagation(),
+        },
+        [
           h(
             "div",
             {
-              ref: (el: HTMLElement) => {
-                _dialogRef.value = el;
-              },
-              class: [
-                "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
-                visible ? "visible opacity-100" : "opacity-0 invisible",
-              ],
-              onClick: (e) => e.stopPropagation(),
+              class: "flex items-center justify-end",
             },
             [
-              h(
-                "div",
-                {
-                  class: "flex items-center justify-end",
-                },
-                [
-                  h("img", {
-                    class: "w-4 h-4 cursor-pointer",
-                    src: CloseSvg,
-                    onClick: hiddenFn,
-                  }),
-                ]
-              ),
-              h(option.component),
+              h("img", {
+                class: "w-4 h-4 cursor-pointer",
+                src: CloseSvg,
+                onClick: this.hiddenFn,
+              }),
             ]
-          );
-      },
-    });
+          ),
+          h(option.component),
+        ]
+      );
+  }
 
-    super.open(com);
+  open(option: DialogOption) {
+    const com = this.createCom(option);
+    this._key = `cover_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    const vnode = createVNode(com, { key: this._key });
+    this.insert(vnode);
   }
 }
 

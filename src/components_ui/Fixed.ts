@@ -1,4 +1,4 @@
-import { Component, createApp, h, ref } from "vue";
+import { Component, createApp, createVNode, h, ref, RendererNode } from "vue";
 import BaseCover from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -8,13 +8,14 @@ interface FixedOption {
 }
 
 class Fixed extends BaseCover {
+  private _key;
   private _top = ref(50);
   private _left = ref(50);
   private _baseRect: DOMRect;
   private _isDown = false;
   private _baseClientX;
   private _baseClientY;
-  private _fixedRef = ref<HTMLElement>();
+  private _fixedRef = ref<RendererNode>();
   private _rect = {
     width: 0,
     height: 0,
@@ -72,58 +73,54 @@ class Fixed extends BaseCover {
   mouseUp(e: MouseEvent) {
     this._isDown = false;
   }
-  open = (option: FixedOption) => {
-    const { _top, _left, close } = this;
-    const com = createApp({
-      setup: () => {
-        return () =>
+
+  createCom(option: FixedOption) {
+    return () =>
+      h(
+        "div",
+        {
+          className: "fixed bg-black-0.5 rounded-md z-20 w-max",
+          style: {
+            top: `${this._top.value}px`,
+            left: `${this._left.value}px`,
+          },
+          ref: (el: HTMLElement) => {
+            this._fixedRef.value = el;
+          },
+        },
+        [
           h(
             "div",
             {
-              className: "fixed bg-black-0.5 rounded-md z-20 w-max",
-              style: {
-                top: `${_top.value}px`,
-                left: `${_left.value}px`,
-              },
-              ref: (el: HTMLElement) => {
-                this._fixedRef.value = el;
-              },
+              className:
+                "h-5 border-b px-1 flex justify-between cursor-move items-center select-none",
+              onMousedown: this.mousedown,
+              onMouseup: this.mouseUp,
+              onTouchstart: this.mousedown,
+              onTouchend: this.mouseUp,
             },
             [
-              h(
-                "div",
-                {
-                  className:
-                    "h-5 border-b px-1 flex justify-between cursor-move items-center select-none",
-                  onMousedown: this.mousedown,
-                  onMouseup: this.mouseUp,
-                  onTouchstart: this.mousedown,
-                  onTouchend: this.mouseUp,
-                },
-                [
-                  h("img", {
-                    src: CloseSvg,
-                    alt: "",
-                    className: "w-3 h-3 cursor-pointer",
-                    onClick: close,
-                    onTouchend: close,
-                  }),
-                  h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
-                ]
-              ),
-              h(option.component),
-              // h(
-              //   "div",
-              //   { className: "p-3 w-[300px]" },
-
-              // ),
+              h("img", {
+                src: CloseSvg,
+                alt: "",
+                className: "w-3 h-3 cursor-pointer",
+                onClick: close,
+                onTouchend: close,
+              }),
+              h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
             ]
-          );
-      },
-    });
+          ),
+          h(option.component),
+        ]
+      );
+  }
 
-    const componentDom = super.open(com) as HTMLElement;
-    this._fixedRef.value = componentDom;
+  open = (option: FixedOption) => {
+    const com = this.createCom(option);
+    this._key = `cover_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    const vnode = createVNode(com, { key: this._key });
+    super.insert(vnode);
+    this._fixedRef.value = vnode.el;
 
     // this._rect.width = window.innerWidth - fixedRect.width;
     // this._rect.height = window.innerHeight - fixedRect.height;
@@ -143,7 +140,7 @@ class Fixed extends BaseCover {
       window.innerWidth / 2 - this._fixedRef.value.offsetWidth / 2;
     // this._rect.width = 0;
     // this._rect.height = 0;
-    super.close();
+    super.close(this._key);
   }
 }
 

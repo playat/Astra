@@ -1,52 +1,65 @@
 // 功能：提供open和close接口
 // 基础属性 component
 
-import { App } from "vue";
+import {
+  App,
+  createVNode,
+  Fragment,
+  FunctionalComponent,
+  h,
+  render,
+  VNode,
+} from "vue";
 
 /**
  * 全屏覆盖型组件接口
  */
 export default class BaseCover {
-  private _component: App;
-  private _mask: HTMLElement;
+  #children: VNode[];
+  #mask: HTMLElement;
   /**
-   * 调用组件的卸载方法并清除变量
+   * 移除特定组件
    */
-  close() {
-    this._component.unmount();
-    this._component = null;
-    this._mask.classList.replace("visible", "invisible");
+  close(key: string) {
+    const index = this.#children.findIndex((item) => item.props.key === key);
+    if (index !== -1) {
+      this.#children.splice(index, 1);
+      render(h(Fragment, this.#children), this.#mask);
+    }
+    this.#mask.classList.replace("visible", "invisible");
+  }
+  /**
+   * 创建通用蒙版组件
+   */
+  createMask() {
+    // 创建全局mask
+    this.#mask = document.createElement("div");
+    this.#mask.classList.add(
+      "fixed",
+      "top-0",
+      "left-0",
+      "w-full",
+      "h-full",
+      "bg-[rgba(0,0,0,0.2)]",
+      "invisible",
+      "z-[1000]"
+    );
+    this.#mask.id = "_mask";
+    document.body.appendChild(this.#mask);
   }
 
   /**
-   * 将传入的组件定义封装成具有生命周期的组件
-   * 并挂载到body中
-   * @param app 需要渲染到body中的组件
+   * 挂载组件
+   * @param node 被渲染的虚拟dom
    */
-  open(app: App): HTMLElement | Element | void {
-    if (!this._mask) {
-      // 创建全局mask
-      this._mask = document.createElement("div");
-      this._mask.classList.add(
-        "fixed",
-        "top-0",
-        "left-0",
-        "w-full",
-        "h-full",
-        "bg-[rgba(0,0,0,0.2)]",
-        "invisible",
-        "z-[1000]"
-      );
-      this._mask.id = "_mask";
-      this._mask.addEventListener("click", this.close);
-      document.body.appendChild(this._mask);
+  insert(node: VNode) {
+    if (!this.#mask) {
+      this.createMask();
     }
-    this.close(); // 先关闭上一个弹窗
 
-    this._mask.classList.replace("invisible", "visible");
-    this._component = app;
-    this._component.mount(this._mask);
-    const componentDom = this._mask.firstElementChild;
-    return componentDom;
+    this.#mask.classList.replace("invisible", "visible");
+
+    this.#children.push(node);
+    render(h(Fragment, this.#children), this.#mask);
   }
 }
