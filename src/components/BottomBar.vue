@@ -169,7 +169,7 @@ const importData = () => {
   input.style.display = "none";
 
   input.onchange = (e: any) => {
-    const file = e.target.files;
+    const file = e.target.files[0];
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
