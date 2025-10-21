@@ -19,7 +19,7 @@
         class="p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
         @click="importData"
       >
-        <img :src="importLoading ? LoadingSvg : ImportSvg" class="w-5 h-5" />
+        <img :src="ImportSvg" class="w-5 h-5" />
       </div>
     </div>
     <!-- 应用名称展示 -->
@@ -161,10 +161,7 @@ const exportData = () => {
       exportLoading.value = false;
     });
 };
-const importLoading = ref(false);
 const importData = () => {
-  if (importLoading.value) return;
-  importLoading.value = true;
   // 创建隐藏的文件输入元素
   const input = document.createElement("input");
   input.type = "file";
@@ -178,7 +175,6 @@ const importData = () => {
     formData.append("file", file);
     importApp(formData).then(() => {
       appStore.loadAppList();
-      importLoading.value = false;
     });
   };
 
