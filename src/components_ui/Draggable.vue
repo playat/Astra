@@ -162,7 +162,6 @@ const mouseUp = () => {
   const clearTimer = setTimeout(() => {
     clearTimeout(isDragTimer);
     emits("update:isDrag", false);
-    emits("dropEnd", { fromIndex: initIndex.value, toIndex: curIndex });
     clearTimeout(clearTimer);
   }, 300);
 
@@ -186,6 +185,7 @@ const mouseUp = () => {
   //   el.style.transform = "";
   //   el.style.transition = "";
   // });
+  emits("dropEnd", { fromIndex: initIndex.value, toIndex: curIndex });
 
   isMove.value = false;
   curItem.value = null;

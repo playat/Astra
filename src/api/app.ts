@@ -71,7 +71,7 @@ export const importApp = async (data: FormData) => {
  */
 export const sortApp = async (data: { fromIndex: number; toIndex: number }) => {
   return _fetch(`/app/sort`, {
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(data),
   });
 };
