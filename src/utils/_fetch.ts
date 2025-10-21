@@ -50,6 +50,6 @@ export const _fetch = async (url: RequestInfo | URL, init: FetchOption) => {
     const jsonRes = await fetchRes.json();
     return nextFilter(jsonRes);
   } catch (err) {
-    throw err;
+    console.error(err);
   }
 };

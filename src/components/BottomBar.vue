@@ -168,8 +168,8 @@ const importData = () => {
   input.accept = ".json";
   input.style.display = "none";
 
-  input.onchange = (e: Event) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
+  input.onchange = (e: any) => {
+    const file = e.target.files;
     if (!file) return;
     const formData = new FormData();
     formData.append("file", file);
