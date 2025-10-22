@@ -136,6 +136,7 @@ const optionClick = (optionData, item) => {
 
 const sortLoading = ref(false);
 const dropEnd = ({ fromIndex, toIndex }) => {
+  if (!isDrag.value) return;
   sortLoading.value = true;
   sortApp({ fromIndex, toIndex })
     .then(() => {})
