@@ -15,7 +15,7 @@ import {
  * 全屏覆盖型组件接口
  */
 export default class BaseCover {
-  #children: VNode[];
+  #children: VNode[] = [];
   #mask: HTMLElement;
   /**
    * 移除特定组件
