@@ -113,8 +113,8 @@ class Fixed extends BaseCover {
                   src: CloseSvg,
                   alt: "",
                   className: "w-3 h-3 cursor-pointer",
-                  onClick: close,
-                  onTouchend: close,
+                  onClick: this.close,
+                  onTouchend: this.close,
                 }),
                 h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
               ]
