@@ -1,4 +1,12 @@
-import { Component, createApp, createVNode, h, onMounted, ref } from "vue";
+import {
+  Component,
+  createApp,
+  createVNode,
+  defineComponent,
+  h,
+  onMounted,
+  ref,
+} from "vue";
 import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -51,37 +59,39 @@ class Dailog extends BaseCover {
   }
 
   createCom(option: DialogOption) {
-    onMounted(this.visibleFn);
-    return () =>
-      h(
-        "div",
-        {
-          ref: (el: HTMLElement) => {
-            this._dialogRef.value = el;
-          },
-          class: [
-            "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
-            this.visible ? "visible opacity-100" : "opacity-0 invisible",
-          ],
-          onClick: (e) => e.stopPropagation(),
-        },
-        [
-          h(
-            "div",
-            {
-              class: "flex items-center justify-end",
+    return defineComponent(() => {
+      onMounted(this.visibleFn);
+      return () =>
+        h(
+          "div",
+          {
+            ref: (el: HTMLElement) => {
+              this._dialogRef.value = el;
             },
-            [
-              h("img", {
-                class: "w-4 h-4 cursor-pointer",
-                src: CloseSvg,
-                onClick: this.hiddenFn,
-              }),
-            ]
-          ),
-          h(option.component),
-        ]
-      );
+            class: [
+              "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
+              this.visible ? "visible opacity-100" : "opacity-0 invisible",
+            ],
+            onClick: (e) => e.stopPropagation(),
+          },
+          [
+            h(
+              "div",
+              {
+                class: "flex items-center justify-end",
+              },
+              [
+                h("img", {
+                  class: "w-4 h-4 cursor-pointer",
+                  src: CloseSvg,
+                  onClick: this.hiddenFn,
+                }),
+              ]
+            ),
+            h(option.component),
+          ]
+        );
+    });
   }
 
   open(option: DialogOption) {

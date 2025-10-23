@@ -4,6 +4,7 @@
 import {
   App,
   createVNode,
+  DefineSetupFnComponent,
   Fragment,
   FunctionalComponent,
   h,

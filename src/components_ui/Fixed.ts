@@ -1,4 +1,12 @@
-import { Component, createApp, createVNode, h, ref, RendererNode } from "vue";
+import {
+  Component,
+  createApp,
+  createVNode,
+  defineComponent,
+  h,
+  ref,
+  RendererNode,
+} from "vue";
 import BaseCover from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
@@ -75,44 +83,46 @@ class Fixed extends BaseCover {
   }
 
   createCom(option: FixedOption) {
-    return () =>
-      h(
-        "div",
-        {
-          className: "fixed bg-black-0.5 rounded-md z-20 w-max",
-          style: {
-            top: `${this._top.value}px`,
-            left: `${this._left.value}px`,
-          },
-          ref: (el: HTMLElement) => {
-            this._fixedRef.value = el;
-          },
-        },
-        [
-          h(
-            "div",
-            {
-              className:
-                "h-5 border-b px-1 flex justify-between cursor-move items-center select-none",
-              onMousedown: this.mousedown,
-              onMouseup: this.mouseUp,
-              onTouchstart: this.mousedown,
-              onTouchend: this.mouseUp,
+    return defineComponent(() => {
+      return () =>
+        h(
+          "div",
+          {
+            className: "fixed bg-black-0.5 rounded-md z-20 w-max",
+            style: {
+              top: `${this._top.value}px`,
+              left: `${this._left.value}px`,
             },
-            [
-              h("img", {
-                src: CloseSvg,
-                alt: "",
-                className: "w-3 h-3 cursor-pointer",
-                onClick: close,
-                onTouchend: close,
-              }),
-              h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
-            ]
-          ),
-          h(option.component),
-        ]
-      );
+            ref: (el: HTMLElement) => {
+              this._fixedRef.value = el;
+            },
+          },
+          [
+            h(
+              "div",
+              {
+                className:
+                  "h-5 border-b px-1 flex justify-between cursor-move items-center select-none",
+                onMousedown: this.mousedown,
+                onMouseup: this.mouseUp,
+                onTouchstart: this.mousedown,
+                onTouchend: this.mouseUp,
+              },
+              [
+                h("img", {
+                  src: CloseSvg,
+                  alt: "",
+                  className: "w-3 h-3 cursor-pointer",
+                  onClick: close,
+                  onTouchend: close,
+                }),
+                h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
+              ]
+            ),
+            h(option.component),
+          ]
+        );
+    });
   }
 
   open = (option: FixedOption) => {
