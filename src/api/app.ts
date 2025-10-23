@@ -50,7 +50,7 @@ export const deleteApp = (id: string) => {
 export const exportApp = async () => {
   return _fetch(`/app/export`, {
     method: "POST",
-    isFile: true,
+    isDownload: true,
   });
 };
 /**
@@ -62,6 +62,7 @@ export const importApp = async (data: FormData) => {
   return _fetch(`/app/import`, {
     method: "POST",
     body: data,
+    isUpload: true,
   });
 };
 /**

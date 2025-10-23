@@ -16,7 +16,7 @@ export const addPhysiology = async (data: any) => {
 export const exportPhysiology = async () => {
   return _fetch(`/physiology/export`, {
     method: "POST",
-    isFile: true,
+    isDownload: true,
   });
 };
 
@@ -24,5 +24,6 @@ export const importPhysiology = async (data: FormData) => {
   return _fetch(`/physiology/import`, {
     method: "POST",
     body: data,
+    isUpload: true,
   });
 };

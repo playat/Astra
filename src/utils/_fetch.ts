@@ -2,7 +2,8 @@ import useAuthStore from "@/store/auth.js";
 
 interface FetchOption extends RequestInit {
   params?: { [key: string]: any };
-  isFile?: boolean;
+  isDownload?: boolean;
+  isUpload?: boolean;
 }
 
 const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
@@ -10,7 +11,9 @@ const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
     "X-Auth": localStorage.getItem("X-Auth") || "",
     "Content-Type": "application/json",
   };
-
+  if (init.isUpload) {
+    delete init.headers["Content-Type"];
+  }
   let initUrl = `/api${url}`;
   if (init.params) {
     const paramsInstance = new URLSearchParams(init.params);
@@ -38,7 +41,7 @@ export const _fetch = async (url: RequestInfo | URL, init: FetchOption) => {
   const { initUrl, initOption } = fontFilter(url, init);
   try {
     const fetchRes = await fetch(initUrl, initOption);
-    if (initOption.isFile) {
+    if (initOption.isDownload) {
       return {
         filename: fetchRes.headers
           .get("Content-Disposition")
