@@ -22,15 +22,12 @@ export default class BaseCover {
    * 移除特定组件
    */
   close(key: string) {
-    const index = this.#children.findIndex((item) => item.props.key === key);
-
-    if (index !== -1) {
-      this.#children.splice(index, 1);
-      render(h(Fragment, this.#children), this.#mask);
-    }
-    console.log("key", key);
-    console.log("index", index);
-    console.log("this.#children", this.#children);
+    // const index = this.#children.findIndex((item) => item.props.key === key);
+    this.#children = this.#children.filter((item) => item.props.key !== key);
+    // if (index !== -1) {
+    //   this.#children.splice(index, 1);
+    render(h(Fragment, this.#children), this.#mask);
+    // }
 
     this.#mask.classList.replace("visible", "invisible");
   }
