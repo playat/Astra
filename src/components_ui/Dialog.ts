@@ -96,7 +96,9 @@ class Dailog extends BaseCover {
 
   open(option: DialogOption) {
     const com = this.createCom(option);
-    this._key = `cover_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    this._key = `dialog_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2, 9)}`;
     const vnode = createVNode(com, { key: this._key });
     this.insert(vnode);
   }

@@ -127,7 +127,7 @@ class Fixed extends BaseCover {
 
   open = (option: FixedOption) => {
     const com = this.createCom(option);
-    this._key = `cover_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    this._key = `fixed_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     const vnode = createVNode(com, { key: this._key });
     super.insert(vnode);
     this._fixedRef.value = vnode.el;
