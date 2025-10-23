@@ -23,6 +23,9 @@ export default class BaseCover {
    */
   close(key: string) {
     const index = this.#children.findIndex((item) => item.props.key === key);
+    console.log("key", key);
+    console.log("index", index);
+    
     if (index !== -1) {
       this.#children.splice(index, 1);
       render(h(Fragment, this.#children), this.#mask);
