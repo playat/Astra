@@ -49,7 +49,7 @@ abstract class BaseCover {
       "z-[1000]"
     );
     this.#mask.id = "_mask";
-    this.#mask.onclick = this.close;
+    this.#mask.onclick = this.close.bind(this);
     document.body.appendChild(this.#mask);
   }
 
