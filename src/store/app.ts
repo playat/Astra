@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 import { Component, reactive, ref } from "vue";
 import { getAppLsit } from "@/api/app.js";
 import { sysComponents } from "@/config/index.js";
-import Dialog from "@/components_ui/Dialog.js";
+import CoverDialog from "@/components_ui/CoverDialog.js";
 
 const useApp = defineStore("app", () => {
   const bgCfn = reactive<{
@@ -59,9 +59,9 @@ const useApp = defineStore("app", () => {
     if (!data.isDefault) {
       window.open(data.key, "_blank");
     } else {
-      new Dialog().open({
+      new CoverDialog({
         component: sysComponents[data.component],
-      });
+      }).open();
     }
   };
 

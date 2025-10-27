@@ -15,10 +15,17 @@ interface DialogOption {
 }
 
 class Dailog extends BaseCover {
-  private _key;
+  key;
+  private options: DialogOption;
   private visible = ref(false);
   private from: { x: number; y: number } = { x: 0, y: 0 };
   private _dialogRef = ref();
+
+  constructor(options: DialogOption) {
+    super();
+    this.options = options;
+    this.key = `dialog_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  }
 
   private setPosition = (x, y) => {
     this._dialogRef.value.style.top = `${y}px`;
@@ -54,11 +61,7 @@ class Dailog extends BaseCover {
     this.from = { x: 0, y: 0 };
   };
 
-  close() {
-    super.close(this._key);
-  }
-
-  createCom(option: DialogOption) {
+  createCom() {
     return defineComponent(() => {
       onMounted(this.visibleFn);
       return () =>
@@ -88,18 +91,15 @@ class Dailog extends BaseCover {
                 }),
               ]
             ),
-            h(option.component),
+            h(this.options.component),
           ]
         );
     });
   }
 
-  open(option: DialogOption) {
-    const com = this.createCom(option);
-    this._key = `dialog_${Date.now()}_${Math.random()
-      .toString(36)
-      .slice(2, 9)}`;
-    const vnode = createVNode(com, { key: this._key });
+  open() {
+    const com = this.createCom();
+    const vnode = createVNode(com);
     this.insert(vnode);
   }
 }

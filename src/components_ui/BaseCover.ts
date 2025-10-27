@@ -15,24 +15,25 @@ import {
 /**
  * 全屏覆盖型组件接口
  */
-export default class BaseCover {
+abstract class BaseCover {
   #children: VNode[] = [];
   #mask: HTMLElement;
+  abstract key: string;
+  abstract open(options: any): void;
+
   /**
    * 移除特定组件
    */
-  close(key: string) {
-    // const index = this.#children.findIndex((item) => item.props.key === key);
-    this.#children = this.#children.filter((item) => item.props.key !== key);
-    // if (index !== -1) {
-    //   this.#children.splice(index, 1);
+  close() {
+    this.#children = this.#children.filter(
+      (item) => item.props.key !== this.key
+    );
     render(h(Fragment, this.#children), this.#mask);
-    // }
-
     this.#mask.classList.replace("visible", "invisible");
   }
+
   /**
-   * 创建通用蒙版组件
+   * 创建通用蒙版
    */
   createMask() {
     // 创建全局mask
@@ -48,6 +49,7 @@ export default class BaseCover {
       "z-[1000]"
     );
     this.#mask.id = "_mask";
+    this.#mask.onclick = this.close;
     document.body.appendChild(this.#mask);
   }
 
@@ -59,10 +61,10 @@ export default class BaseCover {
     if (!this.#mask) {
       this.createMask();
     }
-
     this.#mask.classList.replace("invisible", "visible");
-
     this.#children.push(node);
     render(h(Fragment, this.#children), this.#mask);
   }
 }
+
+export default BaseCover;

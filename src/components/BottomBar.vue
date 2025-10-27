@@ -37,20 +37,21 @@
       @drop-end="dropEnd"
     >
       <template #default="{ data }">
-        <YGRightMenu
+        <!-- <YGRightMenu
           @option-click="optionClick($event, data)"
           :options="[
             { label: '修改', value: 'edit' },
             { label: '删除', value: 'remove' },
           ]"
-        >
-          <AppItem
-            :data="data"
-            @mouseenter="boxAppFocus(data)"
-            @mouseleave="boxAppBlur"
-            @click="openApp(data)"
-          />
-        </YGRightMenu>
+        > -->
+        <AppItem
+          @contextmenu.prevent="contextMenu($event, data)"
+          :data="data"
+          @mouseenter="boxAppFocus(data)"
+          @mouseleave="boxAppBlur"
+          @click="openApp(data)"
+        />
+        <!-- </YGRightMenu> -->
       </template>
     </Draggable>
     <YGLoading v-if="!appStore.apps.length || sortLoading" />
@@ -95,14 +96,15 @@ import useApp from "@/store/app";
 import { computed, h, onMounted, ref, watch } from "vue";
 import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
-import YGRightMenu from "@/components_ui/YGRightMenu.vue";
-import Dialog from "@/components_ui/Dialog";
+// import YGRightMenu from "@/components_ui/YGRightMenu.vue";
+import CoverDialog from "@/components_ui/CoverDialog";
 import { deleteApp, exportApp, importApp, sortApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 import ExportSvg from "@/assets/svg/export.svg";
 import ImportSvg from "@/assets/svg/import.svg";
 import LoadingSvg from "@/assets/svg/loading.svg";
+import CoverRightMenu from "@/components_ui/CoverRightMenu";
 
 const appStore = useApp();
 const bottomBarRef = ref();
@@ -116,8 +118,7 @@ const openApp = (data: any) => {
 
 const optionClick = (optionData, item) => {
   if (optionData.value === "edit") {
-    const dialog = new Dialog();
-    dialog.open({
+    const dialog = new CoverDialog({
       component: h(AddEditApp, {
         formData: item,
         onSuccess() {
@@ -126,6 +127,7 @@ const optionClick = (optionData, item) => {
         },
       }),
     });
+    dialog.open();
   }
   if (optionData.value === "remove") {
     deleteApp(item?.id).then(() => {
@@ -228,6 +230,21 @@ const initCount = () => {
   appCountTemp.value = appCount.value = Math.round(
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
+};
+
+const contextMenu = (e, item) => {
+  const rightMenu = new CoverRightMenu({
+    x: e.clientX,
+    y: e.clientY,
+    list: [
+      { label: "修改", value: "edit" },
+      { label: "删除", value: "remove" },
+    ],
+  });
+  rightMenu.onOptionClick = (option) => {
+    optionClick(option, item);
+  };
+  rightMenu.open();
 };
 
 watch(

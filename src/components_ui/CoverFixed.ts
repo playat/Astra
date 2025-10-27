@@ -16,7 +16,8 @@ interface FixedOption {
 }
 
 class Fixed extends BaseCover {
-  private _key;
+  key;
+  private options: FixedOption;
   private _top = ref(50);
   private _left = ref(50);
   private _baseRect: DOMRect;
@@ -29,8 +30,9 @@ class Fixed extends BaseCover {
     height: 0,
   };
 
-  constructor() {
+  constructor(options: FixedOption) {
     super();
+    this.options = options;
     this.mousedown = this.mousedown.bind(this);
     this.mousemove = this.mousemove.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
@@ -44,6 +46,7 @@ class Fixed extends BaseCover {
     // if(!document.ontouchmove) {
     document.addEventListener("touchmove", this.mousemove);
     // }
+    this.key = `fixed_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
   }
 
   mousedown(e: MouseEvent & TouchEvent) {
@@ -55,7 +58,7 @@ class Fixed extends BaseCover {
     this._baseClientY = target.clientY;
   }
 
-  mousemove = (e: MouseEvent & TouchEvent) => {
+  mousemove(e: MouseEvent & TouchEvent) {
     e.stopPropagation();
     if (this._isDown) {
       const target = e.type === "touchmove" ? e.touches[0] : e;
@@ -77,12 +80,12 @@ class Fixed extends BaseCover {
       this._left.value = lastX;
       // }
     }
-  };
+  }
   mouseUp(e: MouseEvent) {
     this._isDown = false;
   }
 
-  createCom(option: FixedOption) {
+  createCom() {
     return defineComponent(() => {
       return () =>
         h(
@@ -119,16 +122,16 @@ class Fixed extends BaseCover {
                 h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
               ]
             ),
-            h(option.component),
+            h(this.options.component),
           ]
         );
     });
   }
 
-  open = (option: FixedOption) => {
-    const com = this.createCom(option);
-    this._key = `fixed_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-    const vnode = createVNode(com, { key: this._key });
+  open = () => {
+    const com = this.createCom();
+
+    const vnode = createVNode(com);
     super.insert(vnode);
     this._fixedRef.value = vnode.el;
 
@@ -150,7 +153,7 @@ class Fixed extends BaseCover {
       window.innerWidth / 2 - this._fixedRef.value.offsetWidth / 2;
     // this._rect.width = 0;
     // this._rect.height = 0;
-    super.close(this._key);
+    super.close();
   }
 }
 

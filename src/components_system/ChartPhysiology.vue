@@ -23,7 +23,7 @@ import {
 import { ctLabelPlugin, ctValuePlugin } from "@/utils/ChartistPlugin";
 import YGButton from "@/components_ui/YGButton.vue";
 import AddPhysiology from "../components_system/AddPhysiology.vue";
-import Dialog from "@/components_ui/Dialog";
+import CoverDialog from "@/components_ui/CoverDialog";
 
 const chartContainer = ref(null);
 let chartInstance = null;
@@ -103,8 +103,7 @@ const createChart = async () => {
 
 // 打开添加记录对话框
 const add = () => {
-  const dialog = new Dialog();
-  dialog.open({
+  const dialog = new CoverDialog({
     component: h(AddPhysiology, {
       onSuccess() {
         createChart();
@@ -112,6 +111,7 @@ const add = () => {
       },
     }),
   });
+  dialog.open();
 };
 const exportLoading = ref(false);
 const exportData = () => {

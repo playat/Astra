@@ -30,7 +30,7 @@ import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
 import { onMounted } from "vue";
-import Fixed from "./components_ui/Fixed";
+import CoverFixed from "./components_ui/CoverFixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 import useAuthStore from "./store/auth";
 
@@ -46,9 +46,9 @@ document.addEventListener(
 );
 
 const openChartPhysiology = () => {
-  new Fixed().open({
+  new CoverFixed({
     component: ChartPhysiology,
-  });
+  }).open();
 };
 
 const test = () => {};
