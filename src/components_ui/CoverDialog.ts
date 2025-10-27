@@ -99,8 +99,7 @@ class Dailog extends BaseCover {
 
   open() {
     const com = this.createCom();
-    const vnode = createVNode(com);
-    this.insert(vnode);
+    this.insert(createVNode(com, { key: this.key }));
   }
 }
 

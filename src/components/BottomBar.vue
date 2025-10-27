@@ -70,7 +70,7 @@
           : 'auto',
       }"
     >
-      <YGRightMenu
+      <!-- <YGRightMenu
         v-for="data in viewAppList"
         :key="data.key"
         @option-click="optionClick($event, data)"
@@ -78,14 +78,16 @@
           { label: '修改', value: 'edit' },
           { label: '删除', value: 'remove' },
         ]"
-      >
-        <AppItem
-          :data="data"
-          @click="openApp(data)"
-          @mouseenter="boxAppFocus(data)"
-          @mouseleave="boxAppBlur"
-        />
-      </YGRightMenu>
+      > -->
+      <AppItem
+        v-for="data in viewAppList"
+        :key="data.key"
+        :data="data"
+        @click="openApp(data)"
+        @mouseenter="boxAppFocus(data)"
+        @mouseleave="boxAppBlur"
+      />
+      <!-- </YGRightMenu> -->
     </div>
   </div>
 </template>

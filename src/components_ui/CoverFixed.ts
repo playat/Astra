@@ -131,7 +131,7 @@ class Fixed extends BaseCover {
   open = () => {
     const com = this.createCom();
 
-    const vnode = createVNode(com);
+    const vnode = createVNode(com, { key: this.key });
     super.insert(vnode);
     this._fixedRef.value = vnode.el;
 

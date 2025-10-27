@@ -58,7 +58,7 @@ class RightMenu extends BaseCover {
 
   open() {
     const com = this.createCom();
-    super.insert(createVNode(com));
+    super.insert(createVNode(com, { key: this.key }));
   }
 }
 
