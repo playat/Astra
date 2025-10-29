@@ -37,13 +37,6 @@
       @drop-end="dropEnd"
     >
       <template #default="{ data }">
-        <!-- <YGRightMenu
-          @option-click="optionClick($event, data)"
-          :options="[
-            { label: '修改', value: 'edit' },
-            { label: '删除', value: 'remove' },
-          ]"
-        > -->
         <AppItem
           @contextmenu.prevent="contextMenu($event, data)"
           :data="data"
@@ -51,7 +44,6 @@
           @mouseleave="boxAppBlur"
           @click="openApp(data)"
         />
-        <!-- </YGRightMenu> -->
       </template>
     </Draggable>
     <YGLoading v-if="!appStore.apps.length || sortLoading" />
@@ -70,16 +62,8 @@
           : 'auto',
       }"
     >
-      <!-- <YGRightMenu
-        v-for="data in viewAppList"
-        :key="data.key"
-        @option-click="optionClick($event, data)"
-        :options="[
-          { label: '修改', value: 'edit' },
-          { label: '删除', value: 'remove' },
-        ]"
-      > -->
       <AppItem
+        @contextmenu.prevent="contextMenu($event, data)"
         v-for="data in viewAppList"
         :key="data.key"
         :data="data"
@@ -87,7 +71,6 @@
         @mouseenter="boxAppFocus(data)"
         @mouseleave="boxAppBlur"
       />
-      <!-- </YGRightMenu> -->
     </div>
   </div>
 </template>
