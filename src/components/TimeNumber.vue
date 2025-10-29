@@ -30,28 +30,18 @@ const timeDisplay = computed(() => {
 });
 
 // 更新时间
+let lastSecond = -1;
 const updateTime = () => {
   const now = new Date();
-  hours.value = now.getHours();
-  minutes.value = now.getMinutes();
-  seconds.value = now.getSeconds();
-  // timer = setInterval(updateTime, 1000);
-  // 计算当前与初始时间的差值（秒），并取整数部分
-  const currentTime = Date.now();
-  const elapsedSeconds = Math.floor((currentTime - now.getTime()) / 1000);
-
-  seconds.value += elapsedSeconds;
-  if (seconds.value >= 60) {
-    seconds.value = 0;
-    minutes.value++;
-    if (minutes.value >= 60) {
-      minutes.value = 0;
-      hours.value++;
-      if (hours.value >= 24) {
-        hours.value = 0;
-      }
-    }
+  const currentSecond = now.getSeconds();
+  if (currentSecond !== lastSecond) {
+    // 只有秒数变化时才更新
+    hours.value = now.getHours();
+    minutes.value = now.getMinutes();
+    seconds.value = currentSecond;
+    lastSecond = currentSecond;
   }
+
   requestAnimationFrame(updateTime);
 };
 // 组件挂载时启动计时器
