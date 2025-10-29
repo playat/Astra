@@ -60,5 +60,8 @@ const test = () => {
 
 onMounted(() => {
   appStore.loadAppList();
+  new Message({
+    message: "你好，今天吃什么嘞"
+  }).open()
 });
 </script>
