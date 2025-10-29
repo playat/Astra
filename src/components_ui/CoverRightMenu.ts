@@ -1,4 +1,4 @@
-import { createVNode, defineComponent, h } from "vue";
+import { createVNode, defineComponent, h, onMounted, ref } from "vue";
 import BaseCover, { insert } from "./BaseCover.js";
 
 interface RightMenuOptions {
@@ -12,9 +12,11 @@ interface RightMenuOptions {
 
 class RightMenu extends BaseCover {
   private options: RightMenuOptions;
-
+  private rightMenuRef = ref();
   constructor(options: RightMenuOptions) {
     super();
+    this.close = this.close.bind(this);
+    this.onOptionClick = this.onOptionClick.bind(this);
     this.key = `right-menu-${Math.random().toString(36).slice(2)}`;
     this.options = options;
   }
@@ -23,10 +25,19 @@ class RightMenu extends BaseCover {
 
   createCom() {
     return defineComponent(() => {
+      onMounted(() => {
+        if (this.rightMenuRef.value) {
+          this.rightMenuRef.value.focus();
+        }
+      });
       return () =>
         h(
           "div",
           {
+            ref: (el: HTMLElement) => {
+              this.rightMenuRef.value = el;
+            },
+            tabindex: 0,
             class: [
               "transition-all focus-visible:outline-none absolute bg-[var(--yg-bg-color)] rounded-lg",
             ],
@@ -34,6 +45,7 @@ class RightMenu extends BaseCover {
               left: `${this.options.x}px`,
               top: `${this.options.y}px`,
             },
+            onBlur: this.close,
           },
           this.options.list.map((item, index) =>
             h(
