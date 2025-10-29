@@ -27,6 +27,7 @@
 
 <script lang="ts" setup>
 import { getPublicKey, login } from "@/api/white";
+import Message from "@/components_ui/CoverMessage";
 import useApp from "@/store/app";
 import useAuthStore from "@/store/auth";
 import { encryptData } from "@/utils/CryptoJS";
@@ -48,6 +49,10 @@ const loginFn = () => {
       if (res.data.token) {
         authStore.setToken(res.data.token);
         appStore.loadAppList();
+      } else {
+        new Message({
+          message: "登录失败",
+        }).open();
       }
     });
   });

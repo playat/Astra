@@ -15,6 +15,7 @@ class Message extends BaseCover {
     super();
     this.close = this.close.bind(this);
     this.visibleFn = this.visibleFn.bind(this);
+    this.hiddenFn = this.hiddenFn.bind(this);
     this.options = options;
     this.key = `message-${Math.random().toString(36).slice(2)}`;
   }
@@ -47,7 +48,14 @@ class Message extends BaseCover {
 
   createCom() {
     return defineComponent(() => {
-      onMounted(this.visibleFn);
+      let timer;
+      onMounted(() => {
+        this.visibleFn();
+        timer = setTimeout(() => {
+          this.hiddenFn();
+          clearTimeout(timer);
+        }, 1500);
+      });
       return () =>
         h(
           "div",
@@ -56,7 +64,7 @@ class Message extends BaseCover {
               this._messageRef.value = el;
             },
             class: [
-              "fixed flex items-center justify-center whitespace-nowrap top-8 overflow-hidden text-white left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-950 text-xs",
+              "fixed flex items-center cursor-pointer justify-center whitespace-nowrap top-8 overflow-hidden text-white left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-950 text-xs",
             ],
             onClick: this.close,
           },
