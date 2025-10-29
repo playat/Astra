@@ -1,7 +1,7 @@
 // 功能：提供open和close接口
 // 基础属性 component
 
-import { Fragment, h, nextTick, render, VNode } from "vue";
+import { Fragment, h, render, VNode } from "vue";
 
 let mask: HTMLElement = null;
 let children: VNode[] = [];
@@ -34,7 +34,7 @@ export const insert = (node: VNode) => {
     createMask();
   }
   mask.classList.replace("invisible", "visible");
-  children.push(node);
+  children = [...children, node];
   console.log("children", children);
   render(h(Fragment, null, children), mask);
 };
