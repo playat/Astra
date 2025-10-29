@@ -52,7 +52,7 @@ class Message extends BaseCover {
       onMounted(() => {
         this.visibleFn();
         timer = setTimeout(() => {
-          this.hiddenFn();
+          this.close();
           clearTimeout(timer);
         }, 1500);
       });
