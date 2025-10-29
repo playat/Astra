@@ -7,7 +7,7 @@ import {
   ref,
   RendererNode,
 } from "vue";
-import BaseCover from "./BaseCover.js";
+import BaseCover, { insert } from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import CloseSvg from "@/assets/svg/close.svg";
 
@@ -16,7 +16,6 @@ interface FixedOption {
 }
 
 class Fixed extends BaseCover {
-  key;
   private options: FixedOption;
   private _top = ref(50);
   private _left = ref(50);
@@ -132,7 +131,7 @@ class Fixed extends BaseCover {
     const com = this.createCom();
 
     const vnode = createVNode(com, { key: this.key });
-    super.insert(vnode);
+    insert(vnode);
     this._fixedRef.value = vnode.el;
 
     // this._rect.width = window.innerWidth - fixedRect.width;
@@ -144,6 +143,8 @@ class Fixed extends BaseCover {
   };
 
   close() {
+    console.log(this);
+
     this._baseClientX = undefined;
     this._baseClientY = undefined;
     this._baseRect = undefined;

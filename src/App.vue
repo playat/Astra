@@ -9,21 +9,19 @@
 
   <Login v-else />
 
-  <!-- <BGSetting /> -->
-
   <div
     class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
     @click="openChartPhysiology"
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
+  <!-- <YGButton @click="test">test</YGButton> -->
 </template>
 
 <script setup lang="ts">
 import ShenLiSvg from "@/assets/svg/shen_li.svg";
 import BottomBar from "@/components/BottomBar.vue";
 import SearchBar from "@/components/SearchBar.vue";
-import BGSetting from "@/components_system/BGSetting.vue";
 import BG from "@/components/BG.vue";
 import TimeNumber from "./components/TimeNumber.vue";
 import useApp from "./store/app";
@@ -33,6 +31,8 @@ import { onMounted } from "vue";
 import CoverFixed from "./components_ui/CoverFixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 import useAuthStore from "./store/auth";
+// import YGButton from "./components_ui/YGButton.vue";
+import Message from "./components_ui/CoverMessage";
 
 const appStore = useApp();
 const authStore = useAuthStore();
@@ -51,7 +51,12 @@ const openChartPhysiology = () => {
   }).open();
 };
 
-const test = () => {};
+const test = () => {
+  const dialog = new Message({
+    message: "今晚吃点不一样的",
+  });
+  dialog.open();
+};
 
 onMounted(() => {
   appStore.loadAppList();
