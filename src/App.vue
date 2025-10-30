@@ -1,10 +1,10 @@
 <template>
   <template v-if="authStore.token">
-    <BG />
+    <!-- <BG />
     <BottomBar />
     <TimeNumber />
     <SearchBar />
-    <SuList />
+    <SuList /> -->
   </template>
 
   <Login v-else />

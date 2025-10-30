@@ -1,5 +1,5 @@
 import { createVNode, defineComponent, h, onMounted, ref } from "vue";
-import BaseCover, { insert } from "./BaseCover.js";
+import BaseCover from "./BaseCover.js";
 
 interface RightMenuOptions {
   list: {
@@ -69,7 +69,7 @@ class RightMenu extends BaseCover {
 
   open() {
     const com = this.createCom();
-    insert(createVNode(com, { key: this.key }));
+    this.insert(createVNode(com, { key: this.key }));
   }
 }
 

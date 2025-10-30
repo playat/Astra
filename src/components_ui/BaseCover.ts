@@ -25,19 +25,6 @@ const createMask = () => {
   mask.id = "_mask";
   document.body.appendChild(mask);
 };
-/**
- * 挂载组件
- * @param node 被渲染的虚拟dom
- */
-export const insert = (node: VNode) => {
-  if (!mask) {
-    createMask();
-  }
-  mask.classList.replace("invisible", "visible");
-  children = [...children, node];
-  console.log("children", children);
-  render(h(Fragment, null, children), mask);
-};
 
 /**
  * 全屏覆盖型组件接口
@@ -53,6 +40,19 @@ class BaseCover {
 
     render(h(Fragment, null, children), mask);
     mask.classList.replace("visible", "invisible");
+  }
+
+  /**
+   * 挂载组件
+   * @param node 被渲染的虚拟dom
+   */
+  insert(node: VNode) {
+    if (!mask) {
+      createMask();
+    }
+    mask.classList.replace("invisible", "visible");
+    children = [...children, node];
+    render(h(Fragment, null, children), mask);
   }
 }
 

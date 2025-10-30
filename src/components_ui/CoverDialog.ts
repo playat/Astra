@@ -7,7 +7,7 @@ import {
   onMounted,
   ref,
 } from "vue";
-import BaseCover, { insert } from "./BaseCover.js";
+import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import CloseSvg from "@/assets/svg/close.svg";
 interface DialogOption {
@@ -98,7 +98,7 @@ class Dailog extends BaseCover {
 
   open() {
     const com = this.createCom();
-    insert(createVNode(com, { key: this.key }));
+    this.insert(createVNode(com, { key: this.key }));
   }
 }
 

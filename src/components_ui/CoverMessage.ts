@@ -1,12 +1,12 @@
 import { createVNode, defineComponent, h, onMounted, ref } from "vue";
-import BaseCover, { insert } from "./BaseCover.js";
 import gsap from "gsap";
+import MessageCover from "./MessageCover.js";
 
 interface MessageOptions {
   message: string;
 }
 
-class Message extends BaseCover {
+class Message extends MessageCover {
   private options: MessageOptions;
   private visible = ref(false);
   private _messageRef = ref();
@@ -21,6 +21,7 @@ class Message extends BaseCover {
   }
 
   visibleFn() {
+    this.visible.value = true;
     const autoWhite = this._messageRef.value.offsetWidth;
     gsap.fromTo(
       this._messageRef.value,
@@ -38,6 +39,7 @@ class Message extends BaseCover {
   }
 
   hiddenFn() {
+    this.visible.value = false;
     return gsap.to(this._messageRef.value, {
       width: 16,
       height: 16,
@@ -51,10 +53,10 @@ class Message extends BaseCover {
       let timer;
       onMounted(() => {
         this.visibleFn();
-        timer = setTimeout(() => {
-          this.close();
-          clearTimeout(timer);
-        }, 1500);
+        // timer = setTimeout(() => {
+        //   this.close();
+        //   clearTimeout(timer);
+        // }, 1500);
       });
       return () =>
         h(
@@ -64,7 +66,8 @@ class Message extends BaseCover {
               this._messageRef.value = el;
             },
             class: [
-              "fixed flex items-center cursor-pointer justify-center whitespace-nowrap top-8 overflow-hidden text-white left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-950 text-xs",
+              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
+              this.visible.value ? "opacity-100" : "opacity-0",
             ],
             onClick: this.close,
           },
@@ -75,7 +78,7 @@ class Message extends BaseCover {
 
   open() {
     const com = this.createCom();
-    insert(createVNode(com, { key: this.key }));
+    super.insert(createVNode(com, { key: this.key }));
   }
 
   close() {
