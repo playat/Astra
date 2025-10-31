@@ -43,6 +43,7 @@ class Message {
   }
   hiddenFn() {
     return gsap.to(this._messageRef, {
+      right: -42,
       width: 30,
       height: 30,
       padding: 0,
@@ -65,7 +66,7 @@ class Message {
               this._messageRef = el;
             },
             class: [
-              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
+              "flex absolute items-center left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
             ],
             onClick: this.close,
           },
