@@ -55,15 +55,27 @@ export const insert = (msg: Message) => {
   if (!msgTarget) {
     createMask();
   }
-  msgList.value[0] && msgList.value[0].hiddenFn().then(() => {});
+  if (msgList.value[0]) {
+    msgList.value[0].hiddenFn().then(() => {
+      // msgList.value = [msg, ...msgList.value];
+      msgList.value.unshift(msg);
+      render(
+        h(Fragment, null, [
+          msgList.value[0].node,
+          msgList.value[1]?._messageRef,
+        ]),
+        msgTarget
+      );
+      msg.visibleFn();
+    });
+  } else {
+    msgList.value.unshift(msg);
+    render(msg.node, msgTarget);
+    msg.visibleFn();
+  }
 
-  msgList.value = [msg, ...msgList.value];
-  render(
-    h(Fragment, null, [msgList.value[0].node, msgList.value[1]?.node]),
-    msgTarget
-  );
   // setTimeout(() => {
-  msg.visibleFn();
+  // msg.visibleFn();
   // }, 1500);
 
   // setTimeout(() => {

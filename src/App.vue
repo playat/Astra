@@ -68,10 +68,5 @@ onMounted(() => {
       message: "不知道吃什么",
     }).open();
   }, 1000);
-    setTimeout(() => {
-    new Message({
-      message: "...",
-    }).open();
-  }, 2000);
 });
 </script>
