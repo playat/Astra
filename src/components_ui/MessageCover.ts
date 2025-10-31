@@ -1,9 +1,11 @@
 import { createVNode, defineComponent, Fragment, h, render, VNode } from "vue";
 import BaseCover from "./BaseCover.js";
 import { ref } from "vue";
+import gsap from "gsap";
+import Message from "./CoverMessage.js";
 
 let msgTarget: HTMLElement = null;
-const msgList = ref<VNode[]>([]);
+const msgList = ref<Message[]>([]);
 
 /**
  * 创建消息通用挂载目标
@@ -16,8 +18,10 @@ const createMask = () => {
     "left-1/2",
     "-translate-x-1/2",
     "-translate-y-1/2",
+    "transition-all",
     "top-8",
     "w-max",
+    "h-[30px]",
     "flex",
     "items-center",
     "gap-3",
@@ -27,42 +31,44 @@ const createMask = () => {
   msgTarget.id = "_msgTarget";
   document.body.appendChild(msgTarget);
 };
-
-class MessageCover extends BaseCover {
-  constructor() {
-    super();
-    this.key = `base-cover-message-${Math.random().toString(36).slice(2)}`;
+const createDotCom = () => {
+  return defineComponent(() => {
+    return () =>
+      msgList.value.length > 1
+        ? h(
+            "div",
+            {
+              key: "dot",
+              class:
+                "w-[30px] h-[30px] bg-neutral-950 text text-white rounded-full flex items-center justify-center",
+            },
+            "···"
+          )
+        : null;
+  });
+};
+/**
+ * 挂载组件
+ * @param node 被渲染的虚拟dom
+ */
+export const insert = (msg: Message) => {
+  if (!msgTarget) {
+    createMask();
   }
+  msgList.value[0] && msgList.value[0].hiddenFn().then(() => {});
 
-  createCom() {
-    return defineComponent(() => {
-      return () =>
-        msgList.value.length > 1
-          ? h(
-              "div",
-              {
-                class: "w-[30px] h-[30px] bg-neutral-950 text-xs text-white",
-              },
-              "..."
-            )
-          : null;
-    });
-  }
-  /**
-   * 挂载组件
-   * @param node 被渲染的虚拟dom
-   */
-  insert(node: VNode) {
-    console.log(1);
+  msgList.value = [msg, ...msgList.value];
+  render(
+    h(Fragment, null, [msgList.value[0].node, msgList.value[1]?.node]),
+    msgTarget
+  );
+  // setTimeout(() => {
+  msg.visibleFn();
+  // }, 1500);
 
-    if (!msgTarget) {
-      createMask();
-    }
-    const com = this.createCom();
-    // msgTarget.classList.replace("invisible", "visible");
-    msgList.value = [...msgList.value, node];
-    render(h(Fragment, null, [msgList.value[0], createVNode(com)]), msgTarget);
-  }
-}
-
-export default MessageCover;
+  // setTimeout(() => {
+  //   if (msgList.value[1]) {
+  //     msgList.value[1].hiddenFn();
+  //   }
+  // }, 1000);
+};

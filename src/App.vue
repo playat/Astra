@@ -61,7 +61,17 @@ const test = () => {
 onMounted(() => {
   appStore.loadAppList();
   new Message({
-    message: "你好，今天吃什么嘞"
-  }).open()
+    message: "你好，今天吃什么嘞",
+  }).open();
+  setTimeout(() => {
+    new Message({
+      message: "不知道吃什么",
+    }).open();
+  }, 1000);
+    setTimeout(() => {
+    new Message({
+      message: "...",
+    }).open();
+  }, 2000);
 });
 </script>

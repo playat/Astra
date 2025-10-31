@@ -1,50 +1,55 @@
-import { createVNode, defineComponent, h, onMounted, ref } from "vue";
+import { createVNode, defineComponent, h, onMounted, ref, VNode } from "vue";
 import gsap from "gsap";
-import MessageCover from "./MessageCover.js";
+import { insert } from "./MessageCover.js";
 
 interface MessageOptions {
   message: string;
 }
 
-class Message extends MessageCover {
+class Message {
   private options: MessageOptions;
   private visible = ref(false);
-  private _messageRef = ref();
+  _messageRef = null;
+  private key: string;
+  node: VNode;
 
   constructor(options: MessageOptions) {
-    super();
     this.close = this.close.bind(this);
     this.visibleFn = this.visibleFn.bind(this);
-    this.hiddenFn = this.hiddenFn.bind(this);
     this.options = options;
     this.key = `message-${Math.random().toString(36).slice(2)}`;
   }
 
   visibleFn() {
     this.visible.value = true;
-    const autoWhite = this._messageRef.value.offsetWidth;
+    const autoWhite = this._messageRef.offsetWidth;
     gsap.fromTo(
-      this._messageRef.value,
+      this._messageRef,
       {
         width: 16,
         height: 16,
         ease: "power2.out",
+        duration: 2,
+        opacity: 0,
       },
       {
         width: autoWhite + 32,
         height: 30,
         ease: "power2.out",
+        opacity: 1,
+        duration: 2,
       }
     );
   }
-
   hiddenFn() {
-    this.visible.value = false;
-    return gsap.to(this._messageRef.value, {
-      width: 16,
-      height: 16,
+    return gsap.to(this._messageRef, {
+      position: "absolute",
+      right: -42,
+      width: 30,
+      height: 30,
       padding: 0,
       ease: "power2.out",
+      duration: 2,
     });
   }
 
@@ -52,39 +57,34 @@ class Message extends MessageCover {
     return defineComponent(() => {
       let timer;
       onMounted(() => {
-        this.visibleFn();
-        // timer = setTimeout(() => {
-        //   this.close();
-        //   clearTimeout(timer);
-        // }, 1500);
+        // this.visibleFn();
       });
       return () =>
         h(
           "div",
           {
             ref: (el: HTMLElement) => {
-              this._messageRef.value = el;
+              this._messageRef = el;
             },
             class: [
-              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
-              this.visible.value ? "opacity-100" : "opacity-0",
+              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs opacity-0",
             ],
             onClick: this.close,
           },
-          this.options.message
+          this.visible ? this.options.message : ""
         );
     });
   }
 
   open() {
-    const com = this.createCom();
-    super.insert(createVNode(com, { key: this.key }));
+    this.node = createVNode(this.createCom(), { key: this.key });
+    insert(this);
   }
 
   close() {
-    this.hiddenFn().then(() => {
-      super.close();
-    });
+    // this.hiddenFn().then(() => {
+    //   super.close();
+    // });
   }
 }
 
