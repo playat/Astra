@@ -16,6 +16,7 @@ class Message {
   constructor(options: MessageOptions) {
     this.close = this.close.bind(this);
     this.visibleFn = this.visibleFn.bind(this);
+    this.hiddenFn = this.hiddenFn.bind(this);
     this.options = options;
     this.key = `message-${Math.random().toString(36).slice(2)}`;
   }
