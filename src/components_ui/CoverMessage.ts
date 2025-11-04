@@ -42,6 +42,7 @@ class Message {
     );
   }
   hiddenFn() {
+    this.visible.value = false;
     return gsap.to(this._messageRef, {
       translateX: 42,
       width: 30,
@@ -70,7 +71,7 @@ class Message {
             ],
             onClick: this.close,
           },
-          this.visible ? this.options.message : ""
+          this.visible ? this.options.message : "···"
         );
     });
   }
