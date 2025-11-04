@@ -8,7 +8,6 @@ interface MessageOptions {
 
 class Message {
   private options: MessageOptions;
-  private visible = ref(false);
   _messageRef = null;
   private key: string;
   node: VNode;
@@ -23,7 +22,6 @@ class Message {
   }
 
   visibleFn() {
-    this.visible.value = true;
     const autoWhite = this._messageRef.offsetWidth;
     gsap.fromTo(
       this._messageRef,
@@ -44,7 +42,6 @@ class Message {
     );
   }
   hiddenFn() {
-    this.visible.value = false;
     return gsap.to(this._messageRef, {
       translateX: 42,
       width: 30,
@@ -69,7 +66,7 @@ class Message {
             ],
             onClick: this.close,
           },
-          this.visible.value ? this.options.message : "···"
+          this.options.message
         );
     });
   }
