@@ -60,13 +60,15 @@ const test = () => {
 
 onMounted(() => {
   appStore.loadAppList();
-  new Message({
-    message: "我的宝，今天吃什么嘞？",
-  }).open();
   setTimeout(() => {
     new Message({
-      message: "不晓得，我就吃点普通的",
+      message: "我的宝，今天吃什么嘞？",
     }).open();
+    setTimeout(() => {
+      new Message({
+        message: "不晓得，我就吃点普通的",
+      }).open();
+    }, 1000);
   }, 1000);
 });
 </script>
