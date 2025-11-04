@@ -55,10 +55,6 @@ class Message {
 
   createCom() {
     return defineComponent(() => {
-      let timer;
-      onMounted(() => {
-        // this.visibleFn();
-      });
       return () =>
         h(
           "div",
@@ -71,7 +67,7 @@ class Message {
             ],
             onClick: this.close,
           },
-          this.visible ? this.options.message : "···"
+          this.visible.value ? this.options.message : "···"
         );
     });
   }
