@@ -14,12 +14,11 @@ const createMask = () => {
   msgTarget = document.createElement("div");
   msgTarget.classList.add(
     "fixed",
-    "top-0",
     "left-1/2",
     "-translate-x-1/2",
     "-translate-y-1/2",
     "transition-all",
-    "top-8",
+    "top-6",
     "w-max",
     "h-[30px]",
     "flex",
@@ -57,13 +56,9 @@ export const insert = (msg: Message) => {
   }
   if (msgList.value[0]) {
     msgList.value[0].hiddenFn().then(() => {
-      // msgList.value = [msg, ...msgList.value];
       msgList.value.unshift(msg);
       render(
-        h(Fragment, null, [
-          msgList.value[0].node,
-          msgList.value[1]?._messageRef,
-        ]),
+        h(Fragment, null, [msgList.value[0].node, createVNode(createDotCom())]),
         msgTarget
       );
       msg.visibleFn();
@@ -73,14 +68,4 @@ export const insert = (msg: Message) => {
     render(msg.node, msgTarget);
     msg.visibleFn();
   }
-
-  // setTimeout(() => {
-  // msg.visibleFn();
-  // }, 1500);
-
-  // setTimeout(() => {
-  //   if (msgList.value[1]) {
-  //     msgList.value[1].hiddenFn();
-  //   }
-  // }, 1000);
 };

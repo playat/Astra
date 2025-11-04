@@ -29,7 +29,7 @@ class Message {
         width: 16,
         height: 16,
         ease: "power2.out",
-        duration: 2,
+        duration: 0.5,
         opacity: 0,
       },
       {
@@ -37,18 +37,18 @@ class Message {
         height: 30,
         ease: "power2.out",
         opacity: 1,
-        duration: 2,
+        duration: 0.5,
       }
     );
   }
   hiddenFn() {
     return gsap.to(this._messageRef, {
-      right: -42,
+      translateX: 42,
       width: 30,
       height: 30,
       padding: 0,
       ease: "power2.out",
-      duration: 2,
+      duration: 0.5,
     });
   }
 
@@ -66,7 +66,7 @@ class Message {
               this._messageRef = el;
             },
             class: [
-              "flex absolute items-center left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
+              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
             ],
             onClick: this.close,
           },

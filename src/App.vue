@@ -1,10 +1,10 @@
 <template>
   <template v-if="authStore.token">
-    <!-- <BG />
+    <BG />
     <BottomBar />
     <TimeNumber />
     <SearchBar />
-    <SuList /> -->
+    <SuList />
   </template>
 
   <Login v-else />
@@ -61,11 +61,11 @@ const test = () => {
 onMounted(() => {
   appStore.loadAppList();
   new Message({
-    message: "你好，今天吃什么嘞",
+    message: "我的宝，今天吃什么嘞？",
   }).open();
   setTimeout(() => {
     new Message({
-      message: "不知道吃什么",
+      message: "不晓得，我就吃点普通的",
     }).open();
   }, 1000);
 });
