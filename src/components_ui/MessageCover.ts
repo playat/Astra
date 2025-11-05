@@ -2,10 +2,10 @@ import { createVNode, defineComponent, Fragment, h, render, VNode } from "vue";
 import BaseCover from "./BaseCover.js";
 import { ref } from "vue";
 import gsap from "gsap";
-import Message from "./CoverMessage.js";
+import CoverMessage from "./CoverMessage.js";
 
 let msgTarget: HTMLElement = null;
-const msgList = ref<Message[]>([]);
+const msgList = ref<CoverMessage[]>([]);
 
 /**
  * 创建消息通用挂载目标
@@ -50,7 +50,7 @@ const createDotCom = () => {
  * 挂载组件
  * @param node 被渲染的虚拟dom
  */
-export const insert = (msg: Message) => {
+export const insert = (msg: CoverMessage) => {
   if (!msgTarget) {
     createMask();
   }

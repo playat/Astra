@@ -11,11 +11,13 @@
       muted
       autoplay
       :src="appStore.bgCfn.url"
+      @loadeddata="animate"
       class="w-full h-full object-cover"
     />
     <img
       v-if="appStore.bgCfn.type === 'image'"
       :src="appStore.bgCfn.url"
+      @load="animate"
       class="w-full h-full object-cover"
     />
     <div
@@ -28,7 +30,7 @@
 
 <script setup lang="ts">
 import useApp from "@/store/app";
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import gsap from "gsap";
 const appStore = useApp();
 const bgMaskRef = ref();
@@ -43,7 +45,7 @@ const contextMenu = (e) => {
   appStore.isMore = true;
 };
 
-onMounted(() => {
+const animate = () => {
   gsap.fromTo(
     bgMaskRef.value,
     {
@@ -66,5 +68,5 @@ onMounted(() => {
       ease: "power2.out",
     }
   );
-});
+};
 </script>

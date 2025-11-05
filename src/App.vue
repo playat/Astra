@@ -31,8 +31,10 @@ import { onMounted } from "vue";
 import CoverFixed from "./components_ui/CoverFixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 import useAuthStore from "./store/auth";
+import BGSetting from "@/components_system/BGSetting.vue";
 // import YGButton from "./components_ui/YGButton.vue";
 import Message from "./components_ui/CoverMessage";
+import CoverDialog from "./components_ui/CoverDialog";
 
 const appStore = useApp();
 const authStore = useAuthStore();
@@ -70,5 +72,9 @@ onMounted(() => {
       }).open();
     }, 1000);
   }, 1000);
+
+  new CoverDialog({
+    component: BGSetting,
+  }).open();
 });
 </script>

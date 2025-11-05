@@ -6,7 +6,7 @@ interface MessageOptions {
   message: string;
 }
 
-class Message {
+class CoverMessage {
   private options: MessageOptions;
   _messageRef = null;
   private key: string;
@@ -83,4 +83,4 @@ class Message {
   }
 }
 
-export default Message;
+export default CoverMessage;

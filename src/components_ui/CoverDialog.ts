@@ -14,7 +14,7 @@ interface DialogOption {
   component: Component;
 }
 
-class Dailog extends BaseCover {
+class CoverDailog extends BaseCover {
   private options: DialogOption;
   private visible = ref(false);
   private from: { x: number; y: number } = { x: 0, y: 0 };
@@ -102,4 +102,4 @@ class Dailog extends BaseCover {
   }
 }
 
-export default Dailog;
+export default CoverDailog;

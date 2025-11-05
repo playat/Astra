@@ -1,6 +1,5 @@
 import {
   Component,
-  createApp,
   createVNode,
   defineComponent,
   h,
@@ -15,7 +14,7 @@ interface FixedOption {
   component: Component;
 }
 
-class Fixed extends BaseCover {
+class CoverFixed extends BaseCover {
   private options: FixedOption;
   private _top = ref(50);
   private _left = ref(50);
@@ -90,10 +89,11 @@ class Fixed extends BaseCover {
         h(
           "div",
           {
-            className: "fixed bg-black-0.5 rounded-md z-20 w-max",
+            className: "fixed bg-black-0.5 rounded-md z-20 w-max shadow-white",
             style: {
               top: `${this._top.value}px`,
               left: `${this._left.value}px`,
+              boxShadow: "0 0 30px -10px #fff",
             },
             ref: (el: HTMLElement) => {
               this._fixedRef.value = el;
@@ -158,4 +158,4 @@ class Fixed extends BaseCover {
   }
 }
 
-export default Fixed;
+export default CoverFixed;
