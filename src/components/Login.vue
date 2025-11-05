@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import { getPublicKey, login } from "@/api/white";
-import Message from "@/components_ui/CoverMessage";
+import CoverMessage from "@/components_ui/CoverMessage";
 import useApp from "@/store/app";
 import useAuthStore from "@/store/auth";
 import { encryptData } from "@/utils/CryptoJS";
@@ -49,8 +49,11 @@ const loginFn = () => {
       if (res.data.token) {
         authStore.setToken(res.data.token);
         appStore.loadAppList();
+        new CoverMessage({
+          message: "登录成功",
+        }).open();
       } else {
-        new Message({
+        new CoverMessage({
           message: "登录失败",
         }).open();
       }

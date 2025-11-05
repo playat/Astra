@@ -1,3 +1,4 @@
+import CoverMessage from "@/components_ui/CoverMessage.js";
 import useAuthStore from "@/store/auth.js";
 
 interface FetchOption extends RequestInit {
@@ -32,6 +33,9 @@ const nextFilter = (jsonRes: { [key: string]: any }) => {
     return jsonRes;
   }
   if (code === 401) {
+    new CoverMessage({
+      message: "登录过期，请重新登录",
+    }).open();
     useAuthStore().clear();
   }
   throw new Error(msg);
