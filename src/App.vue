@@ -73,8 +73,8 @@ onMounted(() => {
     }, 1000);
   }, 1000);
 
-  new CoverDialog({
-    component: BGSetting,
-  }).open();
+  // new CoverDialog({
+  //   component: BGSetting,
+  // }).open();
 });
 </script>
