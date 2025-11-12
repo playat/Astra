@@ -54,7 +54,7 @@ let isRemoving = false;
 const msgRemove = async () => {
   isRemoving = true;
   while (msgList.value[0]) {
-    await delay(5000);
+    await delay(3000);
     msgList.value.splice(0, 1);
     i--;
   }
