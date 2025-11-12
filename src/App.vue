@@ -66,18 +66,36 @@ onMounted(() => {
   appStore.loadAppList();
   setTimeout(() => {
     new Message({
-      message: "我的宝，今天吃什么嘞？",
+      message: "今天吃什么嘞？",
     }).open();
     // setTimeout(() => {
     new Message({
-      message: "不晓得，我就吃点普通的",
+      message: "不晓得哦",
     }).open();
     new Message({
-      message: "111不晓得，我就吃点普通的",
+      message: "我们去外面吃不",
     }).open();
     // }, 1000);
   }, 1000);
+  setTimeout(() => {
+    new Message({
+      message: "今天晚上要早点睡",
+    }).open();
+  }, 2000);
+  setTimeout(() => {
+    new Message({
+      message: "回家后先打游戏 哈哈哈",
+    }).open();
+    new Message({
+      message: "不可能不可能，怎么可以这么爽哦",
+    }).open();
+  }, 2500);
 
+  setTimeout(() => {
+    new Message({
+      message: "原神！启动！！",
+    }).open();
+  }, 10000);
   // new CoverDialog({
   //   component: BGSetting,
   // }).open();

@@ -7,7 +7,7 @@ interface MessageOptions {
 }
 
 class CoverMessage {
-  private options: MessageOptions;
+  options: MessageOptions;
   _messageRef = null;
   private key: string;
   node: VNode;
