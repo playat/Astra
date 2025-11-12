@@ -5,6 +5,7 @@
     <TimeNumber />
     <SearchBar />
     <SuList />
+    <User />
   </template>
 
   <Login v-else />
@@ -35,6 +36,7 @@ import BGSetting from "@/components_system/BGSetting.vue";
 // import YGButton from "./components_ui/YGButton.vue";
 import Message from "./components_ui/CoverMessage";
 import CoverDialog from "./components_ui/CoverDialog";
+import User from "./components/User.vue";
 
 const appStore = useApp();
 const authStore = useAuthStore();
@@ -66,11 +68,14 @@ onMounted(() => {
     new Message({
       message: "我的宝，今天吃什么嘞？",
     }).open();
-    setTimeout(() => {
-      new Message({
-        message: "不晓得，我就吃点普通的",
-      }).open();
-    }, 1000);
+    // setTimeout(() => {
+    new Message({
+      message: "不晓得，我就吃点普通的",
+    }).open();
+    new Message({
+      message: "111不晓得，我就吃点普通的",
+    }).open();
+    // }, 1000);
   }, 1000);
 
   // new CoverDialog({

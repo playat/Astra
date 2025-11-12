@@ -13,7 +13,6 @@ class CoverMessage {
   node: VNode;
 
   constructor(options: MessageOptions) {
-    this.close = this.close.bind(this);
     this.visibleFn = this.visibleFn.bind(this);
     this.hiddenFn = this.hiddenFn.bind(this);
     this.createCom = this.createCom.bind(this);
@@ -64,7 +63,6 @@ class CoverMessage {
             class: [
               "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
             ],
-            onClick: this.close,
           },
           this.options.message
         );
@@ -74,12 +72,6 @@ class CoverMessage {
   open() {
     this.node = createVNode(this.createCom(), { key: this.key });
     insert(this);
-  }
-
-  close() {
-    // this.hiddenFn().then(() => {
-    //   super.close();
-    // });
   }
 }
 
