@@ -50,6 +50,16 @@ const createMoreCom = () => {
 const delay = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
+let isRemoving = false;
+const msgRemove = async () => {
+  isRemoving = true;
+  while (msgList.value[0]) {
+    await delay(5000);
+    msgList.value.splice(0, 1);
+    i--;
+  }
+  isRemoving = false;
+};
 
 let isRunning = false;
 let i = 0;
@@ -71,9 +81,7 @@ const msgShow = async () => {
       render(curMsg.node, msgTarget);
       curMsg.visibleFn();
     }
-    delay(5000).then(() => {
-      console.log("当前要移除的消息", curMsg.options.message, i);
-    });
+    if (!isRemoving) msgRemove();
     i++;
     await delay(1000);
   }
