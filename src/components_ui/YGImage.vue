@@ -6,7 +6,7 @@
       draggable="false"
       @load="load"
       @error="error"
-      class="transition-all"
+      class="transition-all w-full h-full"
       :class="loading ? 'opacity-0' : 'opacity-100'"
       :style="{
         objectFit: fit,

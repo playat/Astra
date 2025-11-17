@@ -6,6 +6,7 @@
 
     <div class="mt-4 flex items-center gap-4 justify-end">
       <YGButton @click="add">记录</YGButton>
+      <YGButton @click="addToday">记录今天</YGButton>
       <YGButton @click="exportData" :loading="exportLoading">导出</YGButton>
       <YGButton @click="importData" :loading="importLoading">导入</YGButton>
     </div>
@@ -113,6 +114,23 @@ const add = () => {
   });
   dialog.open();
 };
+
+const addToday = () => {
+  const dialog = new CoverDialog({
+    component: h("div", [
+      h("div", () => "已填充今天日期"),
+      h(AddPhysiology, {
+        isToday: true,
+        onSuccess() {
+          createChart();
+          dialog.close();
+        },
+      }),
+    ]),
+  });
+  dialog.open();
+};
+
 const exportLoading = ref(false);
 const exportData = () => {
   exportLoading.value = true;

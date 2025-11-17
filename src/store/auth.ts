@@ -14,12 +14,12 @@ const useAuthStore = defineStore("auth", () => {
     localStorage.setItem("X-Auth", val);
   };
 
-  const logOut = () => {};
+  const loginOut = () => {};
 
   return {
     token,
     clear,
-    logOut,
+    loginOut,
     setToken,
   };
 });

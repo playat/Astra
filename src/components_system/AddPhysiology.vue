@@ -4,6 +4,7 @@
       <div class="text-sm">时间</div>
       <YGInput
         v-model:value="form.happen"
+        :disabled="isToday"
         placeholder="请输入时间"
         class="mt-2"
       />
@@ -16,8 +17,11 @@
 import { addPhysiology } from "@/api/physiology";
 import YGButton from "@/components_ui/YGButton.vue";
 import YGInput from "@/components_ui/YGInput.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
+const props = defineProps<{
+  isToday?: boolean;
+}>();
 const form = ref({
   happen: "",
 });
@@ -38,4 +42,10 @@ const confirm = () => {
       loading.value = false;
     });
 };
+
+onMounted(() => {
+  if (props.isToday) {
+    form.value.happen = Date.now().toLocaleString();
+  }
+});
 </script>

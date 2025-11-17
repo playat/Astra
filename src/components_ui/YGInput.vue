@@ -4,6 +4,7 @@
   >
     <slot name="perfix" />
     <input
+      :disabled="disabled"
       v-if="type === 'default' || !type"
       :placeholder="placeholder"
       :value="value"
@@ -11,6 +12,7 @@
       class="bg-transparent border-none w-full text-white"
     />
     <textarea
+      :disabled="disabled"
       v-if="type === 'textarea'"
       :placeholder="placeholder"
       :value="value"
@@ -27,6 +29,7 @@ import { InputTypeHTMLAttribute } from "vue";
 defineProps<{
   value: string | number;
   placeholder?: string;
+  disabled?: boolean;
   type?: "default" | "textarea";
 }>();
 
