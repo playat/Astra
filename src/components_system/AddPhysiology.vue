@@ -8,6 +8,7 @@
         placeholder="请输入时间"
         class="mt-2"
       />
+      <YGDatePicker />
     </div>
     <YGButton @click="confirm" :loading="loading"> 确定 </YGButton>
   </div>
@@ -16,6 +17,7 @@
 <script setup lang="ts">
 import { addPhysiology } from "@/api/physiology";
 import YGButton from "@/components_ui/YGButton.vue";
+import YGDatePicker from "@/components_ui/YGDatePicker/index.vue";
 import YGInput from "@/components_ui/YGInput.vue";
 import { onMounted, ref } from "vue";
 

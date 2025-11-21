@@ -1,11 +1,11 @@
 <template>
   <template v-if="authStore.token">
-    <BG />
+    <!-- <BG />
     <BottomBar />
     <TimeNumber />
     <SearchBar />
     <SuList />
-    <User />
+    <User /> -->
   </template>
 
   <Login v-else />
@@ -16,7 +16,6 @@
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
-  <!-- <YGButton @click="test">test</YGButton> -->
 </template>
 
 <script setup lang="ts">
@@ -37,6 +36,7 @@ import BGSetting from "@/components_system/BGSetting.vue";
 import Message from "./components_ui/CoverMessage";
 import CoverDialog from "./components_ui/CoverDialog";
 import User from "./components/User.vue";
+import YGDatePicker from "./components_ui/YGDatePicker/index.vue";
 
 const appStore = useApp();
 const authStore = useAuthStore();
@@ -55,27 +55,17 @@ const openChartPhysiology = () => {
   }).open();
 };
 
-const test = () => {
-  const dialog = new Message({
-    message: "今晚吃点不一样的",
-  });
-  dialog.open();
-};
-
-onMounted(() => {
-  appStore.loadAppList();
+const showMsg = () => {
   setTimeout(() => {
     new Message({
       message: "今天吃什么嘞？",
     }).open();
-    // setTimeout(() => {
     new Message({
       message: "不晓得哦",
     }).open();
     new Message({
       message: "我们去外面吃不",
     }).open();
-    // }, 1000);
   }, 1000);
   setTimeout(() => {
     new Message({
@@ -90,14 +80,22 @@ onMounted(() => {
       message: "不可能不可能，怎么可以这么爽哦",
     }).open();
   }, 2500);
-
   setTimeout(() => {
     new Message({
       message: "原神！启动！！",
     }).open();
   }, 10000);
-  // new CoverDialog({
-  //   component: BGSetting,
-  // }).open();
+};
+const test = () => {
+  const dialog = new CoverDialog({
+    component: YGDatePicker,
+  });
+  dialog.open();
+};
+
+onMounted(() => {
+  test();
+  // appStore.loadAppList();
+  // showMsg();
 });
 </script>
