@@ -1,11 +1,11 @@
 <template>
   <template v-if="authStore.token">
-    <!-- <BG />
+    <BG />
     <BottomBar />
     <TimeNumber />
     <SearchBar />
     <SuList />
-    <User /> -->
+    <User />
   </template>
 
   <Login v-else />
@@ -94,8 +94,8 @@ const test = () => {
 };
 
 onMounted(() => {
-  test();
-  // appStore.loadAppList();
-  // showMsg();
+  // test();
+  appStore.loadAppList();
+  showMsg();
 });
 </script>
