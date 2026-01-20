@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "node16",
-    "moduleResolution": "node16",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "strict": false,
     "importHelpers": true,
     "experimentalDecorators": true,
@@ -16,9 +16,9 @@
     "baseUrl": ".",
     "allowJs": false,
     "resolveJsonModule": true,
-    "lib": ["dom", "esnext"],
+    "lib": ["ESNext", "DOM"],
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["src/*"]
     },
     "types": ["node", "vite/client"]
   },

@@ -63,7 +63,7 @@ const confirm = () => {
 };
 
 const setForm = () => {
-  form.value.id = props.formData.key;
+  form.value.id = props.formData.id;
   form.value.icon = props.formData.icon;
   form.value.key = props.formData.key;
   form.value.name = props.formData.name;
