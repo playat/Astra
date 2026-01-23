@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import useApp from "@/store/app";
 import useSearch from "@/store/search";
+import { onMounted, onUnmounted, ref } from "vue";
 
 const appStore = useApp();
 const searchStore = useSearch();
@@ -28,4 +29,39 @@ const search = (text: string) => {
   searchStore.searchText = text;
   searchStore.toSearch();
 };
+
+// 当前高亮索引
+const activeIndex = ref(-1);
+
+// 监听键盘事件
+const handleKeydown = (e: KeyboardEvent) => {
+  const len = searchStore.suList.length;
+  if (!len) return;
+
+  switch (e.key) {
+    case "ArrowDown":
+      e.preventDefault();
+      activeIndex.value = (activeIndex.value + 1) % len;
+      break;
+    case "ArrowUp":
+      e.preventDefault();
+      activeIndex.value = (activeIndex.value - 1 + len) % len;
+      break;
+    case "Enter":
+      e.preventDefault();
+      if (activeIndex.value >= 0) {
+        search(searchStore.suList[activeIndex.value]);
+      }
+      break;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeydown);
+});
+
 </script>
