@@ -72,77 +72,38 @@ const searchBlur = () => {
   searchStore.searchText = "";
   searchStore.suList = [];
 };
+
 const toFocus = () => {
   appStore.searchFocus = true;
-  inputRef.value.focus();
+  inputRef.value?.focus();
 };
-// 标记是否处于中文输入法组合输入状态
-const isComposing = ref(false);
-// 标记输入框是否已聚焦（避免重复聚焦）
-const isInputFocused = ref(false);
 
-// 处理全局键盘按下事件
-const handleGlobalKeyDown = (e) => {
-  // 1. 中文输入法激活时，不处理任何逻辑（交给输入法原生处理）
-  if (isComposing.value) return;
-
-  // 2. 过滤：只处理字母/数字键，排除功能键
-  const key = e.key;
-  const isLetterOrNumber = /^[a-zA-Z0-9]$/.test(key);
-  const excludeKeys = [
-    "Shift",
-    "Ctrl",
-    "Alt",
-    "Meta",
-    "Tab",
-    "Enter",
-    "Backspace",
-    "Delete",
-    "ArrowUp",
-    "ArrowDown",
-    "ArrowLeft",
-    "ArrowRight",
-  ];
-
-  // 3. 只在「非聚焦状态 + 有效字符」时触发聚焦
+// 全局键盘监听
+const handleGlobalKeyDown = (e: KeyboardEvent) => {
+  // 如果当前已聚焦输入框，或按下的是功能组合键，则不处理
   if (
-    isLetterOrNumber &&
-    !excludeKeys.includes(key) &&
-    !isInputFocused.value &&
-    inputRef.value
+    appStore.searchFocus ||
+    e.ctrlKey ||
+    e.metaKey ||
+    e.altKey ||
+    e.target instanceof HTMLInputElement ||
+    e.target instanceof HTMLTextAreaElement
   ) {
-    // 聚焦到输入框（输入法会自动捕获后续输入）
-    inputRef.value.focus();
-    // 阻止事件冒泡（避免触发其他全局监听）
-    e.stopPropagation();
+    return;
+  }
+
+  // 仅处理字母和数字
+  if (/^[a-zA-Z0-9]$/.test(e.key)) {
+    e.preventDefault(); // 阻止第一个字符录入，解决中文输入法首字母问题
+    toFocus();
   }
 };
 
-// 输入法组合开始（中文输入法激活，比如输入拼音时）
-const handleCompositionStart = () => {
-  isComposing.value = true;
-};
-
-// 输入法组合结束（中文输入完成/取消，比如选字后按空格）
-const handleCompositionEnd = (e) => {
-  isComposing.value = false;
-  // 确保输入框始终处于聚焦状态，文本正确录入
-  if (inputRef.value && !isInputFocused.value) {
-    inputRef.value.focus();
-  }
-};
-// 挂载时注册全局事件
 onMounted(() => {
-  // 注册全局键盘监听（捕获阶段触发，确保优先处理）
-  document.addEventListener("keydown", handleGlobalKeyDown, true);
-  document.addEventListener("compositionstart", handleCompositionStart);
-  document.addEventListener("compositionend", handleCompositionEnd);
+  window.addEventListener("keydown", handleGlobalKeyDown);
 });
 
-// 卸载时销毁全局事件（避免内存泄漏）
 onUnmounted(() => {
-  document.removeEventListener("keydown", handleGlobalKeyDown, true);
-  document.removeEventListener("compositionstart", handleCompositionStart);
-  document.removeEventListener("compositionend", handleCompositionEnd);
+  window.removeEventListener("keydown", handleGlobalKeyDown);
 });
 </script>
