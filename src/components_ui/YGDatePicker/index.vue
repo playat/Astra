@@ -4,19 +4,19 @@
     <NumItem :value="year" />
     <!-- - -->
     <!-- 月 -->
-    <!-- <NumItem :value="month" /> -->
+    <NumItem :value="month" />
     <!-- - -->
     <!-- 日 -->
-    <!-- <NumItem :value="day" /> -->
+    <NumItem :value="day" />
     <!-- <span class="w-4" /> -->
     <!-- 时 -->
-    <!-- <NumItem :value="hours" /> -->
+    <NumItem :value="hours" />
     <!-- : -->
     <!-- 分 -->
-    <!-- <NumItem :value="minutes" /> -->
+    <NumItem :value="minutes" />
     <!-- : -->
     <!-- 秒 -->
-    <!-- <NumItem :value="seconds" /> -->
+    <NumItem :value="seconds" />
   </div>
 </template>
 

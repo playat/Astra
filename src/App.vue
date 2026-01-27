@@ -1,5 +1,5 @@
 <template>
-  <template v-if="authStore.token">
+  <!-- <template v-if="authStore.token">
     <BG />
     <BottomBar />
     <TimeNumber />
@@ -8,7 +8,7 @@
     <User />
   </template>
 
-  <Login v-else />
+  <Login v-else /> -->
 
   <div
     class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
@@ -46,7 +46,7 @@ document.addEventListener(
     appStore.globlePosition.x = event.clientX;
     appStore.globlePosition.y = event.clientY;
   },
-  true
+  true,
 );
 
 const openChartPhysiology = () => {
@@ -55,47 +55,14 @@ const openChartPhysiology = () => {
   }).open();
 };
 
-const showMsg = () => {
-  setTimeout(() => {
-    new Message({
-      message: "今天吃什么嘞？",
-    }).open();
-    new Message({
-      message: "不晓得哦",
-    }).open();
-    new Message({
-      message: "我们去外面吃不",
-    }).open();
-  }, 1000);
-  setTimeout(() => {
-    new Message({
-      message: "今天晚上要早点睡",
-    }).open();
-  }, 2000);
-  setTimeout(() => {
-    new Message({
-      message: "回家后先打游戏 哈哈哈",
-    }).open();
-    new Message({
-      message: "不可能不可能，怎么可以这么爽哦",
-    }).open();
-  }, 2500);
-  setTimeout(() => {
-    new Message({
-      message: "原神！启动！！",
-    }).open();
-  }, 10000);
-};
 const test = () => {
-  const dialog = new CoverDialog({
+  new CoverDialog({
     component: YGDatePicker,
-  });
-  dialog.open();
+  }).open();
 };
 
 onMounted(() => {
-  // test();
+  test();
   appStore.loadAppList();
-  showMsg();
 });
 </script>

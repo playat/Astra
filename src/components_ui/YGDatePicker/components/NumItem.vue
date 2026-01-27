@@ -3,9 +3,10 @@
     class="transform-3d w-14 perspective-origin-center mx-auto relative h-[124px] select-none"
     @mousedown="mouseDown"
     @touchstart="mouseDown"
+    @wheel="handleWheel"
     :style="{
       transform: `rotateX(${rotateX}deg)`,
-      transition: `0.1s ease-out`,
+      transition: isDragging ? 'none' : '0.3s ease-out',
     }"
   >
     <div
@@ -22,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps<{
   value?: number;
@@ -44,9 +45,22 @@ const numList = computed(() => {
   ];
 });
 let lastMouseY = 0;
-let upIndex = 0;
-let downIndex = 7;
 const rotateX = ref(0);
+
+// 记录上一次的 45 度步进值
+let lastStep = 0;
+watch(rotateX, (val) => {
+  const currentStep = Math.floor(val / 45);
+  if (currentStep !== lastStep) {
+    const direction = currentStep > lastStep ? "顺时针" : "逆时针";
+    // 计算当前显示的数字
+    // 顺时针（currentStep 增加）数值增加，逆时针（currentStep 减少）数值减少
+    const offset = Math.round(val / 45);
+    const currentValue = (props.value || 0) + offset;
+    console.log(`旋转45度，方向：${direction}，当前数字：${currentValue}`);
+    lastStep = currentStep;
+  }
+});
 
 const isDragging = ref<boolean>(false);
 
@@ -61,33 +75,21 @@ const mouseMove = (e: TouchEvent & MouseEvent) => {
   const deltaY = clientY - lastMouseY;
   rotateX.value -= deltaY * config.sensitivity;
   lastMouseY = clientY;
-  // 向上还是向下：根据 deltaY 正负判断滑动方向
-  // 每累计移动45度打印一次
-  // 每 45° 为一个“刻度步长”，用于判断用户是否滑过了一个数字位
-  const step = 45;
-  // 根据当前 rotateX 值，四舍五入到最接近的刻度步数
-  const currentStep = Math.round(rotateX.value / step);
-  // 计算“上一次”所在的刻度步数，用于与 currentStep 比较是否跨步
-  const lastStep = Math.round(
-    (rotateX.value - deltaY * config.sensitivity) / step
-  );
-  if (currentStep !== lastStep) {
-    if (deltaY < 0) {
-      // 向上滑动
-      numList.value[upIndex] = numList.value[7] + 1 + upIndex;
-      upIndex++;
-      if (upIndex > 7) upIndex = 0;
-    } else if (deltaY > 0) {
-      // 向下滑动时，把即将出现的底部数字设为当前最小值再减 1，保持连续递减
-      numList.value[downIndex] = numList.value[0] - 1 - (7 - downIndex);
-      downIndex--;
-      if (downIndex < 0) downIndex = 7;
-    }
-  }
 };
 
 const mouseUp = () => {
   isDragging.value = false;
+  // 自动吸附到最近的 45 度倍数
+  rotateX.value = Math.round(rotateX.value / 45) * 45;
+};
+
+// 处理鼠标滚轮
+const handleWheel = (e: WheelEvent) => {
+  e.preventDefault();
+  // 向上滚动 e.deltaY < 0，数值增加（rotateX 增加）
+  // 向下滚动 e.deltaY > 0，数值减少（rotateX 减少）
+  const direction = e.deltaY < 0 ? 1 : -1;
+  rotateX.value += direction * 45;
 };
 
 // 生命周期：挂载时绑定全局事件

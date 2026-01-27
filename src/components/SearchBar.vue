@@ -46,7 +46,6 @@ import useSearch from "@/store/search";
 const appStore = useApp();
 const searchStore = useSearch();
 const inputRef = ref();
-const isLook = ref(false);
 let timer: any;
 const searchInput = (e: any) => {
   const value = e.target.value;
