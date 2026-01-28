@@ -1,14 +1,8 @@
 <template>
   <div class="text-white flex flex-col gap-3">
     <div>
-      <div class="text-sm">时间</div>
-      <YGInput
-        v-model:value="form.happen"
-        :disabled="isToday"
-        placeholder="请输入时间"
-        class="mt-2"
-      />
-      <YGDatePicker />
+      <div class="text-sm">选择时间：</div>
+      <YGDatePicker v-model="form.happen" class="mt-3" />
     </div>
     <YGButton @click="confirm" :loading="loading"> 确定 </YGButton>
   </div>
@@ -45,9 +39,4 @@ const confirm = () => {
     });
 };
 
-onMounted(() => {
-  if (props.isToday) {
-    form.value.happen = Date.now().toLocaleString();
-  }
-});
 </script>

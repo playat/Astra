@@ -4,9 +4,8 @@
       <div ref="chartContainer" />
     </div>
 
-    <div class="mt-4 flex items-center gap-4 justify-end">
+    <div class="mt-4 flex items-center gap-4 justify-end flex-wrap">
       <YGButton @click="add">记录</YGButton>
-      <YGButton @click="addToday">记录今天</YGButton>
       <YGButton @click="exportData" :loading="exportLoading">导出</YGButton>
       <YGButton @click="importData" :loading="importLoading">导入</YGButton>
     </div>
@@ -14,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, h, nextTick } from "vue";
+import { ref, onMounted, h } from "vue";
 import { LineChart } from "chartist";
 import {
   exportPhysiology,
@@ -76,9 +75,9 @@ const createChart = async () => {
       axisX: {
         offset: 60,
         // showGrid: false, // 隐藏X轴网格线
-        labelOffset: {
+        // labelOffset: {
           // x: -45,
-        },
+        // },
       },
       showArea: true,
       axisY: {
@@ -111,22 +110,6 @@ const add = () => {
         dialog.close();
       },
     }),
-  });
-  dialog.open();
-};
-
-const addToday = () => {
-  const dialog = new CoverDialog({
-    component: h("div", [
-      h("div", () => "已填充今天日期"),
-      h(AddPhysiology, {
-        isToday: true,
-        onSuccess() {
-          createChart();
-          dialog.close();
-        },
-      }),
-    ]),
   });
   dialog.open();
 };

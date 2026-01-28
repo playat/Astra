@@ -1,48 +1,49 @@
 <template>
   <div class="text-white bg-neutral-800 flex items-center gap-3">
     <!-- 年 -->
-    <NumItem :value="year" />
+    <NumItem v-model="year" :min="1900" :max="2100" />
     <!-- - -->
     <!-- 月 -->
-    <NumItem :value="month" />
+    <NumItem v-model="month" :min="1" :max="12" />
     <!-- - -->
     <!-- 日 -->
-    <NumItem :value="day" />
+    <NumItem v-model="day" :min="1" :max="31" />
     <!-- <span class="w-4" /> -->
     <!-- 时 -->
-    <NumItem :value="hours" />
+    <!-- <NumItem v-model="hours" :min="0" :max="23" /> -->
     <!-- : -->
     <!-- 分 -->
-    <NumItem :value="minutes" />
+    <!-- <NumItem v-model="minutes" :min="0" :max="59" /> -->
     <!-- : -->
     <!-- 秒 -->
-    <NumItem :value="seconds" />
+    <!-- <NumItem v-model="seconds" :min="0" :max="59" /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import NumItem from "./components/NumItem.vue";
 
-defineProps<{
-  value: any;
+const props = defineProps<{
+  modelValue: any;
 }>();
 
-defineEmits(["update:value"]);
+const emits = defineEmits(["update:modelValue"]);
 
 const year = ref();
 const month = ref();
 const day = ref();
-const hours = ref();
-const minutes = ref();
-const seconds = ref();
+
+// 监听各字段变化，组装成 Date 对象并传出
+watch([year, month, day], () => {
+  const date = `${year.value}-${month.value}-${day.value}`;
+  emits("update:modelValue", date);
+});
+
 onMounted(() => {
-  const now = new Date();
+  const now = props.modelValue ? new Date(props.modelValue) : new Date();
   year.value = now.getFullYear();
   month.value = now.getMonth() + 1;
   day.value = now.getDate();
-  hours.value = now.getHours();
-  minutes.value = now.getMinutes();
-  seconds.value = now.getSeconds();
 });
 </script>

@@ -11,13 +11,13 @@
   >
     <div
       v-for="(item, index) in numList"
-      :key="item"
+      :key="index"
       class="h-[50px] w-full absolute flex items-center bg-gray-600 top-1/2 -translate-y-1/2 transition-all justify-center border-white border-y"
       :style="{
         transform: `rotateX(${135 - index * 45}deg) translateZ(62px)`,
       }"
     >
-      {{ item }}
+      {{ item.value }}
     </div>
   </div>
 </template>
@@ -26,42 +26,59 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 
 const props = defineProps<{
-  value?: number;
+  modelValue?: number;
+  max?: number;
+  min?: number;
+}>();
+const emit = defineEmits<{
+  (e: "update:modelValue", value: number): void;
 }>();
 // 配置参数
 const config = {
   sensitivity: 0.6, // 旋转灵敏度
 };
+// 取出 modelValue 作为初始值
+let initialValue = 0;
+
+const isInitialized = ref(false);
 const numList = computed(() => {
-  return [
-    props.value - 3,
-    props.value - 2,
-    props.value - 1,
-    props.value,
-    props.value + 1,
-    props.value + 2,
-    props.value + 3,
-    props.value + 4,
-  ];
+  if (!isInitialized.value) return [];
+  return Array.from({ length: 8 }).map((_, index) => {
+    // 基础偏移：index 3 是 0，index 0 是 -3
+    const baseOffset = index - 3;
+    // 计算圈数 k
+    // 角度：rotateX + 初始角度 (135 - index * 45)
+    // 初始角度：index 0 -> 135, index 3 -> 0
+    const angle = rotateX.value + 135 - index * 45;
+    // 偏移 180 度是为了让背面切换
+    const k = Math.floor((angle + 180) / 360);
+    return {
+      value: initialValue + baseOffset + k * 8,
+      index,
+    };
+  });
 });
+
+const stopWatch = watch(
+  () => props.modelValue,
+  (val) => {
+    if (val !== undefined && val !== null) {
+      initialValue = val;
+      isInitialized.value = true;
+      stopWatch();
+    }
+  },
+  { immediate: true },
+);
 let lastMouseY = 0;
 const rotateX = ref(0);
 
-// 记录上一次的 45 度步进值
-let lastStep = 0;
 watch(rotateX, (val) => {
-  const currentStep = Math.floor(val / 45);
-  if (currentStep !== lastStep) {
-    const direction = currentStep > lastStep ? "顺时针" : "逆时针";
-    // 计算当前显示的数字
-    // 顺时针（currentStep 增加）数值增加，逆时针（currentStep 减少）数值减少
-    const offset = Math.round(val / 45);
-    const currentValue = (props.value || 0) + offset;
-    console.log(`旋转45度，方向：${direction}，当前数字：${currentValue}`);
-    lastStep = currentStep;
+  if (isInitialized.value) {
+    const currentFrontVal = initialValue + Math.round(val / 45);
+    emit("update:modelValue", currentFrontVal);
   }
 });
-
 const isDragging = ref<boolean>(false);
 
 const mouseDown = (e: TouchEvent & MouseEvent) => {
@@ -73,6 +90,12 @@ const mouseMove = (e: TouchEvent & MouseEvent) => {
   if (!isDragging.value) return;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
   const deltaY = clientY - lastMouseY;
+  // 根据拖拽方向判断是否已达边界，若已达边界则阻止继续拖动
+  if (
+    (props.min !== undefined && deltaY > 0 && props.modelValue <= props.min) ||
+    (props.max !== undefined && deltaY < 0 && props.modelValue >= props.max)
+  )
+    return;
   rotateX.value -= deltaY * config.sensitivity;
   lastMouseY = clientY;
 };
@@ -86,9 +109,17 @@ const mouseUp = () => {
 // 处理鼠标滚轮
 const handleWheel = (e: WheelEvent) => {
   e.preventDefault();
-  // 向上滚动 e.deltaY < 0，数值增加（rotateX 增加）
-  // 向下滚动 e.deltaY > 0，数值减少（rotateX 减少）
-  const direction = e.deltaY < 0 ? 1 : -1;
+  // 根据拖拽方向判断是否已达边界，若已达边界则阻止继续拖动
+  if (
+    (props.min !== undefined &&
+      e.deltaY < 0 &&
+      props.modelValue <= props.min) ||
+    (props.max !== undefined && e.deltaY > 0 && props.modelValue >= props.max)
+  )
+    return;
+  // 向上滚动 e.deltaY < 0，数值增加（rotateX 减少）
+  // 向下滚动 e.deltaY > 0，数值减少（rotateX 滚动）
+  const direction = e.deltaY < 0 ? -1 : 1;
   rotateX.value += direction * 45;
 };
 

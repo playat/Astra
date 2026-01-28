@@ -42,7 +42,7 @@ class CoverDailog extends BaseCover {
         "transition-all",
         "duration-300",
         "opacity-100",
-        "scale-100"
+        "scale-100",
       );
       this.setPosition(window.innerWidth / 2, window.innerHeight / 2);
     }, 100);
@@ -71,7 +71,7 @@ class CoverDailog extends BaseCover {
               this._dialogRef.value = el;
             },
             class: [
-              "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] p-3 rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
+              "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
               this.visible ? "visible opacity-100" : "opacity-0 invisible",
             ],
             onClick: (e) => e.stopPropagation(),
@@ -80,18 +80,25 @@ class CoverDailog extends BaseCover {
             h(
               "div",
               {
-                class: "flex items-center justify-end",
+                class: "flex items-center px-1 h-5 border-b",
               },
               [
-                h("img", {
-                  class: "w-4 h-4 cursor-pointer",
-                  src: CloseSvg,
+                h("div", {
+                  className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
                   onClick: this.hiddenFn,
+                  onTouchend: this.hiddenFn,
                 }),
-              ]
+              ],
+              // [
+              //   h("img", {
+              //     class: "w-4 h-4 cursor-pointer",
+              //     src: CloseSvg,
+              //     onClick: this.hiddenFn,
+              //   }),
+              // ],
             ),
             h(this.options.component),
-          ]
+          ],
         );
     });
   }

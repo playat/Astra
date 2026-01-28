@@ -11,6 +11,7 @@
   <Login v-else /> -->
 
   <div
+    v-if="authStore.token"
     class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
     @click="openChartPhysiology"
   >
@@ -62,7 +63,7 @@ const test = () => {
 };
 
 onMounted(() => {
-  test();
+  // test();
   appStore.loadAppList();
 });
 </script>

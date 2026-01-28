@@ -111,18 +111,16 @@ class CoverFixed extends BaseCover {
                 onTouchend: this.mouseUp,
               },
               [
-                h("img", {
-                  src: CloseSvg,
-                  alt: "",
-                  className: "w-3 h-3 cursor-pointer",
+                h("div", {
+                  className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
                   onClick: this.close,
                   onTouchend: this.close,
                 }),
                 h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
-              ]
+              ],
             ),
             h(this.options.component),
-          ]
+          ],
         );
     });
   }

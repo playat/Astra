@@ -20,7 +20,7 @@ const createMask = () => {
     "h-full",
     "bg-[rgba(0,0,0,0.2)]",
     "invisible",
-    "z-[1000]"
+    "z-[1000]",
   );
   mask.id = "_mask";
   document.body.appendChild(mask);
@@ -36,10 +36,10 @@ class BaseCover {
    */
   close() {
     children = children.filter((item) => item.props.key !== this.key);
-    console.log("close children", children, this.key);
-
     render(h(Fragment, null, children), mask);
-    mask.classList.replace("visible", "invisible");
+    if (children.length === 0) {
+      mask.classList.replace("visible", "invisible");
+    }
   }
 
   /**
@@ -51,6 +51,11 @@ class BaseCover {
       createMask();
     }
     mask.classList.replace("invisible", "visible");
+    // 设置 node 的 z-index 为 1001 + children.length
+    node.props = {
+      ...node.props,
+      style: { ...node.props?.style, zIndex: 1001 + children.length },
+    };
     children = [...children, node];
     render(h(Fragment, null, children), mask);
   }
