@@ -1,254 +1,281 @@
 <template>
-  <div
-    class="flex justify-center relative gap-3"
-    @mousemove="mouseMove"
-    @mouseup="mouseUp"
-    @touchstart="mouseMove"
-    @touchend="mouseUp"
-  >
+  <div class="flex justify-center relative gap-3 flex-wrap">
+    <!-- Draggable Items -->
     <div
-      :ref="(el) => setItems(index, el)"
       v-for="(item, index) in list"
+      :key="item.key || index"
+      :ref="(el) => (itemRefs[index] = el as HTMLElement)"
       :data-index="index"
-      :key="item.key"
-      @mousedown="mouseDown($event, item, index)"
-      :style="{
-        opacity: initIndex === index ? 0.5 : 1,
-      }"
+      class="transition-transform duration-300 ease-out will-change-transform select-none"
+      :class="{ 'opacity-50': dragIndex === index }"
+      @mousedown="onMouseDown($event, item, index)"
+      @touchstart.passive="onMouseDown($event, item, index)"
     >
       <slot :data="item" :index="index" />
     </div>
 
-    <div
-      v-if="isMove"
-      :style="{
-        left: `${left}px`,
-        top: `${top}px`,
-      }"
-      class="absolute pointer-events-none bg-transparent"
-    >
-      <slot :data="curItem" :index="-1" />
-    </div>
+    <!-- Dragging Phantom Element -->
+    <Teleport to="body">
+      <div
+        v-if="isDragging && dragItem"
+        class="fixed pointer-events-none z-[9999] opacity-90"
+        :style="{
+          left: `${dragPos.x}px`,
+          top: `${dragPos.y}px`,
+          width: `${dragRect.width}px`,
+          height: `${dragRect.height}px`,
+          margin: 0, // Ensure no external margin affects positioning
+        }"
+      >
+        <slot :data="dragItem" :index="-1" />
+      </div>
+    </Teleport>
   </div>
 </template>
+
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 
-const props = defineProps<{
+interface Props {
   list: any[];
-  isDrag: boolean;
+  isDrag?: boolean;
+}
+
+const props = defineProps<Props>();
+
+const emits = defineEmits<{
+  (e: "update:list", value: any[]): void;
+  (e: "update:isDrag", value: boolean): void;
+  (e: "dropEnd", value: { fromIndex: number; toIndex: number }): void;
 }>();
-const emits = defineEmits(["update:list", "update:isDrag", "dropEnd"]);
-const initIndex = ref();
-const positions = ref([]);
-const top = ref(0);
-const left = ref(0);
-const itemRefs = ref({});
-const curItem = ref();
-let initClientX = 0;
-let initClientY = 0;
-const curIn = ref();
-const curEl = ref();
-let initPoint: {
-  left?: number;
-  top?: number;
-  width?: number;
-  height?: number;
-} = {};
 
-const setItems = (key, el) => {
-  itemRefs.value[key] = el;
-};
+// State
+const itemRefs = ref<HTMLElement[]>([]);
+const dragItem = ref<any>(null);
+const dragIndex = ref<number>(-1); // The original index of the item being dragged
+const hoverIndex = ref<number>(-1); // The current visual index target
+const isDragging = ref(false);
+const isPressed = ref(false); // Mouse/Touch is down but drag might not have started
+const dragPos = ref({ x: 0, y: 0 });
+const dragRect = ref({ width: 0, height: 0 });
 
-const isMove = ref();
-let isDragTimer: any;
-const createPositions = () => {
-  for (const key in itemRefs.value) {
-    const el = itemRefs.value[key];
-    el.style.transform = "translate3d(0, 0, 0)";
-    el.style.transition = "transform 0.3s ease";
-    positions.value.push({
-      left: el.offsetLeft,
-      top: el.offsetTop,
-      width: el.offsetWidth,
-      height: el.offsetHeight,
-    });
+// Layout Cache
+interface Rect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+let itemRects: Rect[] = [];
+let startPointer = { x: 0, y: 0 };
+let initialItemPos = { x: 0, y: 0 };
+let pendingItem: { item: any; index: number; target: HTMLElement } | null = null;
+
+// Event Helpers
+const getPointerPos = (e: MouseEvent | TouchEvent) => {
+  if (e instanceof MouseEvent) {
+    return { x: e.clientX, y: e.clientY };
   }
-  // itemRefs.value.forEach((el, i) => {
-  //   el.setAttribute("data-index", i);
-  //   el.style.transform = "translate3d(0, 0, 0)";
-  //   el.style.transition = "transform 0.3s ease";
-  //   positions.value.push({
-  //     left: el.offsetLeft,
-  //     top: el.offsetTop,
-  //     width: el.offsetWidth,
-  //     height: el.offsetHeight,
-  //   });
-  // });
+  const touch = e.touches[0] || e.changedTouches[0];
+  return { x: touch.clientX, y: touch.clientY };
 };
-const mouseDown = (e, item, index) => {
-  isDragTimer = setTimeout(() => {
-    emits("update:isDrag", true);
-  }, 300);
-  initClientX = e.clientX;
-  initClientY = e.clientY;
 
-  curEl.value = e.currentTarget;
-  curItem.value = item;
+// 1. Mouse/Touch Down
+const onMouseDown = (e: MouseEvent | TouchEvent, item: any, index: number) => {
+  if (e instanceof MouseEvent && e.button !== 0) return; // Only left click
 
-  initIndex.value = index;
+  const target = e.currentTarget as HTMLElement;
+  const { x, y } = getPointerPos(e);
+  startPointer = { x, y };
+  
+  pendingItem = { item, index, target };
+  isPressed.value = true;
+  
+  // Add global listeners
+  window.addEventListener("mousemove", onMove, { passive: false });
+  window.addEventListener("touchmove", onMove, { passive: false });
+  window.addEventListener("mouseup", onUp);
+  window.addEventListener("touchend", onUp);
+};
 
-  initPoint = {
-    left: e.currentTarget.offsetLeft,
-    top: e.currentTarget.offsetTop,
-    width: e.currentTarget.offsetWidth,
-    height: e.currentTarget.offsetHeight,
+// 2. Start Drag (Called when movement threshold passed)
+const startDrag = () => {
+  if (!pendingItem) return;
+  
+  const { item, index, target } = pendingItem;
+  
+  captureLayout();
+  
+  const rect = target.getBoundingClientRect();
+  initialItemPos = { x: rect.left, y: rect.top };
+  dragRect.value = { width: rect.width, height: rect.height };
+  dragPos.value = { x: rect.left, y: rect.top };
+  
+  isDragging.value = true;
+  dragItem.value = item;
+  dragIndex.value = index;
+  hoverIndex.value = index;
+  
+  emits("update:isDrag", true);
+};
+
+// 3. Move
+const onMove = (e: MouseEvent | TouchEvent) => {
+  if (!isPressed.value) return;
+
+  const { x, y } = getPointerPos(e);
+  
+  // If not yet dragging, check threshold
+  if (!isDragging.value) {
+    const dx = x - startPointer.x;
+    const dy = y - startPointer.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance > 5) { // 5px threshold
+      startDrag();
+    } else {
+      return; // Haven't moved enough
+    }
+  }
+  
+  // Dragging logic
+  if (e.cancelable) e.preventDefault(); // Prevent scroll
+  
+  const dx = x - startPointer.x;
+  const dy = y - startPointer.y;
+  
+  dragPos.value = {
+    x: initialItemPos.x + dx,
+    y: initialItemPos.y + dy,
   };
-
-  isMove.value = true;
-  left.value = e.currentTarget.offsetLeft;
-  top.value = e.currentTarget.offsetTop;
-
-  if (positions.value.length === 0) {
-    createPositions();
+  
+  // Collision detection
+  const centerX = dragPos.value.x + dragRect.value.width / 2;
+  const centerY = dragPos.value.y + dragRect.value.height / 2;
+  
+  let newHoverIndex = -1;
+  
+  for (let i = 0; i < itemRects.length; i++) {
+    const r = itemRects[i];
+    if (
+      centerX >= r.left &&
+      centerX <= r.left + r.width &&
+      centerY >= r.top &&
+      centerY <= r.top + r.height
+    ) {
+      newHoverIndex = i;
+      break;
+    }
+  }
+  
+  if (newHoverIndex !== -1 && newHoverIndex !== hoverIndex.value) {
+    hoverIndex.value = newHoverIndex;
+    updateLayout();
   }
 };
-// 检查当前拖拽点是否进入某个矩形范围内
-const checkPointInRect = (point, rect) => {
-  return (
-    point.x >= rect.left &&
-    point.x <= rect.left + rect.width &&
-    point.y >= rect.top &&
-    point.y <= rect.top + rect.height
-  );
-};
-const mouseMove = (e) => {
-  if (!isMove.value) {
-    return;
-  }
-  left.value = initPoint.left + (e.clientX - initClientX);
-  top.value = initPoint.top + (e.clientY - initClientY);
 
-  const curEl = itemRefs.value[initIndex.value];
-
-  const curIndex = Number(curEl.getAttribute("data-index"));
-
-  // 检查是否进入其他卡片范围
-  positions.value.forEach((rect, index) => {
-    const isEnter = checkPointInRect(
-      {
-        x: left.value + initPoint.width / 2,
-        y: top.value + initPoint.height / 2,
-      },
-      rect
-    );
-    if (isEnter && curIn.value !== index) {
-      curIn.value = index;
-      if (curIndex < index) {
-        transPrev(curIndex, index);
-      }
-      if (curIndex > index) {
-        transNext(curIndex, index);
-      }
-      transCur(index);
+// 4. Update Layout Transforms
+const updateLayout = () => {
+  const from = dragIndex.value;
+  const to = hoverIndex.value;
+  
+  itemRefs.value.forEach((el, index) => {
+    if (!el) return;
+    
+    // The dragged item stays hidden/dimmed in its original slot
+    if (index === from) {
+      const targetRect = itemRects[to];
+      const currentRect = itemRects[from];
+      const tx = targetRect.left - currentRect.left;
+      const ty = targetRect.top - currentRect.top;
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+      return;
+    }
+    
+    let shift = 0;
+    // Calculate shift direction
+    if (from < to) {
+      if (index > from && index <= to) shift = -1;
+    } else if (from > to) {
+      if (index >= to && index < from) shift = 1;
+    }
+    
+    if (shift !== 0) {
+      // Logic: If I need to shift, I move to the position of the neighbor I'm displacing.
+      // If I'm shifting -1 (left), I move to index-1's rect.
+      // But my natural position is index's rect.
+      // So translate = rect[index-1] - rect[index]
+      
+      const targetIndex = index + shift;
+      const targetRect = itemRects[targetIndex];
+      const currentRect = itemRects[index];
+      
+      const tx = targetRect.left - currentRect.left;
+      const ty = targetRect.top - currentRect.top;
+      el.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
+    } else {
+      el.style.transform = ``;
     }
   });
 };
 
-const mouseUp = () => {
-  const curEl = itemRefs.value[initIndex.value];
-  const curIndex = Number(curEl.getAttribute("data-index"));
-
-  const clearTimer = setTimeout(() => {
-    clearTimeout(isDragTimer);
-    emits("update:isDrag", false);
-    clearTimeout(clearTimer);
-  }, 300);
-
-  // if (initIndex.value) {
-
-  if (initIndex.value !== curIndex) {
-    const newList = [...props.list];
-    const movedItem = newList[initIndex.value];
-    newList.splice(initIndex.value, 1);
-    newList.splice(curIndex, 0, movedItem);
-    emits("update:list", newList);
-  }
-  // }
-  for (const key in itemRefs.value) {
-    const el = itemRefs.value[key];
-    el.setAttribute("data-index", key);
-    el.style.transform = "";
-    el.style.transition = "";
-  }
-  // itemRefs.value.forEach((el) => {
-  //   el.style.transform = "";
-  //   el.style.transition = "";
-  // });
-  emits("dropEnd", { fromIndex: initIndex.value, toIndex: curIndex });
-
-  isMove.value = false;
-  curItem.value = null;
-  initIndex.value = null;
-  positions.value = [];
-  // curIn.value = null;
-};
-
-const transPrev = (from, to) => {
-  for (const key in itemRefs.value) {
-    const el = itemRefs.value[key];
-    const i = Number(el.getAttribute("data-index"));
-    if (i <= to && i > from) {
-      const curPos = positions.value[i];
-      const prevPos = positions.value[i - 1];
-
-      let translate3d = el.style.transform
-        .match(/translate3d\(([^)]+)\)/)[1]
-        .split(", ");
-
-      let translateX = parseFloat(translate3d[0]);
-      let translateY = parseFloat(translate3d[1]);
-
-      const transX = translateX + prevPos.left - curPos.left;
-      const transY = translateY + prevPos.top - curPos.top;
-
-      el.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
-      el.setAttribute("data-index", i - 1);
+// 5. Mouse/Touch Up
+const onUp = () => {
+  isPressed.value = false;
+  pendingItem = null;
+  
+  window.removeEventListener("mousemove", onMove);
+  window.removeEventListener("touchmove", onMove);
+  window.removeEventListener("mouseup", onUp);
+  window.removeEventListener("touchend", onUp);
+  
+  if (isDragging.value) {
+    // Commit changes
+    if (dragIndex.value !== hoverIndex.value && hoverIndex.value !== -1) {
+      const newList = [...props.list];
+      const [moved] = newList.splice(dragIndex.value, 1);
+      newList.splice(hoverIndex.value, 0, moved);
+      emits("update:list", newList);
+      emits("dropEnd", { fromIndex: dragIndex.value, toIndex: hoverIndex.value });
     }
+
+    // Delay resetting isDragging slightly to block the click event
+    setTimeout(() => {
+      isDragging.value = false;
+      emits("update:isDrag", false);
+    }, 0);
+    
+    // Cleanup
+    dragItem.value = null;
+    dragIndex.value = -1;
+    hoverIndex.value = -1;
+    itemRects = [];
+    
+    // Reset transforms
+    itemRefs.value.forEach(el => {
+      if(el) el.style.transform = '';
+    });
   }
 };
 
-const transNext = (from, to) => {
-  for (const key in itemRefs.value) {
-    const el = itemRefs.value[key];
-    const i = Number(el.getAttribute("data-index"));
-    if (i >= to && i < from) {
-      const curPos = positions.value[i];
-      const nextPos = positions.value[i + 1];
-
-      let translate3d = el.style.transform
-        .match(/translate3d\(([^)]+)\)/)[1]
-        .split(", ");
-
-      let translateX = parseFloat(translate3d[0]);
-      let translateY = parseFloat(translate3d[1]);
-
-      const transX = translateX + nextPos.left - curPos.left;
-      const transY = translateY + nextPos.top - curPos.top;
-
-      el.style.transform = `translate3d(${transX}px, ${transY}px, 0)`;
-      el.setAttribute("data-index", i + 1);
-    }
-  }
+const captureLayout = () => {
+  itemRects = [];
+  itemRefs.value = itemRefs.value.filter(Boolean);
+  itemRefs.value.forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    itemRects.push({
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    });
+  });
 };
 
-const transCur = (toIndex) => {
-  const toPos = positions.value[toIndex];
-  const fromPos = positions.value[initIndex.value];
-
-  itemRefs.value[initIndex.value].style.transform = `translate3d(${
-    toPos.left - fromPos.left
-  }px, ${toPos.top - fromPos.top}px, 0)`;
-  itemRefs.value[initIndex.value].setAttribute("data-index", toIndex);
-};
+onBeforeUnmount(() => {
+  window.removeEventListener("mousemove", onMove);
+  window.removeEventListener("touchmove", onMove);
+  window.removeEventListener("mouseup", onUp);
+  window.removeEventListener("touchend", onUp);
+});
 </script>

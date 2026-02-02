@@ -1,8 +1,11 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px px-4 py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
+    class="backdrop-blur-20px py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
+    :style="{
+      width: `${baseCount * 3.25 + 0.75}rem`,
+    }"
   >
     <!-- 导入、导出按钮 -->
     <div class="absolute -right-4 -top-4 flex flex-col gap-3">
@@ -51,26 +54,23 @@
     <!-- 抽屉 -->
     <div
       v-if="appStore.isMore"
-      class="grid w-full gap-4 h-full overflow-y-auto overflow-x-hidden relative"
-      style="
-        grid-template-columns: repeat(auto-fill, 40px);
-        grid-auto-rows: 40px;
-      "
-      :style="{
-        width: appStore.isMore
-          ? `${appCountTemp * 2.5 + (appCountTemp - 1)}rem`
-          : 'auto',
-      }"
+      class="h-full overflow-y-auto overflow-x-hidden relative"
     >
-      <AppItem
-        @contextmenu.prevent="contextMenu($event, data)"
-        v-for="data in viewAppList"
-        :key="data.key"
-        :data="data"
-        @click="openApp(data)"
-        @mouseenter="boxAppFocus(data)"
-        @mouseleave="boxAppBlur"
-      />
+     <Draggable
+        v-model:list="viewAppList"
+        v-model:is-drag="isDrag"
+        @drop-end="dropEnd"
+      >
+        <template #default="{ data }">
+          <AppItem
+            @contextmenu.prevent="contextMenu($event, data)"
+            :data="data"
+            @click="openApp(data)"
+            @mouseenter="boxAppFocus(data)"
+            @mouseleave="boxAppBlur"
+          />
+        </template>
+      </Draggable>
     </div>
   </div>
 </template>
@@ -97,6 +97,7 @@ const isDrag = ref(false);
 const appNameViewRef = ref();
 
 const openApp = (data: any) => {
+  // 增加一个微小的延迟检查，防止拖拽结束瞬间触发点击
   if (isDrag.value) return;
   appStore.openApp(data);
 };
@@ -195,7 +196,7 @@ const boxAppBlur = () => {
 };
 
 const appCount = ref(0);
-const appCountTemp = ref(0);
+const baseCount = ref(0);
 const viewAppList = computed(() => {
   return appStore.apps.slice(0, appCount.value);
 });
@@ -212,9 +213,11 @@ const initCount = () => {
   // 外部padding: 2rem
   // 视口宽度 window.innerWidth
   // 2.5n + 0.75n - 0.75 ≤ W - 2
-  appCountTemp.value = appCount.value = Math.round(
+  appCount.value = Math.round(
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
+  // 缓存最初的图标数量
+  baseCount.value = appCount.value;
 };
 
 const contextMenu = (e, item) => {
