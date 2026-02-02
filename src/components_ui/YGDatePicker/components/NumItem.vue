@@ -1,9 +1,14 @@
 <template>
   <div
-    class="transform-3d w-14 perspective-origin-center mx-auto relative h-[124px] select-none"
+    class="transform-3d w-14 perspective-origin-center mx-auto relative h-[124px] select-none touch-none"
     @mousedown="mouseDown"
     @touchstart="mouseDown"
     @wheel="handleWheel"
+    @mousemove="mouseMove"
+    @mouseup="mouseUp"
+    @touchmove="mouseMove"
+    @touchend="mouseUp"
+    @mouseleave="mouseUp"
     :style="{
       transform: `rotateX(${rotateX}deg)`,
       transition: isDragging ? 'none' : '0.3s ease-out',
@@ -87,6 +92,7 @@ const mouseDown = (e: TouchEvent & MouseEvent) => {
 };
 
 const mouseMove = (e: TouchEvent & MouseEvent) => {
+  e.preventDefault(); // 阻止页面跟随拖动
   if (!isDragging.value) return;
   const clientY = e.touches ? e.touches[0].clientY : e.clientY;
   const deltaY = clientY - lastMouseY;
@@ -122,22 +128,6 @@ const handleWheel = (e: WheelEvent) => {
   const direction = e.deltaY < 0 ? -1 : 1;
   rotateX.value += direction * 45;
 };
-
-// 生命周期：挂载时绑定全局事件
-onMounted(() => {
-  document.addEventListener("mousemove", mouseMove);
-  document.addEventListener("mouseup", mouseUp);
-  document.addEventListener("touchmove", mouseMove);
-  document.addEventListener("touchend", mouseUp);
-});
-
-// 生命周期：卸载时解绑全局事件（防止内存泄漏）
-onUnmounted(() => {
-  document.removeEventListener("mousemove", mouseMove);
-  document.removeEventListener("mouseup", mouseUp);
-  document.removeEventListener("touchmove", mouseMove);
-  document.removeEventListener("touchend", mouseUp);
-});
 </script>
 
 <style>
