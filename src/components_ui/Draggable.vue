@@ -236,6 +236,8 @@ const onUp = () => {
       const [moved] = newList.splice(dragIndex.value, 1);
       newList.splice(hoverIndex.value, 0, moved);
       emits("update:list", newList);
+      console.log("update:list", newList);
+      
       emits("dropEnd", { fromIndex: dragIndex.value, toIndex: hoverIndex.value });
     }
 

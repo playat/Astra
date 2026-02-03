@@ -197,8 +197,16 @@ const boxAppBlur = () => {
 
 const appCount = ref(0);
 const baseCount = ref(0);
-const viewAppList = computed(() => {
-  return appStore.apps.slice(0, appCount.value);
+const viewAppList = computed({
+  get: () => {
+    return appStore.apps.slice(0, appCount.value);
+  },
+  set: (val) => {
+    appStore.apps = [
+      ...val,
+      ...appStore.apps.slice(appCount.value, appStore.apps.length),
+    ];
+  },
 });
 
 const initCount = () => {
