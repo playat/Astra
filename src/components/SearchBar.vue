@@ -28,7 +28,7 @@
 
     <div
       class="text-sm absolute left-0 top-0 transition-[opacity] cursor-pointer flex items-center justify-center w-full h-full text-white whitespace-nowrap"
-      :class="appStore.searchFocus ? 'opacity-0' : 'opacity-100 flex-1'"
+      :class="appStore.searchFocus ? 'opacity-0 pointer-events-none' : 'opacity-100 flex-1'"
       @click="toFocus"
     >
       搜索
