@@ -59,7 +59,7 @@ const searchInput = (e: any) => {
         wd: value,
         cb: "SUJsonP",
       }).then((res: any) => {
-        searchStore.suList = res.data.s;
+        searchStore.suList = res.data?.s;
       });
     }, 300);
   } else {

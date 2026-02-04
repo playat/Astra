@@ -1,44 +1,47 @@
 <template>
-  <div
-    class="fixed top-8 right-8 w-9 h-9 bg-gray-500 rounded-full overflow-hidden transition-all"
-    @mouseenter="enter"
-    @mouseleave="leave"
-    :style="{
-      width: isHover ? `${contentWidth}px` : `2.25rem`,
-    }"
-  >
-    <div class="w-max flex items-center gap-1 p-0.5" ref="contentRef">
-      <YGImage
-        :src="UserSvg"
-        fit="cover"
-        class="bg-gray-700 w-8 h-8 rounded-full p-0.5"
-      />
-      <div
-        class="text-white cursor-pointer whitespace-nowrap text-sm"
-        @click="authStore.loginOut"
-      >
-        退出登录
+  <div class="fixed top-8 right-8 group cursor-pointer" @click="handleLogout()">
+    <div
+      class="w-10 h-10 bg-gradient-to-br from-[#38bdf8] to-[#818cf8] rounded-lg group-hover:rounded-2xl transition-all duration-500 p-[1px] animate-float-mini"
+    >
+      <div class="w-full h-full p-2 bg-[#0f172a] rounded-[inherit] overflow-hidden">
+        <img
+          :src="UserSvg"
+          class="w-full h-full object-cover hover:mix-blend-luminosity transition-all"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import YGImage from "@/components_ui/YGImage.vue";
 import UserSvg from "@/assets/svg/user.svg";
-import { ref } from "vue";
 import useAuthStore from "@/store/auth";
 
 const authStore = useAuthStore();
-const isHover = ref(false);
-const contentRef = ref();
-const contentWidth = ref(0);
-const enter = () => {
-  isHover.value = true;
-  contentWidth.value = contentRef.value.offsetWidth;
-};
 
-const leave = () => {
-  isHover.value = false;
+const handleLogout = () => {
+  authStore.loginOut();
 };
 </script>
+<style scoped>
+/* 
+  Tailwind Arbitrary Values used for portability:
+  gemini-blue -> #38bdf8
+  gemini-purple -> #818cf8
+  card -> #0f172a
+*/
+
+.animate-float-mini {
+  animation: float-mini 3s ease-in-out infinite;
+}
+
+@keyframes float-mini {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+</style>
