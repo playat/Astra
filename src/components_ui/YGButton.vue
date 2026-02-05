@@ -1,9 +1,9 @@
 <template>
   <button
     :disabled="disabled || loading"
-    class="flex text-sm text-[#f3f3f3] select-none h-max justify-center items-center gap-[5px] min-w-[80px] px-3 py-2 rounded-lg bg-[var(--yg-color)] cursor-pointer hover:bg-[var(--yg-color-dark)]"
+    class="flex items-center justify-center gap-2 px-4 py-3 bg-[#111] border border-[#333] text-white uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black hover:border-white transition-all duration-300 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed select-none min-w-[100px]"
   >
-    <img class="loading-animate w-5 h-5" :src="LoadingSvg" v-if="loading" />
+    <img class="loading-animate w-4 h-4 invert dark:invert-0" :src="LoadingSvg" v-if="loading" />
     <slot />
   </button>
 </template>
@@ -29,5 +29,10 @@ defineProps<{
 
 .loading-animate {
   animation: rotate 1s linear infinite;
+}
+
+/* 当按钮背景变白时（hover状态），确保loading图标颜色反转以保持可见性 */
+button:hover .loading-animate {
+  filter: invert(1);
 }
 </style>

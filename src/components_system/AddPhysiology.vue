@@ -1,10 +1,40 @@
 <template>
-  <div class="text-white flex flex-col gap-3">
-    <div>
-      <div class="text-sm">选择时间：</div>
-      <YGDatePicker v-model="form.happen" class="mt-3" />
+  <div class="text-white flex flex-col w-[500px] bg-black border border-[#333]">
+    <!-- Header -->
+    <div
+      class="border-b border-[#333] px-6 py-4 flex items-center justify-between"
+    >
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+        <span class="text-sm font-bold tracking-[0.2em] uppercase"
+          >生理记录</span
+        >
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-[10px] text-[#666] font-mono">SYS.PHY.V1.0</div>
+      </div>
     </div>
-    <YGButton @click="confirm" :loading="loading"> 确定 </YGButton>
+
+    <div class="p-8 space-y-8">
+      <!-- Section 1: Time Select -->
+      <div class="space-y-3">
+        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+          >选择时间</label
+        >
+        <div class="w-full border border-[#333] bg-[#0f0f0f] p-4 flex justify-center">
+          <YGDatePicker v-model="form.happen" />
+        </div>
+      </div>
+
+      <!-- Execute Button -->
+      <YGButton 
+        @click="confirm" 
+        :loading="loading"
+        class="w-full py-4 !bg-[#111] !border-[#333] !text-white !uppercase !tracking-[0.3em] !text-sm hover:!bg-white hover:!text-black transition-all duration-300 active:scale-[0.99]"
+      > 
+        确定 
+      </YGButton>
+    </div>
   </div>
 </template>
 

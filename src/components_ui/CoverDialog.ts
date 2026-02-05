@@ -71,7 +71,7 @@ class CoverDailog extends BaseCover {
               this._dialogRef.value = el;
             },
             class: [
-              "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] rounded-md flex flex-col gap-3 overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
+              "fixed min-w-[300px] max-w-11/12 bg-[var(--yg-bg-color)] rounded-md flex flex-col overflow-hidden scale-0 -translate-x-1/2 -translate-y-1/2",
               this.visible ? "visible opacity-100" : "opacity-0 invisible",
             ],
             onClick: (e) => e.stopPropagation(),
