@@ -97,7 +97,7 @@ class CoverDailog extends BaseCover {
               //   }),
               // ],
             ),
-            h(this.options.component),
+            h(this.options.component, {onClose: this.hiddenFn}),
           ],
         );
     });

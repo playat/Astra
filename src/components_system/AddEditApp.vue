@@ -75,7 +75,7 @@ import { onMounted, ref } from "vue";
 const props = defineProps<{
   formData?: any;
 }>();
-const emit = defineEmits(["success"]);
+const emit = defineEmits(["close"]);
 
 const form = ref({
   id: "",
@@ -90,7 +90,7 @@ const confirm = () => {
   if (form.value.id) {
     editApp(form.value)
       .then(() => {
-        emit("success");
+        emit("close");
       })
       .finally(() => {
         addLoading.value = false;
@@ -98,7 +98,7 @@ const confirm = () => {
   } else {
     addApp(form.value)
       .then(() => {
-        emit("success");
+        emit("close");
       })
       .finally(() => {
         addLoading.value = false;

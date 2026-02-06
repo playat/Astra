@@ -1,12 +1,12 @@
 <template>
-  <div class="relative">
+  <div class="relative w-max h-full">
     <img
       v-bind="$attrs"
       referrerpolicy="no-referrer"
       draggable="false"
       @load="load"
       @error="error"
-      class="transition-all w-full h-full"
+      class="transition-all h-full w-auto"
       :class="loading ? 'opacity-0' : 'opacity-100'"
       :style="{
         objectFit: fit,

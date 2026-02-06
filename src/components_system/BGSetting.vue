@@ -39,7 +39,7 @@
       </div>
 
       <!-- Section 2: Input -->
-      <div v-if="tempType !== 'none'" class="space-y-3">
+      <div v-if="tempType !== 'none' && !tempUrl" class="space-y-3">
         <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
           >本地资源</label
         >
@@ -51,34 +51,38 @@
       </div>
 
       <!-- Section 3: Preview (Technical) -->
-      <div v-if="tempType !== 'none' && tempUrl" class="space-y-3 animate-fade-in">
+      <div
+        v-if="tempType !== 'none' && tempUrl"
+        class="space-y-3 animate-fade-in"
+      >
         <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
           >效果预览</label
         >
-        
+
         <!-- Image Preview -->
-        <div v-if="tempType === 'image'" class="w-full h-40">
-           <YGImage :src="tempUrl" fit="cover">
-              <template #overlay>
-                 <div class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20">
-                    RES: {{ tempFile?.name ? 'NEW' : 'CURRENT' }}
-                 </div>
-              </template>
-           </YGImage>
+        <div
+          v-if="tempType === 'image'"
+          class="w-full h-40 flex justify-center"
+        >
+          <YGImage :src="tempUrl">
+            <template #overlay>
+              <div
+                class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
+              >
+                RES: {{ tempFile?.name ? "NEW" : "CURRENT" }}
+              </div>
+            </template>
+          </YGImage>
         </div>
 
         <!-- Video Preview (Keep original implementation as YGImage is for images) -->
         <div
           v-else
-          class="w-full h-40 bg-[#050505] border border-[#333] relative p-1 overflow-hidden group"
+          class="w-full h-40 bg-[#050505] border border-[#333] relative p-1 overflow-hidden flex justify-center"
         >
-          <!-- Crosshairs -->
-          <div class="absolute top-1/2 left-0 w-full h-px bg-[#333]/50 pointer-events-none z-10"></div>
-          <div class="absolute top-0 left-1/2 w-px h-full bg-[#333]/50 pointer-events-none z-10"></div>
-
           <video
             :src="tempUrl"
-            class="w-full h-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
+            class="w-auto h-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
             autoplay
             muted
             loop
@@ -87,7 +91,7 @@
           <div
             class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
           >
-            RES: {{ tempFile?.name ? 'NEW' : 'CURRENT' }}
+            RES: {{ tempFile?.name ? "NEW" : "CURRENT" }}
           </div>
         </div>
       </div>
@@ -95,7 +99,7 @@
       <!-- Execute Button -->
       <button
         @click="applySettings"
-        class="w-full py-4 bg-[#111] border border-[#333] text-white uppercase tracking-[0.3em] text-sm hover:bg-white hover:text-black transition-all duration-300 active:scale-[0.99]"
+        class="w-full py-4 cursor-pointer bg-[#111] border border-[#333] text-white uppercase tracking-[0.3em] text-sm hover:bg-white hover:text-black transition-all duration-300 active:scale-[0.99]"
       >
         应用设置
       </button>
@@ -109,6 +113,7 @@ import { setItem } from "@/utils/indexedDb";
 import { ref, onMounted, onUnmounted } from "vue";
 import YGUpload from "@/components_ui/YGUpload.vue";
 import YGImage from "@/components_ui/YGImage.vue";
+import CoverMessage from "@/components_ui/CoverMessage";
 
 const appStore = useApp();
 const emits = defineEmits(["close"]);
@@ -123,7 +128,6 @@ const modeOptions = [
 const tempType = ref<"none" | "image" | "video">("none");
 const tempUrl = ref("");
 const tempFile = ref<File | undefined>();
-const isDragging = ref(false);
 
 // 初始化状态
 onMounted(() => {
@@ -150,22 +154,24 @@ const handleTypeChange = (type: "none" | "image" | "video") => {
   } else {
     // 如果已有的文件类型不匹配新类型，则清空
     if (tempFile.value) {
-        const fileType = tempFile.value.type.split('/')[0];
-        if (fileType !== type) {
-             tempUrl.value = "";
-             tempFile.value = undefined;
-        }
+      const fileType = tempFile.value.type.split("/")[0];
+      if (fileType !== type) {
+        tempUrl.value = "";
+        tempFile.value = undefined;
+      }
     }
   }
 };
 
 const validateAndSetFile = (file: File) => {
   if (!file) return;
-  
+
   // 简单的类型校验
-  const fileType = file.type.split('/')[0];
-  if (tempType.value !== 'none' && fileType !== tempType.value) {
-    alert(`请选择 ${tempType.value === 'image' ? '图片' : '视频'} 文件`);
+  const fileType = file.type.split("/")[0];
+  if (tempType.value !== "none" && fileType !== tempType.value) {
+    new CoverMessage({
+      message: `请选择 ${tempType.value === "image" ? "图片" : "视频"} 文件`,
+    }).open();
     return;
   }
 
@@ -177,24 +183,6 @@ const validateAndSetFile = (file: File) => {
   const url = URL.createObjectURL(file);
   tempUrl.value = url;
   tempFile.value = file;
-};
-
-// 处理文件上传
-const handleFileUpload = (e: Event) => {
-  const input = e.target as HTMLInputElement;
-  const file = input.files?.[0];
-  if (file) {
-    validateAndSetFile(file);
-  }
-};
-
-// 处理拖拽上传
-const handleDrop = (e: DragEvent) => {
-  isDragging.value = false;
-  const file = e.dataTransfer?.files[0];
-  if (file) {
-    validateAndSetFile(file);
-  }
 };
 
 // 应用设置
@@ -214,7 +202,10 @@ const applySettings = () => {
         type: tempType.value,
         file: tempFile.value,
       };
-      setItem("bg", "bg_img", { type: tempType.value, imgFile: tempFile.value });
+      setItem("bg", "bg_img", {
+        type: tempType.value,
+        imgFile: tempFile.value,
+      });
     }
   }
   emits("close");
@@ -227,7 +218,13 @@ const applySettings = () => {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

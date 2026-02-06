@@ -53,7 +53,7 @@ const form = ref({
 });
 
 const loading = ref(false);
-const emits = defineEmits(["success"]);
+const emits = defineEmits(["close"]);
 const confirm = () => {
   if (!form.value.happen) {
     return;
@@ -61,7 +61,7 @@ const confirm = () => {
   loading.value = true;
   addPhysiology(form.value)
     .then(() => {
-      emits("success");
+      emits("close");
     })
     .finally(() => {
       form.value.happen = "";

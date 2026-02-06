@@ -119,7 +119,7 @@ class CoverFixed extends BaseCover {
                 h("img", { src: MoveSvg, alt: "", className: "w-3 h-3" }),
               ],
             ),
-            h(this.options.component),
+            h(this.options.component, {onClose: this.close}),
           ],
         );
     });

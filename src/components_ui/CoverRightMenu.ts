@@ -25,8 +25,32 @@ class RightMenu extends BaseCover {
 
   createCom() {
     return defineComponent(() => {
+      const menuX = ref(this.options.x);
+      const menuY = ref(this.options.y);
+
       onMounted(() => {
         if (this.rightMenuRef.value) {
+          const el = this.rightMenuRef.value as HTMLElement;
+          const { innerWidth, innerHeight } = window;
+          const { offsetWidth, offsetHeight } = el;
+
+          // Check right boundary
+          if (menuX.value + offsetWidth > innerWidth) {
+            menuX.value = innerWidth - offsetWidth - 10;
+          }
+          // Check bottom boundary
+          if (menuY.value + offsetHeight > innerHeight) {
+            menuY.value = innerHeight - offsetHeight - 10;
+          }
+          // Check left boundary
+          if (menuX.value < 0) {
+            menuX.value = 10;
+          }
+          // Check top boundary
+          if (menuY.value < 0) {
+            menuY.value = 10;
+          }
+
           this.rightMenuRef.value.focus();
         }
       });
@@ -39,11 +63,11 @@ class RightMenu extends BaseCover {
             },
             tabindex: 0,
             class: [
-              "transition-all focus-visible:outline-none absolute bg-[var(--yg-bg-color)] rounded-lg",
+              "transition-all focus-visible:outline-none absolute bg-[#111] border border-[#333] min-w-[140px] z-[9999] shadow-xl",
             ],
             style: {
-              left: `${this.options.x}px`,
-              top: `${this.options.y}px`,
+              left: `${menuX.value}px`,
+              top: `${menuY.value}px`,
             },
             onBlur: this.close,
           },
@@ -53,7 +77,7 @@ class RightMenu extends BaseCover {
               {
                 key: index,
                 class:
-                  "hover:!text-[var(--yg-color)] transition-all text-white text-nowrap cursor-pointer text-xs py-1 px-4",
+                  "flex items-center px-4 py-3 text-white uppercase tracking-[0.2em] text-xs transition-all duration-200 cursor-pointer border-b border-[#333] last:border-b-0 hover:bg-white hover:text-black active:scale-[0.99]",
                 onClick: (e) => {
                   e.stopPropagation();
                   this.onOptionClick(item);
