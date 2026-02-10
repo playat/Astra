@@ -34,7 +34,7 @@
       {{ hoverApp?.name }}
     </div>
     <Draggable
-      v-if="appStore.apps.length && !appStore.isMore"
+      v-show="appStore.apps.length && !appStore.isMore"
       v-model:list="viewAppList"
       v-model:is-drag="isDrag"
       @drop-end="dropEnd"
@@ -53,7 +53,7 @@
 
     <!-- 抽屉 -->
     <div
-      v-if="appStore.isMore"
+      v-show="appStore.isMore"
       class="h-full overflow-y-auto overflow-x-hidden relative"
     >
      <Draggable

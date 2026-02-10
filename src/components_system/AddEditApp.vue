@@ -57,7 +57,7 @@
       <YGButton 
         @click="confirm" 
         :loading="addLoading"
-        class="w-full py-4 !bg-[#111] !border-[#333] !text-white !uppercase !tracking-[0.3em] !text-sm hover:!bg-white hover:!text-black transition-all duration-300 active:scale-[0.99] mt-4"
+        block
       > 
         确定 
       </YGButton>
@@ -86,6 +86,10 @@ const form = ref({
 
 const addLoading = ref(false);
 const confirm = () => {
+  // 增加空值判断
+  if (!form.value.key || !form.value.name) {
+    return;
+  }
   addLoading.value = true;
   if (form.value.id) {
     editApp(form.value)

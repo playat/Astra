@@ -97,12 +97,12 @@
       </div>
 
       <!-- Execute Button -->
-      <button
+      <YGButton
         @click="applySettings"
-        class="w-full py-4 cursor-pointer bg-[#111] border border-[#333] text-white uppercase tracking-[0.3em] text-sm hover:bg-white hover:text-black transition-all duration-300 active:scale-[0.99]"
+        block
       >
-        应用设置
-      </button>
+        确定
+      </YGButton>
     </div>
   </div>
 </template>
@@ -114,6 +114,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import YGUpload from "@/components_ui/YGUpload.vue";
 import YGImage from "@/components_ui/YGImage.vue";
 import CoverMessage from "@/components_ui/CoverMessage";
+import YGButton from "@/components_ui/YGButton.vue";
 
 const appStore = useApp();
 const emits = defineEmits(["close"]);

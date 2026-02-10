@@ -30,7 +30,7 @@
       <YGButton 
         @click="confirm" 
         :loading="loading"
-        class="w-full py-4 !bg-[#111] !border-[#333] !text-white !uppercase !tracking-[0.3em] !text-sm hover:!bg-white hover:!text-black transition-all duration-300 active:scale-[0.99]"
+        block
       > 
         确定 
       </YGButton>

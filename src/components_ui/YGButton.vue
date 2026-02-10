@@ -1,7 +1,10 @@
 <template>
   <button
     :disabled="disabled || loading"
-    class="flex items-center justify-center gap-2 px-4 py-3 bg-[#111] border border-[#333] text-white uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black hover:border-white transition-all duration-300 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed select-none min-w-[100px]"
+    :class="[
+      'cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-[#111] border border-[#333] text-white uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black hover:border-white transition-all duration-300 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed select-none min-w-[100px]',
+      block ? 'flex w-full' : 'inline-flex',
+    ]"
   >
     <img class="loading-animate w-4 h-4 invert dark:invert-0" :src="LoadingSvg" v-if="loading" />
     <slot />
@@ -14,6 +17,7 @@ import LoadingSvg from "@/assets/svg/loading.svg";
 defineProps<{
   loading?: boolean;
   disabled?: boolean;
+  block?: boolean;
 }>();
 </script>
 
