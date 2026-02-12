@@ -5,6 +5,8 @@ import {
   h,
   ref,
   RendererNode,
+  onMounted,
+  onUnmounted,
 } from "vue";
 import BaseCover from "./BaseCover.js";
 import MoveSvg from "@/assets/svg/move.svg";
@@ -23,6 +25,7 @@ class CoverFixed extends BaseCover {
   private _baseClientX;
   private _baseClientY;
   private _fixedRef = ref<RendererNode>();
+  private _hasMoved = false;
   private _rect = {
     width: 0,
     height: 0,
@@ -49,6 +52,7 @@ class CoverFixed extends BaseCover {
 
   mousedown(e: MouseEvent & TouchEvent) {
     e.preventDefault();
+    this._hasMoved = true;
     const target = e.type === "touchstart" ? e.touches[0] : e;
     this._isDown = true;
     this._baseRect = this._fixedRef.value.getBoundingClientRect();
@@ -85,6 +89,27 @@ class CoverFixed extends BaseCover {
 
   createCom() {
     return defineComponent(() => {
+      let resizeObserver: ResizeObserver;
+
+      onMounted(() => {
+        if (this._fixedRef.value) {
+          resizeObserver = new ResizeObserver(() => {
+            if (!this._hasMoved && this._fixedRef.value) {
+              const fixedRect = this._fixedRef.value.getBoundingClientRect();
+              this._left.value = window.innerWidth / 2 - fixedRect.width / 2;
+              this._top.value = window.innerHeight / 2 - fixedRect.height / 2;
+            }
+          });
+          resizeObserver.observe(this._fixedRef.value as HTMLElement);
+        }
+      });
+
+      onUnmounted(() => {
+        if (resizeObserver) {
+          resizeObserver.disconnect();
+        }
+      });
+
       return () =>
         h(
           "div",
@@ -130,14 +155,6 @@ class CoverFixed extends BaseCover {
 
     const vnode = createVNode(com, { key: this.key });
     this.insert(vnode);
-    this._fixedRef.value = vnode.el;
-
-    // this._rect.width = window.innerWidth - fixedRect.width;
-    // this._rect.height = window.innerHeight - fixedRect.height;
-    setTimeout(() => {
-      const fixedRect = this._fixedRef.value.getBoundingClientRect();
-      this._left.value = window.innerWidth / 2 - fixedRect.width / 2;
-    }, 100);
   };
 
   close() {
@@ -147,6 +164,7 @@ class CoverFixed extends BaseCover {
     this._baseClientY = undefined;
     this._baseRect = undefined;
     this._isDown = false;
+    this._hasMoved = false;
     this._top.value = 50;
     this._left.value =
       window.innerWidth / 2 - this._fixedRef.value.offsetWidth / 2;
