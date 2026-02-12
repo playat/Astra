@@ -90,6 +90,20 @@ const confirm = () => {
   if (!form.value.key || !form.value.name) {
     return;
   }
+
+  // 如果是编辑模式，判断值是否有变更
+  if (props.formData) {
+    const isChanged =
+      form.value.key !== props.formData.key ||
+      form.value.name !== props.formData.name ||
+      form.value.icon !== props.formData.icon;
+
+    if (!isChanged) {
+      emit("close");
+      return;
+    }
+  }
+
   addLoading.value = true;
   if (form.value.id) {
     editApp(form.value)
