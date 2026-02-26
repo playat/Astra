@@ -1,18 +1,19 @@
 <template>
   <div
-    class="absolute top-1/4 mt-14 w-xl max-w-4/5 backdrop-blur-20px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white-0.15 text-gray-300 scrollbar-none"
+    class="absolute top-1/4 mt-14 w-xl max-w-4/5 backdrop-blur-20px overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white/15 text-gray-300 scrollbar-none border border-white/10 shadow-xl"
     :class="[
       appStore.searchFocus && searchStore.suList.length && !appStore.isMore
-        ? 'visible'
+        ? 'visible opacity-100'
         : 'h-0 opacity-0 invisible',
     ]"
   >
     <div
       v-for="(item, index) in searchStore.suList"
       :key="item"
-      class="text-sm cursor-pointer py-1.5 px-4 hover:bg-white-0.15 rounded-lg transition-all"
-      :class="{ 'bg-white-0.15': activeIndex === index }"
+      class="text-sm cursor-pointer py-2 px-4 hover:bg-white/20 rounded-lg transition-all duration-200 active:scale-95 hover:text-white"
+      :class="{ 'bg-white/20 text-white': activeIndex === index }"
       @click="search(item)"
+      @mousedown.prevent
     >
       {{ item }}
     </div>
@@ -28,6 +29,8 @@ const appStore = useApp();
 const searchStore = useSearch();
 const search = (text: string) => {
   searchStore.searchText = text;
+  // 保持搜索框焦点状态
+  appStore.searchFocus = true;
   searchStore.toSearch();
 };
 

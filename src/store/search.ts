@@ -11,7 +11,11 @@ const useSearch = defineStore("search", () => {
   const searchText = ref("");
 
   const toSearch = () => {
+    if (!searchText.value.trim()) return;
+    
     window.open(`${searchApi[searchFrom.value]}${searchText.value}`);
+    
+    // 清理搜索状态
     searchText.value = "";
     suList.value = [];
     appStore.searchFocus = false;
