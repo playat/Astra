@@ -29,7 +29,7 @@
     <div
       ref="appNameViewRef"
       style="background: rgba(255, 255, 255, 0.1)"
-      class="absolute backdrop-blur-20px top-0 opacity-0 left-1/2 -translate-x-1/2 rounded-xl py-1 px-4 text-white pointer-events-none"
+      class="absolute w-max backdrop-blur-20px top-0 opacity-0 left-1/2 -translate-x-1/2 rounded-xl py-1 px-4 text-white pointer-events-none"
     >
       {{ hoverApp?.name }}
     </div>

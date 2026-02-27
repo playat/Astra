@@ -11,9 +11,15 @@ const useSearch = defineStore("search", () => {
   const searchText = ref("");
 
   const toSearch = () => {
-    if (!searchText.value.trim()) return;
+    const query = searchText.value.trim();
     
-    window.open(`${searchApi[searchFrom.value]}${searchText.value}`);
+    if (!query) {
+      // 如果没有搜索文本，直接跳转到搜索引擎主页
+      window.open(searchApi[searchFrom.value]);
+    } else {
+      // 如果有搜索文本，则进行搜索
+      window.open(`${searchApi[searchFrom.value]}${query}`);
+    }
     
     // 清理搜索状态
     searchText.value = "";
