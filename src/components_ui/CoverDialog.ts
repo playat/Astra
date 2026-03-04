@@ -48,7 +48,7 @@ class CoverDailog extends BaseCover {
     }, 100);
   };
 
-  private hiddenFn = () => {
+  protected hiddenFn = () => {
     this.visible.value = false;
     this._dialogRef.value.classList.replace("scale-100", "scale-50");
     this._dialogRef.value.classList.replace("opacity-100", "opacity-0");
