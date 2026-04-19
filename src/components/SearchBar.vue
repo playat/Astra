@@ -7,7 +7,7 @@
     }"
   >
     <div
-      class="transform-[opacity] w-full flex items-center justify-between delay-200"
+      class="transform-[opacity] w-full flex items-center justify-between"
       :class="!appStore.searchFocus ? 'opacity-0' : 'opacity-100'"
     >
       <img :src="BingSvg" class="w-5 h-5" />
@@ -15,7 +15,6 @@
         ref="inputRef"
         class="text-center absolute left-0 top-0 flex-1 h-10 w-full select-none placeholder:text-white placeholder:text-sm"
         @input="searchInput"
-        @blur="searchBlur"
         v-model="searchStore.searchText"
         @keydown.enter="searchStore.toSearch"
       />
@@ -66,11 +65,6 @@ const searchInput = (e: any) => {
     searchStore.suList = [];
   }
 };
-const searchBlur = () => {
-  appStore.searchFocus = false;
-  searchStore.searchText = "";
-  searchStore.suList = [];
-};
 
 const toFocus = () => {
   appStore.searchFocus = true;
@@ -94,6 +88,7 @@ const handleGlobalKeyDown = (e: KeyboardEvent) => {
   // 仅处理字母和数字
   if (/^[a-zA-Z0-9]$/.test(e.key)) {
     e.preventDefault(); // 阻止第一个字符录入，解决中文输入法首字母问题
+    appStore.searchText = e.key;  
     toFocus();
   }
 };
