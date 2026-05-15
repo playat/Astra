@@ -1,8 +1,9 @@
 <template>
   <div
-    class="text-gray-300 backdrop-blur-20px absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 max-w-4/5 h-10 transition-[width background] flex items-center justify-center hover:w-xl hover:!bg-neutral-800 duration-300 bg-white-0.15 px-4 cursor-pointer"
+    class="text-gray-300 backdrop-blur-20px absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 max-w-4/5 h-10 transition-[width background] flex items-center justify-center duration-300 bg-white-0.15 px-4 cursor-pointer"
     :class="{
-      'w-xl !bg-neutral-800': appStore.searchFocus,
+      'w-xl !bg-neutral-800': appStore.searchFocus && !searchStore.searchText,
+      'hover:w-xl hover:!bg-neutral-800': !searchStore.searchText,
       'opacity-0 invisible': appStore.isMore,
     }"
   >
@@ -93,11 +94,21 @@ const handleGlobalKeyDown = (e: KeyboardEvent) => {
   }
 };
 
+const handleVisibilityChange = () => {
+  if (document.hidden) {
+    appStore.searchFocus = false;
+    searchStore.searchText = "";
+    searchStore.suList = [];
+  }
+};
+
 onMounted(() => {
   window.addEventListener("keydown", handleGlobalKeyDown);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleGlobalKeyDown);
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 </script>
