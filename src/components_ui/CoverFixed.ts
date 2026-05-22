@@ -14,6 +14,7 @@ import CloseSvg from "@/assets/svg/close.svg";
 
 interface FixedOption {
   component: Component;
+  position?: "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right" | { top: number; left: number };
 }
 
 class CoverFixed extends BaseCover {
@@ -26,6 +27,7 @@ class CoverFixed extends BaseCover {
   private _baseClientY;
   private _fixedRef = ref<RendererNode>();
   private _hasMoved = false;
+  private _customPosition?: FixedOption["position"];
   private _rect = {
     width: 0,
     height: 0,
@@ -34,6 +36,7 @@ class CoverFixed extends BaseCover {
   constructor(options: FixedOption) {
     super();
     this.options = options;
+    this._customPosition = options.position;
     this.mousedown = this.mousedown.bind(this);
     this.mousemove = this.mousemove.bind(this);
     this.mouseUp = this.mouseUp.bind(this);
@@ -94,10 +97,29 @@ class CoverFixed extends BaseCover {
       onMounted(() => {
         if (this._fixedRef.value) {
           resizeObserver = new ResizeObserver(() => {
-            if (!this._hasMoved && this._fixedRef.value) {
-              const fixedRect = this._fixedRef.value.getBoundingClientRect();
-              this._left.value = window.innerWidth / 2 - fixedRect.width / 2;
-              this._top.value = window.innerHeight / 2 - fixedRect.height / 2;
+            if (this._hasMoved || !this._fixedRef.value) return;
+            const fixedRect = this._fixedRef.value.getBoundingClientRect();
+            const w = fixedRect.width;
+            const h = fixedRect.height;
+            const pos = this._customPosition;
+            if (!pos || pos === "center") {
+              this._left.value = window.innerWidth / 2 - w / 2;
+              this._top.value = window.innerHeight / 2 - h / 2;
+            } else if (typeof pos === "object") {
+              this._top.value = pos.top;
+              this._left.value = pos.left;
+            } else {
+              const map: Record<string, { top: number; left: number }> = {
+                "top-left": { top: 20, left: 20 },
+                "top-right": { top: 20, left: window.innerWidth - w - 20 },
+                "bottom-left": { top: window.innerHeight - h - 20, left: 20 },
+                "bottom-right": { top: window.innerHeight - h - 20, left: window.innerWidth - w - 20 },
+              };
+              const p = map[pos];
+              if (p) {
+                this._top.value = p.top;
+                this._left.value = p.left;
+              }
             }
           });
           resizeObserver.observe(this._fixedRef.value as HTMLElement);
@@ -114,11 +136,10 @@ class CoverFixed extends BaseCover {
         h(
           "div",
           {
-            className: "fixed bg-black-0.5 rounded-md z-20 w-max shadow-white",
+            className: "fixed bg-black-0.5 rounded-md z-20 w-max border border-gray-800",
             style: {
               top: `${this._top.value}px`,
               left: `${this._left.value}px`,
-              boxShadow: "0 0 30px -10px #fff",
             },
             ref: (el: HTMLElement) => {
               this._fixedRef.value = el;

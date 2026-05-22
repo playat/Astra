@@ -20,6 +20,7 @@ const useApp = defineStore("app", () => {
 
   const apps = ref<
     {
+      id: string;
       isDefault: boolean;
       key: string;
       name: string;
