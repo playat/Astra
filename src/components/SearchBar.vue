@@ -1,6 +1,6 @@
 <template>
   <div
-    class="text-gray-300 backdrop-blur-20px absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 max-w-4/5 h-10 transition-[width background] flex items-center justify-center duration-300 bg-white-0.15 px-4 cursor-pointer"
+    class="text-gray-300 backdrop-blur-[20px] absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 max-w-4/5 h-10 transition-[width background] flex items-center justify-center duration-300 bg-white/15 px-4 cursor-pointer"
     :class="{
       'w-xl bg-neutral-800!': appStore.searchFocus || searchStore.searchText,
       'hover:w-xl hover:bg-neutral-800!': !searchStore.searchText && !appStore.searchFocus,

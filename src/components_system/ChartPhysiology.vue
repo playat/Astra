@@ -1,10 +1,10 @@
 <template>
-  <div class="relative max-w-[90vw] p-3">
+  <div class="relative w-[90vw] p-3">
     <div class="overflow-x-scroll" ref="boxRef">
       <div ref="chartContainer" />
     </div>
 
-    <div class="mt-4 flex items-center gap-4 justify-end flex-wrap">
+    <div class="mt-4 flex items-center gap-4 justify-center flex-wrap">
       <YGButton @click="add">记录</YGButton>
       <YGButton @click="exportData" :loading="exportLoading">导出</YGButton>
       <YGButton @click="importData" :loading="importLoading">导入</YGButton>

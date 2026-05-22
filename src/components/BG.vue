@@ -23,7 +23,7 @@
     <div
       ref="bgMaskRef"
       class="absolute inset-0 bg-black/80"
-      :class="appStore.isMore ? 'backdrop-blur-6px' : ''"
+      :class="appStore.isMore ? 'backdrop-blur-[6px]' : ''"
     />
   </div>
 </template>

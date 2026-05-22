@@ -20,7 +20,7 @@
       <div
         v-for="app in appStore.apps.filter(a => !a.isDefault)"
         :key="app.key"
-        class="flex items-center gap-3 px-2 py-1.5 rounded-md hover:bg-white-0.1 cursor-pointer select-none"
+        class="flex items-center gap-3 px-2 py-1.5 rounded-md hover:bg-white/10 cursor-pointer select-none"
         @click="toggle(app)"
       >
         <div

@@ -1,7 +1,7 @@
 <template>
   <div
     ref="bottomBarRef"
-    class="backdrop-blur-20px py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
+    class="backdrop-blur-[20px] py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
     :style="{
       width: `${baseCount * 3.25 + 0.75}rem`,
@@ -29,7 +29,7 @@
     <div
       ref="appNameViewRef"
       style="background: rgba(255, 255, 255, 0.1)"
-      class="absolute w-max backdrop-blur-20px top-0 opacity-0 left-1/2 -translate-x-1/2 rounded-xl py-1 px-4 text-white pointer-events-none"
+      class="absolute w-max backdrop-blur-[20px] top-0 opacity-0 left-1/2 -translate-x-1/2 rounded-xl py-1 px-4 text-white pointer-events-none"
     >
       {{ hoverApp?.name }}
     </div>

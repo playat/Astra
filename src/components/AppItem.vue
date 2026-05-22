@@ -1,7 +1,7 @@
 <template>
   <div
     ref="appRef"
-    class="w-10 h-10 p-2 bg-black-0.5 rounded-lg cursor-pointer relative select-none backdrop-blur-20px hover:!bg-white"
+    class="w-10 h-10 p-2 bg-black/50 rounded-lg cursor-pointer relative select-none backdrop-blur-[20px] hover:!bg-white"
   >
     <!-- <img
       class="w-full h-full"

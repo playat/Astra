@@ -12,7 +12,7 @@
 
   <div
     v-if="authStore.token"
-    class="fixed left-4 bottom-36 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
+    class="fixed left-4 bottom-36 bg-black/50 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
     @click="launchDefaultApps"
   >
     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -24,7 +24,7 @@
   </div>
   <div
     v-if="authStore.token"
-    class="fixed left-4 bottom-22 bg-black-0.5 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
+    class="fixed left-4 bottom-22 bg-black/50 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
     @click="openChartPhysiology"
   >
     <img :src="ShenLiSvg" class="w-4 h-4" />
@@ -41,12 +41,8 @@ import useApp from "./store/app";
 import SuList from "./components/SuList.vue";
 import Login from "./components/Login.vue";
 import { onMounted } from "vue";
-import CoverFixed from "./components_ui/CoverFixed";
 import ChartPhysiology from "@/components_system/ChartPhysiology.vue";
 import useAuthStore from "./store/auth";
-import BGSetting from "@/components_system/BGSetting.vue";
-// import YGButton from "./components_ui/YGButton.vue";
-import Message from "./components_ui/CoverMessage";
 import CoverDialog from "./components_ui/CoverDialog";
 import User from "./components/User.vue";
 import YGDatePicker from "./components_ui/YGDatePicker/index.vue";
@@ -64,16 +60,21 @@ document.addEventListener(
 );
 
 const openChartPhysiology = () => {
-  new CoverFixed({
+  new CoverDialog({
     component: ChartPhysiology,
+    draggable: true,
   }).open();
 };
 
 const launchDefaultApps = () => {
-  new CoverFixed({ component: DefaultApps, position: {
-    top: window.innerHeight / 2 - 200,
-    left: 100,
-  } }).open();
+  new CoverDialog({
+    component: DefaultApps,
+    draggable: true,
+    position: {
+      top: window.innerHeight / 2 - 200,
+      left: 100,
+    },
+  }).open();
 };
 
 const test = () => {
