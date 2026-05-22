@@ -85,6 +85,6 @@ const test = () => {
 onMounted(() => {
   // test();
   appStore.loadAppList();
-  launchDefaultApps();
+  // launchDefaultApps();
 });
 </script>
