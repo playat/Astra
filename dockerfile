@@ -31,4 +31,4 @@ COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # 暴露端口
-EXPOSE 80
+EXPOSE 8080
