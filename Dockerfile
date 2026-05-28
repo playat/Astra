@@ -6,12 +6,12 @@ FROM node:20 AS build
 WORKDIR /app
 
 # 启用 pnpm
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10.12.3 --activate
 
 # 先复制依赖文件
 COPY package.json ./
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 # 再复制全部源码
 COPY . .
