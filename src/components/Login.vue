@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPublicKey, login } from "@/api/white";
+import { getPublicKey, login } from "@/api/auth";
 import CoverMessage from "@/components_ui/CoverMessage";
 import useApp from "@/store/app";
 import useAuthStore from "@/store/auth";

@@ -6,7 +6,7 @@ import { _fetch } from "@/utils/_fetch.js";
  * @returns
  */
 export const login = (data: any) => {
-  return _fetch(`/white/login`, {
+  return _fetch(`/auth/login`, {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -17,7 +17,7 @@ export const login = (data: any) => {
  * @returns
  */
 export const getPublicKey = async () => {
-  return _fetch(`/white/public_key`, {
+  return _fetch(`/auth/public_key`, {
     method: "GET",
   });
 };
