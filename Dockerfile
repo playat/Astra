@@ -25,10 +25,10 @@ RUN pnpm run build
 FROM nginx:alpine
 
 # 复制 nginx 配置
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 把构建产物 dist 放进 nginx 静态目录
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html/TABS
 
 # 暴露端口
 EXPOSE 8080
