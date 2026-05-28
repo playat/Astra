@@ -2,16 +2,16 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 const useAuthStore = defineStore("auth", () => {
-  const token = ref(localStorage.getItem("X-Auth") || "");
+  const token = ref(localStorage.getItem("x-auth") || "");
 
   const clear = () => {
     token.value = "";
-    localStorage.removeItem("X-Auth");
+    localStorage.removeItem("x-auth");
   };
 
   const setToken = (val: string) => {
     token.value = val;
-    localStorage.setItem("X-Auth", val);
+    localStorage.setItem("x-auth", val);
   };
 
   const loginOut = () => {};
