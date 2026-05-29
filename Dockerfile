@@ -9,7 +9,7 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@10.12.3 --activate
 
 # 先复制依赖文件
-COPY package.json ./
+COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install
 
