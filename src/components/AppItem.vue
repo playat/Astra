@@ -26,6 +26,10 @@
         </div>
       </template>
     </YGImage>
+    <div
+      v-if="data.is_default_open"
+      class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-400 shadow-[0_0_4px_rgba(74,222,128,0.6)]"
+    ></div>
   </div>
 </template>
 

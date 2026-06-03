@@ -1,6 +1,6 @@
 import { getItem } from "@/utils/indexedDb.js";
 import { defineStore } from "pinia";
-import { Component, reactive, ref } from "vue";
+import { Component, computed, reactive, ref } from "vue";
 import { getAppLsit } from "@/api/app.js";
 import { sysComponents } from "@/config/index.js";
 import CoverDialog from "@/components_ui/CoverDialog.js";
@@ -22,18 +22,26 @@ const useApp = defineStore("app", () => {
     {
       id: string;
       isDefault: boolean;
+      is_default_open: boolean;
       key: string;
       name: string;
       icon: string;
       component?: Component;
     }[]
   >([]);
+
+  const defaultOpenApps = computed(() =>
+    apps.value.filter((app) => app.is_default_open)
+  );
   const loadAppLoading = ref(false);
   const loadAppList = () => {
     loadAppLoading.value = true;
     getAppLsit()
       .then((res) => {
-        apps.value = res.data;
+        apps.value = res.data.map((item: any) => ({
+          ...item,
+          is_default_open: item.is_default_open === 1,
+        }));
       })
       .finally(() => {
         loadAppLoading.value = false;
@@ -70,6 +78,7 @@ const useApp = defineStore("app", () => {
     loadAppLoading,
     bgCfn,
     apps,
+    defaultOpenApps,
     loadAppList,
     searchFocus,
     globlePosition,

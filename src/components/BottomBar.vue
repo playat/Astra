@@ -83,13 +83,14 @@ import AddEditApp from "../components_system/AddEditApp.vue";
 import gsap from "gsap";
 // import YGRightMenu from "@/components_ui/YGRightMenu.vue";
 import CoverDialog from "@/components_ui/CoverDialog";
-import { deleteApp, exportApp, importApp, sortApp } from "@/api/app";
+import { deleteApp, exportApp, importApp, sortApp, setDefaultOpen } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 import ExportSvg from "@/assets/svg/export.svg";
 import ImportSvg from "@/assets/svg/import.svg";
 import LoadingSvg from "@/assets/svg/loading.svg";
 import CoverRightMenu from "@/components_ui/CoverRightMenu";
+import MessageBox from "@/components_system/MessageBox.vue";
 
 const appStore = useApp();
 const bottomBarRef = ref();
@@ -120,6 +121,31 @@ const optionClick = (optionData, item) => {
       appStore.loadAppList();
     });
   }
+  if (optionData.value === "defaultOpen") {
+    handleDefaultOpen(item);
+  }
+};
+
+const handleDefaultOpen = (item: any) => {
+  const isCurrentlyDefault = item.is_default_open;
+  const actionText = isCurrentlyDefault ? "取消默认打开" : "设为默认打开";
+
+  const dialog = new CoverDialog({
+    component: h(MessageBox, {
+      title: "确认操作",
+      message: `确定要${actionText}「${item.name}」吗？`,
+      onConfirm: () => {
+        setDefaultOpen(item.id, isCurrentlyDefault ? 0 : 1).then(() => {
+          appStore.loadAppList();
+        });
+        dialog.close();
+      },
+      onCancel: () => {
+        dialog.close();
+      },
+    }),
+  });
+  dialog.open();
 };
 
 const sortLoading = ref(false);
@@ -234,6 +260,7 @@ const contextMenu = (e, item) => {
     y: e.clientY,
     list: [
       { label: "修改", value: "edit" },
+      { label: item.is_default_open ? "取消默认打开" : "设为默认打开", value: "defaultOpen" },
       { label: "删除", value: "remove" },
     ],
   });

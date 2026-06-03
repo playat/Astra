@@ -76,3 +76,11 @@ export const sortApp = async (data: { fromIndex: number; toIndex: number }) => {
     body: JSON.stringify(data),
   });
 };
+
+/** 设置/取消默认打开应用 */
+export const setDefaultOpen = (appId: string, isDefaultOpen: 0 | 1) => {
+  return _fetch(`/app/default-open`, {
+    method: "PUT",
+    body: JSON.stringify({ app_id: appId, is_default_open: isDefaultOpen }),
+  });
+};
