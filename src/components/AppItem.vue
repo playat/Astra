@@ -2,13 +2,8 @@
   <div
     ref="appRef"
     class="w-10 h-10 p-2 bg-black/50 rounded-lg cursor-pointer relative select-none backdrop-blur-[20px] hover:!bg-white"
+    @contextmenu.prevent="onContextMenu"
   >
-    <!-- <img
-      class="w-full h-full"
-      :src="data.isDefault ? sysIcons[data.icon] : data.icon"
-      draggable="false"
-      referrerpolicy="no-referrer"
-    /> -->
     <YGImage
       class="w-full h-full left-0 top-0"
       :src="data.isDefault ? sysIcons[data.icon] : data.icon"
@@ -37,8 +32,82 @@
 import YGImage from "@/components_ui/YGImage.vue";
 import { sysIcons } from "@/config";
 import { getInvertColor, getRandomLightColor } from "@/utils/color";
+import CoverRightMenu from "@/components_ui/CoverRightMenu";
+import CoverDialog from "@/components_ui/CoverDialog";
+import { deleteApp, setDefaultOpen } from "@/api/app";
+import useApp from "@/store/app";
+import { h } from "vue";
+import AddEditApp from "@/components_system/AddEditApp.vue";
+import MessageBox from "@/components_system/MessageBox.vue";
 
-defineProps<{
+const props = defineProps<{
   data: any;
 }>();
+
+const emit = defineEmits<{
+  (e: "refresh"): void;
+}>();
+
+const appStore = useApp();
+
+const onContextMenu = (e: MouseEvent) => {
+  const rightMenu = new CoverRightMenu({
+    x: e.clientX,
+    y: e.clientY,
+    list: [
+      { label: "修改", value: "edit" },
+      { label: props.data.is_default_open ? "取消默认打开" : "设为默认打开", value: "defaultOpen" },
+      { label: "删除", value: "remove" },
+    ],
+  });
+  rightMenu.onOptionClick = (option) => {
+    handleOption(option);
+  };
+  rightMenu.open();
+};
+
+const handleOption = (option: { label: string; value?: string }) => {
+  if (option.value === "edit") {
+    const dialog = new CoverDialog({
+      component: h(AddEditApp, {
+        formData: props.data,
+        onSuccess() {
+          appStore.loadAppList();
+          dialog.close();
+        },
+      }),
+    });
+    dialog.open();
+  }
+  if (option.value === "remove") {
+    deleteApp(props.data.id).then(() => {
+      appStore.loadAppList();
+    });
+  }
+  if (option.value === "defaultOpen") {
+    handleDefaultOpen();
+  }
+};
+
+const handleDefaultOpen = () => {
+  const isCurrentlyDefault = props.data.is_default_open;
+  const actionText = isCurrentlyDefault ? "取消默认打开" : "设为默认打开";
+
+  const dialog = new CoverDialog({
+    component: h(MessageBox, {
+      title: "确认操作",
+      message: `确定要${actionText}「${props.data.name}」吗？`,
+      onConfirm: () => {
+        setDefaultOpen(props.data.id, isCurrentlyDefault ? 0 : 1).then(() => {
+          appStore.loadAppList();
+        });
+        dialog.close();
+      },
+      onCancel: () => {
+        dialog.close();
+      },
+    }),
+  });
+  dialog.open();
+};
 </script>

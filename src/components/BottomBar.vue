@@ -41,7 +41,6 @@
     >
       <template #default="{ data }">
         <AppItem
-          @contextmenu.prevent="contextMenu($event, data)"
           :data="data"
           @mouseenter="boxAppFocus(data)"
           @mouseleave="boxAppBlur"
@@ -63,7 +62,6 @@
       >
         <template #default="{ data }">
           <AppItem
-            @contextmenu.prevent="contextMenu($event, data)"
             :data="data"
             @click="openApp(data)"
             @mouseenter="boxAppFocus(data)"
@@ -78,19 +76,14 @@
 <script setup lang="ts">
 import Draggable from "@/components_ui/Draggable.vue";
 import useApp from "@/store/app";
-import { computed, h, onMounted, ref, watch } from "vue";
-import AddEditApp from "../components_system/AddEditApp.vue";
+import { computed, onMounted, ref, watch } from "vue";
 import gsap from "gsap";
-// import YGRightMenu from "@/components_ui/YGRightMenu.vue";
-import CoverDialog from "@/components_ui/CoverDialog";
-import { deleteApp, exportApp, importApp, sortApp, setDefaultOpen } from "@/api/app";
+import { exportApp, importApp, sortApp } from "@/api/app";
 import YGLoading from "@/components_ui/YGLoading.vue";
 import AppItem from "./AppItem.vue";
 import ExportSvg from "@/assets/svg/export.svg";
 import ImportSvg from "@/assets/svg/import.svg";
 import LoadingSvg from "@/assets/svg/loading.svg";
-import CoverRightMenu from "@/components_ui/CoverRightMenu";
-import MessageBox from "@/components_system/MessageBox.vue";
 
 const appStore = useApp();
 const bottomBarRef = ref();
@@ -98,54 +91,8 @@ const isDrag = ref(false);
 const appNameViewRef = ref();
 
 const openApp = (data: any) => {
-  // 增加一个微小的延迟检查，防止拖拽结束瞬间触发点击
   if (isDrag.value) return;
   appStore.openApp(data);
-};
-
-const optionClick = (optionData, item) => {
-  if (optionData.value === "edit") {
-    const dialog = new CoverDialog({
-      component: h(AddEditApp, {
-        formData: item,
-        onSuccess() {
-          appStore.loadAppList();
-          dialog.close();
-        },
-      }),
-    });
-    dialog.open();
-  }
-  if (optionData.value === "remove") {
-    deleteApp(item?.id).then(() => {
-      appStore.loadAppList();
-    });
-  }
-  if (optionData.value === "defaultOpen") {
-    handleDefaultOpen(item);
-  }
-};
-
-const handleDefaultOpen = (item: any) => {
-  const isCurrentlyDefault = item.is_default_open;
-  const actionText = isCurrentlyDefault ? "取消默认打开" : "设为默认打开";
-
-  const dialog = new CoverDialog({
-    component: h(MessageBox, {
-      title: "确认操作",
-      message: `确定要${actionText}「${item.name}」吗？`,
-      onConfirm: () => {
-        setDefaultOpen(item.id, isCurrentlyDefault ? 0 : 1).then(() => {
-          appStore.loadAppList();
-        });
-        dialog.close();
-      },
-      onCancel: () => {
-        dialog.close();
-      },
-    }),
-  });
-  dialog.open();
 };
 
 const sortLoading = ref(false);
@@ -158,13 +105,13 @@ const dropEnd = ({ fromIndex, toIndex }) => {
       sortLoading.value = false;
     });
 };
+
 const exportLoading = ref(false);
 const exportData = () => {
   if (exportLoading.value) return;
   exportLoading.value = true;
   exportApp()
     .then((res: { filename: string; blob: Blob }) => {
-      // 下载文件
       const url = window.URL.createObjectURL(new Blob([res.blob]));
       const link = document.createElement("a");
       link.href = url;
@@ -176,8 +123,8 @@ const exportData = () => {
       exportLoading.value = false;
     });
 };
+
 const importData = () => {
-  // 创建隐藏的文件输入元素
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".json";
@@ -195,11 +142,11 @@ const importData = () => {
 
   input.click();
 };
+
 const hoverApp = ref(null);
 
 const boxAppFocus = (data) => {
   hoverApp.value = data;
-  // const currentApp = data.children[0];
   gsap.to(appNameViewRef.value, {
     opacity: 1,
     top: "-52px",
@@ -210,9 +157,6 @@ const boxAppFocus = (data) => {
 
 const boxAppBlur = () => {
   hoverApp.value = null;
-  // const currentApp = data.children[0];
-  // 获取对应的 DOM 元素
-  // 隐藏应用名称提示
   gsap.to(appNameViewRef.value, {
     opacity: 0,
     top: 0,
@@ -236,38 +180,13 @@ const viewAppList = computed({
 });
 
 const initCount = () => {
-  // 获取根元素的字体大小
   const fontSize = parseFloat(
     getComputedStyle(document.documentElement).fontSize
   );
-  // 读取视口宽度后
-  // 计算视口宽度可以放下多少个图标
-  // 图标宽: 2.5rem
-  // 间距: 0.75rem
-  // 外部padding: 2rem
-  // 视口宽度 window.innerWidth
-  // 2.5n + 0.75n - 0.75 ≤ W - 2
   appCount.value = Math.round(
     ((window.innerWidth / fontSize) * 0.9 - 1.25) / 3.25
   );
-  // 缓存最初的图标数量
   baseCount.value = appCount.value;
-};
-
-const contextMenu = (e, item) => {
-  const rightMenu = new CoverRightMenu({
-    x: e.clientX,
-    y: e.clientY,
-    list: [
-      { label: "修改", value: "edit" },
-      { label: item.is_default_open ? "取消默认打开" : "设为默认打开", value: "defaultOpen" },
-      { label: "删除", value: "remove" },
-    ],
-  });
-  rightMenu.onOptionClick = (option) => {
-    optionClick(option, item);
-  };
-  rightMenu.open();
 };
 
 watch(
@@ -317,8 +236,6 @@ watch(
 
 onMounted(() => {
   initCount();
-
-  // 监听视口宽度变化
   window.addEventListener("resize", () => {
     initCount();
   });
