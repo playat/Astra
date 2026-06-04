@@ -29,14 +29,19 @@ const fontFilter = (url: RequestInfo | URL, init: FetchOption) => {
 
 const nextFilter = (jsonRes: { [key: string]: any }) => {
   const { code, msg } = jsonRes;
+  if (msg) {
+    new CoverMessage({ message: msg }).open();
+  }
   if (code === 200) {
     return jsonRes;
   }
   if (code === 401) {
-    new CoverMessage({
-      message: "登录过期，请重新登录",
-    }).open();
+    new CoverMessage({ message: "登录过期，请重新登录" }).open();
     useAuthStore().clear();
+  }
+  if (code === 500) {
+    new CoverMessage({ message: '未知错误' }).open();
+    return;
   }
   throw new Error(msg);
 };

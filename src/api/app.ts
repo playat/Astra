@@ -81,6 +81,6 @@ export const sortApp = async (data: { fromIndex: number; toIndex: number }) => {
 export const setDefaultOpen = (appId: string, isDefaultOpen: 0 | 1) => {
   return _fetch(`/app/default-open`, {
     method: "PUT",
-    body: JSON.stringify({ app_id: appId, is_default_open: isDefaultOpen }),
+    body: JSON.stringify({ appId, isDefaultOpen }),
   });
 };
