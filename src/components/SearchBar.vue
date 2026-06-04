@@ -11,7 +11,21 @@
       class="transform-[opacity] w-full flex items-center justify-between"
       :class="appStore.searchFocus || searchStore.searchText ? 'opacity-100' : 'opacity-0'"
     >
-      <img :src="BingSvg" class="w-5 h-5" />
+      <YGSelect
+        v-model="searchStore.searchFrom"
+        :options="searchStore.searchOptions"
+      >
+        <template #trigger="{ selected }">
+          <img
+            :src="searchStore.currentSearch.icon"
+            class="w-5 h-5"
+          />
+        </template>
+        <template #option="{ item }">
+          <img :src="item.icon" class="w-4 h-4" />
+          <span>{{ item.label }}</span>
+        </template>
+      </YGSelect>
       <input
         ref="inputRef"
         class="text-center absolute left-0 top-0 flex-1 h-10 w-full select-none placeholder:text-white placeholder:text-sm"
@@ -39,13 +53,15 @@
 import { suSearch } from "@/api/su";
 import { onMounted, onUnmounted, ref } from "vue";
 import SearchSvg from "@/assets/svg/search.svg";
-import BingSvg from "@/assets/svg/bing.svg";
 import useApp from "@/store/app";
 import useSearch from "@/store/search";
+import YGSelect from "@/components_ui/YGSelect.vue";
+
 const appStore = useApp();
 const searchStore = useSearch();
 const inputRef = ref();
 let timer: any;
+
 const searchInput = (e: any) => {
   const value = e.target.value;
   searchStore.searchText = value;
@@ -56,7 +72,7 @@ const searchInput = (e: any) => {
     timer = setTimeout(() => {
       suSearch({
         wd: value,
-        cb: "SUJsonP",
+        type: searchStore.searchFrom
       }).then((res: any) => {
         searchStore.suList = res.data?.s;
       });
@@ -71,9 +87,7 @@ const toFocus = () => {
   inputRef.value?.focus();
 };
 
-// 全局键盘监听
 const handleGlobalKeyDown = (e: KeyboardEvent) => {
-  // 如果当前已聚焦输入框，或按下的是功能组合键，则不处理
   if (
     appStore.searchFocus ||
     e.ctrlKey ||
@@ -85,10 +99,9 @@ const handleGlobalKeyDown = (e: KeyboardEvent) => {
     return;
   }
 
-  // 仅处理字母和数字
   if (/^[a-zA-Z0-9]$/.test(e.key)) {
-    e.preventDefault(); // 阻止第一个字符录入，解决中文输入法首字母问题
-    searchStore.searchText = e.key;  
+    e.preventDefault();
+    searchStore.searchText = e.key;
     toFocus();
   }
 };

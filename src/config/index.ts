@@ -1,6 +1,18 @@
+import BingIcon from "@/assets/svg/bing.svg";
+import GoogleIcon from "@/assets/svg/google.svg";
+
 // 搜索接口配置
 const searchApi = {
-  bing: "https://www.bing.com/search?q=",
+  edge: {
+    url: "https://www.bing.com/search?q=",
+    icon: BingIcon,
+    label: "Bing",
+  },
+  google: {
+    url: "https://www.google.com/search?q=",
+    icon: GoogleIcon,
+    label: "Google",
+  },
 };
 export default searchApi;
 

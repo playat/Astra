@@ -1,36 +1,46 @@
 import searchApi from "@/config/index.js";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import useApp from "./app.js";
 
 const useSearch = defineStore("search", () => {
   const appStore = useApp();
 
   const suList = ref<string[]>([]);
-  const searchFrom = ref("bing");
+  const searchFrom = ref<keyof typeof searchApi>("edge");
   const searchText = ref("");
+
+  const searchOptions = computed(() =>
+    Object.entries(searchApi).map(([key, value]) => ({
+      value: key,
+      label: value.label,
+      icon: value.icon,
+    }))
+  );
+
+  const currentSearch = computed(() => searchApi[searchFrom.value]);
 
   const toSearch = () => {
     const query = searchText.value.trim();
-    
+
     if (!query) {
-      // 如果没有搜索文本，直接跳转到搜索引擎主页
-      window.open(searchApi[searchFrom.value]);
+      window.open(currentSearch.value.url);
     } else {
-      // 如果有搜索文本，则进行搜索
-      window.open(`${searchApi[searchFrom.value]}${query}`);
+      window.open(`${currentSearch.value.url}${query}`);
     }
-    
-    // 清理搜索状态
+
     searchText.value = "";
     suList.value = [];
     appStore.searchFocus = false;
   };
+
   return {
     suList,
     toSearch,
     searchText,
-    searchFrom
+    searchFrom,
+    searchOptions,
+    currentSearch,
   };
 });
 
