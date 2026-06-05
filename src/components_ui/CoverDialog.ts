@@ -143,8 +143,15 @@ class CoverDialog extends BaseCover {
     return defineComponent(() => {
       let resizeObserver: ResizeObserver;
 
+      const handleKeydown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          self.hiddenFn();
+        }
+      };
+
       onMounted(() => {
         self._visibleFn();
+        document.addEventListener("keydown", handleKeydown);
 
         if (self.draggable && self._dialogRef.value) {
           resizeObserver = new ResizeObserver(() => {
@@ -158,6 +165,7 @@ class CoverDialog extends BaseCover {
 
       onUnmounted(() => {
         resizeObserver?.disconnect();
+        document.removeEventListener("keydown", handleKeydown);
         document.removeEventListener("mousemove", self._onMouseMove);
         document.removeEventListener("touchmove", self._onMouseMove);
         document.removeEventListener("mouseup", self._onMouseUp);

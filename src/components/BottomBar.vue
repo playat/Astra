@@ -215,7 +215,7 @@ watch(
 watch(
   () => appStore.apps,
   (newVal) => {
-    if (newVal.length) {
+    if (newVal.length && !appStore.isMore) {
       gsap.fromTo(
         bottomBarRef.value,
         {

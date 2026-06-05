@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import YGButton from "@/components_ui/YGButton.vue";
-import { ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 
 const props = defineProps<{
   title?: string;
@@ -69,4 +69,18 @@ const handleConfirm = async () => {
     confirmLoading.value = false;
   }
 };
+
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.key === "Escape") {
+    handleCancel();
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeydown);
+});
 </script>

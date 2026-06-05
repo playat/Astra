@@ -1,10 +1,12 @@
-import { createVNode, defineComponent, h, onMounted, ref } from "vue";
+import { h } from "vue";
 import CoverDailog from "./CoverDialog.js";
 import MessageBox from "@/components_system/MessageBox.vue";
 
 interface MessageBoxOptions {
   title?: string;
-  message?: string; // 显示的消息内容
+  message?: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
 }
 
 class CoverMessageBox extends CoverDailog {
@@ -13,15 +15,21 @@ class CoverMessageBox extends CoverDailog {
       component: h(MessageBox, {
         title: options.title,
         message: options.message,
-        onConfirm: () => this.hiddenFn(),
-        onCancel: () => this.hiddenFn(),
+        onConfirm: () => {
+          options.onConfirm?.();
+          this.hiddenFn();
+        },
+        onCancel: () => {
+          options.onCancel?.();
+          this.hiddenFn();
+        },
       }),
     });
     this.key = `msgbox_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
   }
 
   open() {
-    super.open()
+    super.open();
   }
 }
 

@@ -34,11 +34,11 @@ import { sysIcons } from "@/config";
 import { getInvertColor, getRandomLightColor } from "@/utils/color";
 import CoverRightMenu from "@/components_ui/CoverRightMenu";
 import CoverDialog from "@/components_ui/CoverDialog";
+import CoverMessageBox from "@/components_ui/CoverMessageBox";
 import { deleteApp, setDefaultOpen } from "@/api/app";
 import useApp from "@/store/app";
 import { h } from "vue";
 import AddEditApp from "@/components_system/AddEditApp.vue";
-import MessageBox from "@/components_system/MessageBox.vue";
 
 const props = defineProps<{
   data: any;
@@ -93,21 +93,14 @@ const handleDefaultOpen = () => {
   const isCurrentlyDefault = props.data.is_default_open;
   const actionText = isCurrentlyDefault ? "取消默认打开" : "设为默认打开";
 
-  const dialog = new CoverDialog({
-    component: h(MessageBox, {
-      title: "确认操作",
-      message: `确定要${actionText}「${props.data.name}」吗？`,
-      onConfirm: () => {
-        setDefaultOpen(props.data.id, isCurrentlyDefault ? 0 : 1).then(() => {
-          appStore.loadAppList();
-        });
-        dialog.close();
-      },
-      onCancel: () => {
-        dialog.close();
-      },
-    }),
-  });
-  dialog.open();
+  new CoverMessageBox({
+    title: "确认操作",
+    message: `确定要${actionText}「${props.data.name}」吗？`,
+    onConfirm: () => {
+      setDefaultOpen(props.data.id, isCurrentlyDefault ? 0 : 1).then(() => {
+        appStore.loadAppList();
+      });
+    },
+  }).open();
 };
 </script>

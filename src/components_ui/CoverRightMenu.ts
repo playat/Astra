@@ -70,6 +70,11 @@ class RightMenu extends BaseCover {
               top: `${menuY.value}px`,
             },
             onBlur: this.close,
+            onKeydown: (e: KeyboardEvent) => {
+              if (e.key === "Escape") {
+                this.close();
+              }
+            },
           },
           this.options.list.map((item, index) =>
             h(
