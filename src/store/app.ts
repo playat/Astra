@@ -16,8 +16,6 @@ const useApp = defineStore("app", () => {
     file: undefined,
   });
 
-  const searchFocus = ref(false);
-
   const apps = ref<
     {
       id: string;
@@ -80,7 +78,6 @@ const useApp = defineStore("app", () => {
     apps,
     defaultOpenApps,
     loadAppList,
-    searchFocus,
     globlePosition,
     isMore,
     openApp,

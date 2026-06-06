@@ -2,17 +2,22 @@
   <div
     class="text-gray-300 backdrop-blur-[20px] absolute top-1/4 left-1/2 -translate-x-1/2 rounded-full w-60 max-w-4/5 h-10 transition-[width background] flex items-center justify-center duration-300 bg-white/15 px-4 cursor-pointer"
     :class="{
-      'w-xl bg-neutral-800!': appStore.searchFocus || searchStore.searchText,
-      'hover:w-xl hover:bg-neutral-800!': !searchStore.searchText && !appStore.searchFocus,
+      'w-xl bg-neutral-800!': searchStore.searchFocus || searchStore.searchText,
+      'hover:w-xl hover:bg-neutral-800!': !searchStore.searchText && !searchStore.searchFocus,
       'opacity-0 invisible': appStore.isMore,
     }"
   >
     <div
       class="transform-[opacity] w-full flex items-center justify-between"
-      :class="appStore.searchFocus || searchStore.searchText ? 'opacity-100' : 'opacity-0'"
+      :class="searchStore.searchFocus || searchStore.searchText ? 'opacity-100' : 'opacity-0'"
     >
       <YGSelect
         v-model="searchStore.searchFrom"
+        :popper-style="{
+          right: '40px',
+          top: '50%',
+          transform: 'translateY(-50%)'
+        }"
         :options="searchStore.searchOptions"
       >
         <template #trigger="{ selected }">
@@ -28,9 +33,11 @@
       </YGSelect>
       <input
         ref="inputRef"
-        class="text-center absolute left-0 top-0 flex-1 h-10 w-full select-none placeholder:text-white placeholder:text-sm"
+        class="text-center flex-1 h-10 select-none placeholder:text-white placeholder:text-sm"
         @input="searchInput"
         @keydown.enter="searchStore.toSearch"
+        @blur="toBlur"
+        @focus="searchStore.searchFocus = true"
       />
       <img
         :src="SearchSvg"
@@ -38,10 +45,9 @@
         @click="searchStore.toSearch"
       />
     </div>
-
     <div
       class="text-sm absolute left-0 top-0 transition-opacity cursor-pointer flex items-center justify-center w-full h-full text-white whitespace-nowrap"
-      :class="appStore.searchFocus || searchStore.searchText ? 'opacity-0 pointer-events-none' : 'opacity-100 flex-1'"
+      :class="searchStore.searchFocus || searchStore.searchText ? 'opacity-0 pointer-events-none' : 'opacity-100 flex-1'"
       @click="toFocus"
     >
       搜索
@@ -74,22 +80,24 @@ const searchInput = (e: any) => {
         wd: value,
         type: searchStore.searchFrom
       }).then((res: any) => {
-        searchStore.suList = res.data?.s;
+        searchStore.suList = res.data;
       });
     }, 300);
   } else {
     searchStore.suList = [];
   }
 };
-
+const toBlur = () => {
+  if(!searchStore.searchText) {
+    searchStore.searchFocus = false
+  }
+}
 const toFocus = () => {
-  appStore.searchFocus = true;
   inputRef.value?.focus();
 };
 
 const handleGlobalKeyDown = (e: KeyboardEvent) => {
   if (
-    appStore.searchFocus ||
     e.ctrlKey ||
     e.metaKey ||
     e.altKey ||
@@ -101,26 +109,15 @@ const handleGlobalKeyDown = (e: KeyboardEvent) => {
 
   if (/^[a-zA-Z0-9]$/.test(e.key)) {
     e.preventDefault();
-    searchStore.searchText = e.key;
     toFocus();
-  }
-};
-
-const handleVisibilityChange = () => {
-  if (document.hidden) {
-    appStore.searchFocus = false;
-    searchStore.searchText = "";
-    searchStore.suList = [];
   }
 };
 
 onMounted(() => {
   window.addEventListener("keydown", handleGlobalKeyDown);
-  document.addEventListener("visibilitychange", handleVisibilityChange);
 });
 
 onUnmounted(() => {
   window.removeEventListener("keydown", handleGlobalKeyDown);
-  document.removeEventListener("visibilitychange", handleVisibilityChange);
 });
 </script>

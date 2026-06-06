@@ -36,7 +36,6 @@ const appStore = useApp();
 const bgMaskRef = ref();
 const bgRef = ref();
 const reset = () => {
-  appStore.searchFocus = false;
   appStore.isMore = false;
 };
 

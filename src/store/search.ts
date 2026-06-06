@@ -1,11 +1,9 @@
 import searchApi from "@/config/index.js";
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import useApp from "./app.js";
 
 const useSearch = defineStore("search", () => {
-  const appStore = useApp();
-
+  const searchFocus = ref(false);
   const suList = ref<string[]>([]);
   const searchFrom = ref<keyof typeof searchApi>("edge");
   const searchText = ref("");
@@ -31,7 +29,7 @@ const useSearch = defineStore("search", () => {
 
     searchText.value = "";
     suList.value = [];
-    appStore.searchFocus = false;
+    searchFocus.value = false;
   };
 
   return {
@@ -41,6 +39,7 @@ const useSearch = defineStore("search", () => {
     searchFrom,
     searchOptions,
     currentSearch,
+    searchFocus
   };
 });
 

@@ -2,7 +2,7 @@
   <div
     class="absolute top-1/4 mt-14 w-xl max-w-4/5 backdrop-blur-[20px] overflow-y-scroll max-h-[50vh] transition-all left-1/2 -translate-x-1/2 p-2 rounded-md bg-white/15 text-gray-300 scrollbar-none border border-white/10 shadow-xl"
     :class="[
-      appStore.searchFocus && searchStore.suList.length && !appStore.isMore
+      searchStore.searchFocus && searchStore.suList.length && !appStore.isMore
         ? 'visible opacity-100'
         : 'h-0 opacity-0 invisible',
     ]"
@@ -30,7 +30,7 @@ const searchStore = useSearch();
 const search = (text: string) => {
   searchStore.searchText = text;
   // 保持搜索框焦点状态
-  appStore.searchFocus = true;
+  searchStore.searchFocus = true;
   searchStore.toSearch();
 };
 
@@ -49,7 +49,7 @@ watch(
 const handleKeydown = (e: KeyboardEvent) => {
   const len = searchStore.suList.length;
   // 只有当搜索建议列表显示且应用处于搜索聚焦状态时才处理
-  if (!len || !appStore.searchFocus) return;
+  if (!len || !searchStore.searchFocus) return;
 
   switch (e.key) {
     case "ArrowDown":
