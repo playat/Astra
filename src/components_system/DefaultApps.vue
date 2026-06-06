@@ -33,17 +33,42 @@ import { ref } from "vue";
 import useApp from "@/store/app";
 import AppItem from "@/components/AppItem.vue";
 import YGButton from "@/components_ui/YGButton.vue";
+import CoverMessageBox from "@/components_ui/CoverMessageBox";
+import { detectExtension, openTabsViaExtension } from "@/utils/extensionBridge";
 
 const appStore = useApp();
 const opening = ref(false);
 
 const openAll = async () => {
   if (!appStore.defaultOpenApps.length) return;
+
   opening.value = true;
-  for (const app of appStore.defaultOpenApps) {
-    appStore.openApp(app);
-    await new Promise((r) => setTimeout(r, 500));
+  
+  try {
+    const installed = await detectExtension();
+    console.log("installed",installed);
+    
+    if (!installed) {
+      new CoverMessageBox({
+        title: "提示",
+        message: "未检测到浏览器插件，请先安装插件后再使用批量打开功能",
+      }).open();
+      return;
+    }
+
+    const urls = appStore.defaultOpenApps
+      .filter((app) => !app.isDefault)
+      .map((app) => app.key);
+
+    if (urls.length > 0) {
+      await openTabsViaExtension(urls);
+    }
+
+    appStore.defaultOpenApps
+      .filter((app) => app.isDefault)
+      .forEach((app) => appStore.openApp(app));
+  } finally {
+    opening.value = false;
   }
-  opening.value = false;
 };
 </script>
