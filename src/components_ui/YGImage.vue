@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-max h-full">
+  <div class="relative w-full h-full">
     <img
       v-bind="$attrs"
       referrerpolicy="no-referrer"
@@ -14,7 +14,7 @@
       }"
     />
     <div
-      class="left-1/2 top-1/2 -translate-1/2 flex items-center justify-center bg-transparent absolute w-full h-full transition-all"
+      class="flex items-center justify-center bg-transparent absolute left-1/2 top-1/2 -translate-1/2 w-full h-full transition-all"
       :class="isError ? 'opacity-100 visible' : 'opacity-0 invisible'"
     >
       <slot v-if="$slots.error" name="error" />
