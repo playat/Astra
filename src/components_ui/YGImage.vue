@@ -14,14 +14,14 @@
       }"
     />
     <div
-      class="left-0 top-0 flex items-center justify-center bg-transparent absolute w-full h-full transition-all"
+      class="left-1/2 top-1/2 -translate-1/2 flex items-center justify-center bg-transparent absolute w-full h-full transition-all"
       :class="isError ? 'opacity-100 visible' : 'opacity-0 invisible'"
     >
       <slot v-if="$slots.error" name="error" />
       <img v-else :src="imgErrorSvg" class="w-4/5" />
     </div>
     <div
-      class="left-0 top-1/2 -translate-y-1/2 absolute transition-all w-full h-full"
+      class="left-1/2 top-1/2 -translate-1/2 absolute transition-all w-full h-full"
       :class="loading ? 'opacity-100 visible' : 'opacity-0 invisible'"
     >
       <YGImageLoading />
