@@ -7,24 +7,6 @@
       width: `${baseCount * 3.25 + 0.75}rem`,
     }"
   >
-    <!-- 导入、导出按钮 -->
-    <div class="absolute -right-4 -top-4 flex flex-col gap-3">
-      <div
-        v-if="appStore.isMore"
-        class="p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-        @click="exportData"
-      >
-        <img :src="exportLoading ? LoadingSvg : ExportSvg" class="w-5 h-5" />
-      </div>
-
-      <div
-        v-if="appStore.isMore"
-        class="p-2 flex items-center justify-center rounded-full cursor-pointer bg-neutral-800 box-shadow-[0_0_10px_rgba(0,0,0,0.5)]"
-        @click="importData"
-      >
-        <img :src="ImportSvg" class="w-5 h-5" />
-      </div>
-    </div>
     <!-- 应用名称展示 -->
     <div
       ref="appNameViewRef"
@@ -53,22 +35,41 @@
     <!-- 抽屉 -->
     <div
       v-show="appStore.isMore"
-      class="h-full overflow-y-auto overflow-x-hidden relative"
+      class="h-full overflow-y-auto overflow-x-hidden relative px-3 pt-2 pb-3 scrollbar-none"
     >
-     <Draggable
-        v-model:list="viewAppList"
-        v-model:is-drag="isDrag"
-        @drop-end="dropEnd"
-      >
-        <template #default="{ data }">
-          <AppItem
-            :data="data"
-            @click="openApp(data)"
-            @mouseenter="boxAppFocus(data)"
-            @mouseleave="boxAppBlur"
-          />
-        </template>
-      </Draggable>
+      <div class="flex justify-end gap-1 mb-2 px-1">
+        <div
+          class="drawer-action-btn"
+          :class="{ 'opacity-40 pointer-events-none': exportLoading }"
+          @click="exportData"
+        >
+          <img :src="exportLoading ? LoadingSvg : ExportSvg" class="w-3.5 h-3.5 invert" />
+          <span>导出</span>
+        </div>
+        <div class="drawer-action-btn" @click="importData">
+          <img :src="ImportSvg" class="w-3.5 h-3.5 invert" />
+          <span>导入</span>
+        </div>
+      </div>
+      <div class="drawer-grid">
+        <Draggable
+          v-model:list="viewAppList"
+          v-model:is-drag="isDrag"
+          @drop-end="dropEnd"
+        >
+          <template #default="{ data }">
+            <div
+              class="drawer-card group"
+              @click="openApp(data)"
+              @mouseenter="boxAppFocus(data)"
+              @mouseleave="boxAppBlur"
+            >
+              <AppItem :data="data" />
+              <span class="drawer-card-name">{{ data.name }}</span>
+            </div>
+          </template>
+        </Draggable>
+      </div>
     </div>
   </div>
 </template>
@@ -241,3 +242,67 @@ onMounted(() => {
   });
 });
 </script>
+
+<style scoped>
+.drawer-grid :deep(> div) {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, 4.5rem) !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+}
+
+.drawer-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.25rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.drawer-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.drawer-card :deep(> div:first-child) {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  border-radius: 0.625rem !important;
+}
+
+.drawer-card-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  max-width: 4.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  transition: color 0.2s;
+  padding: 0 5px;
+}
+
+.drawer-card:hover .drawer-card-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.drawer-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.drawer-action-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.9);
+}
+</style>

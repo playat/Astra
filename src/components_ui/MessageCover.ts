@@ -1,7 +1,5 @@
-import { createVNode, defineComponent, Fragment, h, render, VNode } from "vue";
-import BaseCover from "./BaseCover.js";
+import { createVNode, defineComponent, Fragment, h, render } from "vue";
 import { ref } from "vue";
-import gsap from "gsap";
 import CoverMessage from "./CoverMessage.js";
 
 let msgTarget: HTMLElement = null;
@@ -39,7 +37,7 @@ const createMoreCom = () => {
             {
               key: "dot",
               class:
-                "w-[30px] h-[30px] bg-neutral-950 text text-white rounded-full flex items-center justify-center",
+                "w-7.5 h-7.5 bg-neutral-950 text text-white rounded-full flex items-center justify-center",
             },
             "···"
           )

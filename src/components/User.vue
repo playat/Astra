@@ -1,27 +1,40 @@
 <template>
-  <div class="fixed top-8 right-8 group cursor-pointer" @click="handleLogout()">
+  <div
+    class="fixed top-8 right-8 user-btn group"
+    @mouseenter="expanded = true"
+    @mouseleave="expanded = false"
+  >
     <div
-      class="w-10 h-10 bg-gradient-to-br from-[#38bdf8] to-[#818cf8] rounded-lg group-hover:rounded-2xl transition-all duration-500 p-[1px] animate-float-mini"
+      class="flex items-center rounded-full cursor-pointer transition-all duration-300 select-none"
+      :class="expanded ? 'bg-white/12 px-3 py-2 pr-4 backdrop-blur-xl gap-2' : 'bg-white/9 p-2 backdrop-blur-xl gap-0'"
+      @click="handleLogout()"
     >
-      <div class="w-full h-full p-2 bg-[#0f172a] rounded-[inherit] overflow-hidden">
-        <img
-          :src="UserSvg"
-          class="w-full h-full object-cover hover:mix-blend-luminosity transition-all"
-        />
-      </div>
+      <img
+        :src="UserSvg"
+        class="w-5 h-5 opacity-90 group-hover:opacity-100 transition-all duration-300"
+      />
+      <span
+        class="text-white/70 text-xs tracking-wide whitespace-nowrap overflow-hidden transition-all duration-300"
+        :style="{ maxWidth: expanded ? '5rem' : '0', opacity: expanded ? 1 : 0 }"
+      >
+        退出登录
+      </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import UserSvg from "@/assets/svg/user.svg";
 import useAuthStore from "@/store/auth";
 import CoverMessageBox from "@/components_ui/CoverMessageBox";
 import Message from "@/components_ui/CoverMessage";
 
 const authStore = useAuthStore();
+const expanded = ref(false);
 
 const handleLogout = () => {
+  if (!expanded.value) return;
   new CoverMessageBox({
     title: "退出确认",
     message: "确定要退出登录吗？",
@@ -29,31 +42,7 @@ const handleLogout = () => {
       authStore.loginOut();
       Message.open({ message: "已退出登录" });
     },
-    onCancel: () => {
-      // 取消操作，不做任何处理
-    },
+    onCancel: () => {},
   }).open();
 };
 </script>
-<style scoped>
-/* 
-  Tailwind Arbitrary Values used for portability:
-  gemini-blue -> #38bdf8
-  gemini-purple -> #818cf8
-  card -> #0f172a
-*/
-
-.animate-float-mini {
-  animation: float-mini 3s ease-in-out infinite;
-}
-
-@keyframes float-mini {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-</style>
