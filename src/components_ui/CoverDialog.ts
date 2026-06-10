@@ -187,10 +187,13 @@ class CoverDialog extends BaseCover {
             h(
               LiquidGlass,
               {
-                radius: 8,
-                intensity: 50,
-                backgroundOpacity: 0.2,
-                backdropBlur: 8,
+                borderRadius: 8,
+                noiseStrength: 50,
+                glassTintColor: '#ffffff',
+                glassTintOpacity: 0.2,
+                frostBlurRadius: 8,
+                width: 'auto',
+                height: 'auto',
               },
               () => [
                 h(

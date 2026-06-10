@@ -1,11 +1,12 @@
 <template>
   <LiquidGlass
-    :radius="12"
+    :border-radius="12"
     :width="block ? '100%' : 'auto'"
     :height="'auto'"
-    :intensity="50"
-    :background-opacity="0.15"
-    :backdrop-blur="6"
+    :noise-strength="50"
+    :glass-tint-color="'#ffffff'"
+    :glass-tint-opacity="0.15"
+    :frost-blur-radius="6"
     :block="block"
   >
     <button
