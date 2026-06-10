@@ -6,13 +6,13 @@ import {
   onMounted,
   onUnmounted,
   ref,
-  resolveDirective,
   withDirectives,
 } from "vue";
 import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import gsap from "gsap";
+import { vLiquidGlass } from "@/directives/liquidGlass";
 
 interface DialogOption {
   component: Component;
@@ -214,7 +214,7 @@ class CoverDialog extends BaseCover {
                   h(self.options.component, { onClose: self.hiddenFn }),
                 ],
               ),
-              [[resolveDirective("liquid-glass")!, { borderRadius: 8, width: 'auto', height: 'auto' }]],
+              [[vLiquidGlass, { borderRadius: 8, width: 'auto', height: 'auto' }]],
             ),
           ],
         );

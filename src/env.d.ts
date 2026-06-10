@@ -8,3 +8,9 @@ declare module "*.svg" {
   const src: string;
   export default src;
 }
+
+declare module "vue" {
+  export interface GlobalDirectives {
+    VLiquidGlass: import("vue").Directive;
+  }
+}

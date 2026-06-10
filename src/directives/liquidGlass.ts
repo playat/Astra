@@ -116,6 +116,8 @@ function resolveOpts(value: LiquidGlassOptions | undefined): Required<LiquidGlas
 
 const vLiquidGlass: Directive<HTMLElement, LiquidGlassOptions | undefined> = {
   mounted(el, binding) {
+    console.log("调用液态玻璃指令");
+    
     const opts = resolveOpts(binding.value);
     const filterId = `lg-${Math.random().toString(36).slice(2, 9)}`;
 
