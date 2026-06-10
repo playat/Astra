@@ -22,7 +22,7 @@
     />
     <div
       ref="bgMaskRef"
-      class="absolute inset-0 bg-black/80"
+      class="absolute inset-0"
       :class="appStore.isMore ? 'backdrop-blur-[6px]' : ''"
     />
   </div>
@@ -48,10 +48,10 @@ const animate = () => {
   gsap.fromTo(
     bgMaskRef.value,
     {
-      background: `rgba(0,0,0,0.2)`,
+      background: `rgba(0,0,0,0.1)`,
     },
     {
-      background: `rgba(0,0,0,0.6)`,
+      background: `rgba(0,0,0,0.3)`,
       duration: 1.5,
     }
   );
