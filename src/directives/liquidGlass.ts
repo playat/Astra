@@ -56,17 +56,27 @@ function applyStyles(el: HTMLElement, opts: Required<LiquidGlassOptions>) {
 }
 
 function createSvg(filterId: string, opts: Required<LiquidGlassOptions>): SVGElement {
+
+// <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+//   <defs>
+//     <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%">
+//       <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+//       <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+//       <feDisplacementMap in="SourceGraphic" in2="blurred" scale="77" xChannelSelector="R" yChannelSelector="G" />
+//     </filter>
+//   </defs>
+// </svg>
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
-  svg.setAttribute('style', 'position:absolute;width:0;height:0;overflow:hidden');
+  svg.setAttribute('style', 'display: none;');
 
   const defs = document.createElementNS(ns, 'defs');
   const filter = document.createElementNS(ns, 'filter');
   filter.id = filterId;
-  filter.setAttribute('x', '-20%');
-  filter.setAttribute('y', '-20%');
-  filter.setAttribute('width', '140%');
-  filter.setAttribute('height', '140%');
+  filter.setAttribute('x', '0%');
+  filter.setAttribute('y', '0%');
+  filter.setAttribute('width', '100%');
+  filter.setAttribute('height', '100%');
 
   const turbulence = document.createElementNS(ns, 'feTurbulence');
   turbulence.setAttribute('type', 'fractalNoise');
@@ -114,6 +124,7 @@ const vLiquidGlass: Directive<HTMLElement, LiquidGlassOptions | undefined> = {
     svgMap.set(el, svg);
 
     el.style.setProperty('--lg-filter', `url(#${filterId})`);
+    el.classList.add('liquid-glass');
     applyStyles(el, opts);
   },
 
