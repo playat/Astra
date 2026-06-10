@@ -1,7 +1,8 @@
 <template>
   <div
+    v-liquid-glass="{innerShadowBlur: 2, borderRadius: '30px', height: '64px'}"
     ref="bottomBarRef"
-    class="backdrop-blur-[20px] py-3 rounded-xl absolute top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
+    class="py-3! absolute! top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
     style="background: rgba(255, 255, 255, 0.1)"
     :style="{
       width: `${baseCount * 3.25 + 0.75}rem`,
@@ -35,7 +36,7 @@
     <!-- 抽屉 -->
     <div
       v-show="appStore.isMore"
-      class="h-full overflow-y-auto overflow-x-hidden relative px-3 pt-2 pb-3 scrollbar-none"
+      class="h-full w-full overflow-y-auto overflow-x-hidden relative px-3 pt-2 pb-3 scrollbar-none"
     >
       <div class="flex justify-end gap-1 mb-2 px-1">
         <div
