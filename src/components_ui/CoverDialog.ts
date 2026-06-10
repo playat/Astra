@@ -6,12 +6,13 @@ import {
   onMounted,
   onUnmounted,
   ref,
+  resolveDirective,
+  withDirectives,
 } from "vue";
 import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import gsap from "gsap";
-import LiquidGlass from "./LiquidGlass.vue";
 
 interface DialogOption {
   component: Component;
@@ -184,49 +185,36 @@ class CoverDialog extends BaseCover {
             onClick: (e: Event) => e.stopPropagation(),
           },
           [
-            h(
-              LiquidGlass,
-              {
-                borderRadius: 8,
-                noiseStrength: 50,
-                glassTintColor: '#ffffff',
-                glassTintOpacity: 0.2,
-                frostBlurRadius: 8,
-                width: 'auto',
-                height: 'auto',
-              },
-              () => [
-                h(
-                  "div",
-                  {
-                    class: "flex flex-col",
-                  },
-                  [
-                    h(
-                      "div",
-                      {
-                        class: "h-5 border-b border-white/10 px-1 flex items-center select-none",
-                        style: self.draggable ? "cursor: move" : undefined,
-                        onMousedown: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
-                        onMouseup: self._onMouseUp,
-                        onTouchstart: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
-                        onTouchend: self._onMouseUp,
-                      },
-                      [
-                        h("div", {
-                          className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
-                          onClick: self.hiddenFn,
-                          onTouchend: self.hiddenFn,
-                        }),
-                        self.draggable
-                          ? h("img", { src: MoveSvg, alt: "", className: "w-3 h-3 ml-auto" })
-                          : null,
-                      ],
-                    ),
-                    h(self.options.component, { onClose: self.hiddenFn }),
-                  ],
-                ),
-              ],
+            withDirectives(
+              h(
+                "div",
+                { class: "flex flex-col" },
+                [
+                  h(
+                    "div",
+                    {
+                      class: "h-5 border-b border-white/10 px-1 flex items-center select-none",
+                      style: self.draggable ? "cursor: move" : undefined,
+                      onMousedown: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
+                      onMouseup: self._onMouseUp,
+                      onTouchstart: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
+                      onTouchend: self._onMouseUp,
+                    },
+                    [
+                      h("div", {
+                        className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
+                        onClick: self.hiddenFn,
+                        onTouchend: self.hiddenFn,
+                      }),
+                      self.draggable
+                        ? h("img", { src: MoveSvg, alt: "", className: "w-3 h-3 ml-auto" })
+                        : null,
+                    ],
+                  ),
+                  h(self.options.component, { onClose: self.hiddenFn }),
+                ],
+              ),
+              [[resolveDirective("liquid-glass")!, { borderRadius: 8, width: 'auto', height: 'auto' }]],
             ),
           ],
         );

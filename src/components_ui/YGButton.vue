@@ -1,38 +1,39 @@
 <template>
-  <LiquidGlass
-    :border-radius="12"
-    :width="block ? '100%' : 'auto'"
-    :height="'auto'"
-    :noise-strength="50"
-    :glass-tint-color="'#ffffff'"
-    :glass-tint-opacity="0.15"
-    :frost-blur-radius="6"
-    :block="block"
+  <button
+    v-liquid-glass="glassOptions"
+    :disabled="disabled || loading"
+    :class="[
+      'glass-btn',
+      block ? 'flex w-full' : 'inline-flex',
+    ]"
   >
-    <button
-      :disabled="disabled || loading"
-      :class="[
-        'glass-btn',
-        block ? 'flex w-full' : 'inline-flex',
-      ]"
-    >
-      <img class="loading-animate w-4 h-4" :src="LoadingSvg" v-if="loading" />
-      <span class="glass-btn-content">
-        <slot />
-      </span>
-    </button>
-  </LiquidGlass>
+    <img class="loading-animate w-4 h-4" :src="LoadingSvg" v-if="loading" />
+    <span class="glass-btn-content">
+      <slot />
+    </span>
+  </button>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import LoadingSvg from "@/assets/svg/loading.svg";
-import LiquidGlass from "./LiquidGlass.vue";
 
-defineProps<{
+const props = defineProps<{
   loading?: boolean;
   disabled?: boolean;
   block?: boolean;
 }>();
+
+const glassOptions = computed(() => ({
+  borderRadius: 12,
+  width: props.block ? '100%' : 'auto',
+  height: 'auto',
+  noiseStrength: 50,
+  glassTintColor: '#ffffff',
+  glassTintOpacity: 0.15,
+  frostBlurRadius: 6,
+  block: props.block,
+}));
 </script>
 
 <style scoped>
