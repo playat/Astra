@@ -193,7 +193,7 @@ class CoverDialog extends BaseCover {
                   h(
                     "div",
                     {
-                      class: "h-5 border-b border-white/10 px-1 flex items-center select-none",
+                      class: "h-5 w-full border-b border-white/10 px-1 flex items-center select-none",
                       style: self.draggable ? "cursor: move" : undefined,
                       onMousedown: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
                       onMouseup: self._onMouseUp,

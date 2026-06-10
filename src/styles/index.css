@@ -29,8 +29,8 @@ input, textarea {
 * {
   /* 滚动条宽度和高度 */
   &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 2px;
+    height: 2px;
   }
 
   /* 滚动条轨道 */

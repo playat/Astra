@@ -20,8 +20,8 @@ const defaults: Required<LiquidGlassOptions> = {
   height: 200,
   borderRadius: 28,
   innerShadowColor: '#ffffff',
-  innerShadowBlur: 15,
-  innerShadowSpread: -5,
+  innerShadowBlur: 0,
+  innerShadowSpread: 0,
   glassTintColor: '#ffffff',
   glassTintOpacity: 0,
   frostBlurRadius: 0,
@@ -116,9 +116,7 @@ function resolveOpts(value: LiquidGlassOptions | undefined): Required<LiquidGlas
 
 const vLiquidGlass: Directive<HTMLElement, LiquidGlassOptions | undefined> = {
   mounted(el, binding) {
-    console.log("调用液态玻璃指令");
-    
-    const opts = resolveOpts(binding.value);
+    const opts = resolveOpts(binding.value || {});
     const filterId = `lg-${Math.random().toString(36).slice(2, 9)}`;
 
     const svg = createSvg(filterId, opts);
