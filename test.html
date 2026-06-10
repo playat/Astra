@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  <div class="glass-container">
+    <div class="glass-filter"></div>
+    <div class="glass-specular"></div>
+  </div>
+  <svg>
+    <filter id="lg-dist" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+      <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+      <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
+</body>
+
+<script>
+  window.onload = () => {
+    const container = document.querySelector('.glass-container');
+    document.onmousemove = (e) => {
+      container.style.left = e.x - 100 + 'px';
+      container.style.top = e.y - 100 + 'px';
+    };
+  };
+</script>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: url("https://img.shetu66.com/2023/07/06/1688604262239000.png") center no-repeat;
+    background-size: cover;
+  }
+
+  .glass-container {
+    position: fixed;
+    overflow: hidden;
+    width: 200px;
+    height: 200px;
+    border-radius: 200px;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-filter {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    backdrop-filter: blur(4px);
+    filter: url(#lg-dist);
+    isolation: isolate;
+    /* 防止影响其他内容 */
+  }
+
+  .glass-specular {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.75), inset 0 0 5px rgba(255, 255, 255, 0.75);
+  }
+</style>
+
+</html>

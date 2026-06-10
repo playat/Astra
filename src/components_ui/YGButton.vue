@@ -1,18 +1,31 @@
 <template>
-  <button
-    :disabled="disabled || loading"
-    :class="[
-      'cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-[#111] border border-[#333] text-white uppercase tracking-[0.2em] text-xs hover:bg-white hover:text-black hover:border-white transition-all duration-300 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed select-none min-w-[100px]',
-      block ? 'flex w-full' : 'inline-flex',
-    ]"
+  <LiquidGlass
+    :radius="12"
+    :width="block ? '100%' : 'auto'"
+    :height="'auto'"
+    :intensity="50"
+    :background-opacity="0.15"
+    :backdrop-blur="6"
+    :block="block"
   >
-    <img class="loading-animate w-4 h-4 invert dark:invert-0" :src="LoadingSvg" v-if="loading" />
-    <slot />
-  </button>
+    <button
+      :disabled="disabled || loading"
+      :class="[
+        'glass-btn',
+        block ? 'flex w-full' : 'inline-flex',
+      ]"
+    >
+      <img class="loading-animate w-4 h-4" :src="LoadingSvg" v-if="loading" />
+      <span class="glass-btn-content">
+        <slot />
+      </span>
+    </button>
+  </LiquidGlass>
 </template>
 
 <script setup lang="ts">
 import LoadingSvg from "@/assets/svg/loading.svg";
+import LiquidGlass from "./LiquidGlass.vue";
 
 defineProps<{
   loading?: boolean;
@@ -22,6 +35,53 @@ defineProps<{
 </script>
 
 <style scoped>
+.glass-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  min-width: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.glass-btn:hover {
+  color: white;
+}
+
+.glass-btn:active {
+  transform: scale(0.98);
+}
+
+.glass-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.glass-btn-content {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-animate {
+  position: relative;
+  z-index: 4;
+  animation: rotate 1s linear infinite;
+  filter: invert(1);
+}
+
 @keyframes rotate {
   0% {
     transform: rotate(0deg);
@@ -29,14 +89,5 @@ defineProps<{
   100% {
     transform: rotate(360deg);
   }
-}
-
-.loading-animate {
-  animation: rotate 1s linear infinite;
-}
-
-/* 当按钮背景变白时（hover状态），确保loading图标颜色反转以保持可见性 */
-button:hover .loading-animate {
-  filter: invert(1);
 }
 </style>
