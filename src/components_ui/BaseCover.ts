@@ -18,9 +18,10 @@ const createMask = () => {
     "left-0",
     "w-full",
     "h-full",
-    "bg-[rgba(0,0,0,0.2)]",
+    // "bg-[rgba(0,0,0,0.2)]",
     "invisible",
     "z-[1000]",
+    "pointer-events-none"
   );
   mask.id = "_mask";
   document.body.appendChild(mask);
