@@ -67,9 +67,19 @@
           <YGImage :src="previewUrl">
             <template #overlay>
               <div
-                class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
+                class="absolute bottom-2 right-2 flex items-center gap-2 z-20"
               >
-                RES: {{ isPending ? "NEW" : "CURRENT" }}
+                <div
+                  class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono"
+                >
+                  RES: {{ isPending ? "NEW" : "CURRENT" }}
+                </div>
+                <button
+                  @click="forceUpload = true"
+                  class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono cursor-pointer hover:bg-white/20 transition-colors"
+                >
+                  更换
+                </button>
               </div>
             </template>
           </YGImage>
@@ -89,9 +99,19 @@
           ></video>
 
           <div
-            class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
+            class="absolute bottom-2 right-2 flex items-center gap-2 z-20"
           >
-            RES: {{ isPending ? "NEW" : "CURRENT" }}
+            <div
+              class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono"
+            >
+              RES: {{ isPending ? "NEW" : "CURRENT" }}
+            </div>
+            <button
+              @click="forceUpload = true"
+              class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono cursor-pointer hover:bg-white/20 transition-colors"
+            >
+              更换
+            </button>
           </div>
         </div>
       </div>
@@ -131,6 +151,7 @@ const activeType = ref<"none" | "image" | "video">("none");
 // 待确认状态：用户选择了新文件后才会设置
 const pendingFile = ref<File | undefined>();
 const pendingUrl = ref("");
+const forceUpload = ref(false);
 
 // 预览地址：优先显示待确认的新文件，其次显示当前背景
 const previewUrl = computed(() => {
@@ -139,10 +160,12 @@ const previewUrl = computed(() => {
   return "";
 });
 
-// 是否显示上传区域：当前 tab 无匹配背景或有待确认文件时显示
+// 是否显示上传区域：无 tab 或已选文件时隐藏，强制模式下显示
 const showUpload = computed(() => {
   if (activeType.value === "none") return false;
-  if (appStore.bgCfn.type === activeType.value && !pendingUrl.value) return false;
+  if (pendingUrl.value) return false;
+  if (forceUpload.value) return true;
+  if (appStore.bgCfn.type === activeType.value) return false;
   return true;
 });
 
@@ -172,6 +195,7 @@ const handleTypeChange = (type: "none" | "image" | "video") => {
   releaseUrl(pendingUrl.value);
   pendingFile.value = undefined;
   pendingUrl.value = "";
+  forceUpload.value = false;
 };
 
 // 文件选择校验
@@ -189,6 +213,7 @@ const validateAndSetFile = (file: File) => {
   releaseUrl(pendingUrl.value);
   pendingUrl.value = URL.createObjectURL(file);
   pendingFile.value = file;
+  forceUpload.value = false;
 };
 
 // 应用设置：只有选了新文件或选了"无"才会实际变更背景
