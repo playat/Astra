@@ -3,7 +3,7 @@ set -euo pipefail
 export LANG=en_US.UTF-8
 
 ESC=$'\033'
-TERM_W=$(tput cols 2>/dev/null || echo 80)
+TERM_W=80
 CONTENT_W=$((TERM_W - 6))
 
 # ── 参数解析 ──────────────────────────────────────────────
