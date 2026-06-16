@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white flex flex-col w-[500px] bg-black border border-[#333]">
+  <div class="text-white flex flex-col w-125">
     <!-- Header -->
     <div
       class="border-b border-[#333] px-6 py-4 flex items-center justify-between"

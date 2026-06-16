@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 min-w-[320px] max-w-[420px]">
+  <div class="p-4 min-w-[320px] max-w-105">
     <div class="text-white text-sm mb-3 tracking-wide">默认打开应用</div>
 
     <div
@@ -9,7 +9,7 @@
       暂无默认打开的应用
     </div>
 
-    <div v-else class="flex flex-col gap-1 max-h-[360px] overflow-y-auto pr-1">
+    <div v-else class="flex flex-col gap-1 max-h-90 overflow-y-auto pr-1">
       <div
         v-for="app in appStore.defaultOpenApps"
         :key="app.id"

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white flex flex-col w-[400px] bg-black border border-[#333]">
+  <div v-liquid-glass class="text-white flex flex-col w-100">
     <!-- Header -->
     <div
       class="border-b border-[#333] px-6 py-4 flex items-center justify-between"
