@@ -72,21 +72,44 @@ ansi_color() {
     fi
 }
 
-# 打印一行带边框的文本
+# 打印一行带边框的文本（超宽自动换行，续行保持边框）
 write_line() {
     local line_text="$1"
     local width="$2"
     local border_color="$3"
     local text_color="$4"
 
-    local dw bc tc
-    dw=$(display_width "$line_text")
-    local pad=$((width - dw))
-    [[ $pad -lt 0 ]] && pad=0
+    local bc tc
     bc=$(ansi_color "$border_color")
     tc=$(ansi_color "$text_color")
 
-    printf '%s|  %s%s%*s%s  |%s\n' "$bc" "${ESC}[0m" "$tc$line_text" "$pad" "" "${ESC}[0m$bc" "${ESC}[0m"
+    local remaining="$line_text"
+    while [[ -n "$remaining" ]]; do
+        local dw
+        dw=$(display_width "$remaining")
+        if [[ $dw -le $width ]]; then
+            # 不超宽，直接输出
+            local pad=$((width - dw))
+            printf '%s|  %s%s%*s%s  |%s\n' "$bc" "${ESC}[0m" "$tc$remaining" "$pad" "" "${ESC}[0m$bc" "${ESC}[0m"
+            break
+        fi
+        # 逐字符找截断点
+        local pos=0 w=0
+        while [[ $pos -lt ${#remaining} ]]; do
+            local ch="${remaining:$pos:1}"
+            local cw
+            cw=$(display_width "$ch")
+            if [[ $((w + cw)) -gt $width ]]; then
+                break
+            fi
+            w=$((w + cw))
+            pos=$((pos + 1))
+        done
+        local chunk="${remaining:0:$pos}"
+        remaining="${remaining:$pos}"
+        local pad=$((width - w))
+        printf '%s|  %s%s%*s%s  |%s\n' "$bc" "${ESC}[0m" "$tc$chunk" "$pad" "" "${ESC}[0m$bc" "${ESC}[0m"
+    done
 }
 
 # 自动换行的彩色框文本
