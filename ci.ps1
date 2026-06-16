@@ -193,7 +193,15 @@ if ($m) {
     Write-Host ("+$('-' * ($Host.UI.RawUI.WindowSize.Width - 2))+") -ForegroundColor Blue 
     Write-BoxedText "Commit message: $m" -BorderColor Blue -TextColor '#d7834f'
 
-    git add .
+    git add . 2>&1 | ForEach-Object {
+        $line = $_.ToString()
+        if ($line -match "error|failed|fatal") {
+            Write-BoxedText $line -BorderColor Blue -TextColor Red
+            exit 1
+        } else {
+            Write-BoxedText $line -BorderColor Blue -TextColor '#d7834f'
+        }
+    }
 
     git commit -m "$m" 2>&1 | ForEach-Object {
         $line = $_.ToString()
