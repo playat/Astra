@@ -1,6 +1,6 @@
 <template>
   <div class="text-white flex flex-col w-[600px] bg-black border border-[#333]">
-    <!-- Header -->
+    <!-- 标题栏 -->
     <div
       class="border-b border-[#333] px-6 py-4 flex items-center justify-between"
     >
@@ -16,7 +16,7 @@
     </div>
 
     <div class="p-8 space-y-8">
-      <!-- Section 1: Mode Select -->
+      <!-- 模式选择 -->
       <div class="space-y-3">
         <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
           >模式选择</label
@@ -28,7 +28,7 @@
             @click="handleTypeChange(opt.value as any)"
             :class="[
               'flex-1 py-3 text-sm uppercase tracking-wider transition-colors duration-200',
-              tempType === opt.value
+              activeType === opt.value
                 ? 'bg-white text-black font-bold'
                 : 'bg-transparent text-[#666] hover:text-white hover:bg-[#1a1a1a]',
             ]"
@@ -38,50 +38,50 @@
         </div>
       </div>
 
-      <!-- Section 2: Input -->
-      <div v-if="tempType !== 'none' && !tempUrl" class="space-y-3">
+      <!-- 上传区域：切换类型后或无当前背景时显示 -->
+      <div v-if="showUpload" class="space-y-3">
         <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
           >本地资源</label
         >
         <YGUpload
-          v-model="tempFile"
-          :accept="tempType === 'video' ? 'video/*' : 'image/*'"
+          v-model="pendingFile"
+          :accept="activeType === 'video' ? 'video/*' : 'image/*'"
           @update:modelValue="validateAndSetFile"
         />
       </div>
 
-      <!-- Section 3: Preview (Technical) -->
+      <!-- 预览：当前背景或新选择的文件 -->
       <div
-        v-if="tempType !== 'none' && tempUrl"
+        v-if="activeType !== 'none' && previewUrl"
         class="space-y-3 animate-fade-in"
       >
         <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
           >效果预览</label
         >
 
-        <!-- Image Preview -->
+        <!-- 图片预览 -->
         <div
-          v-if="tempType === 'image'"
+          v-if="activeType === 'image'"
           class="w-full h-40 flex justify-center"
         >
-          <YGImage :src="tempUrl">
+          <YGImage :src="previewUrl">
             <template #overlay>
               <div
                 class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
               >
-                RES: {{ tempFile?.name ? "NEW" : "CURRENT" }}
+                RES: {{ isPending ? "NEW" : "CURRENT" }}
               </div>
             </template>
           </YGImage>
         </div>
 
-        <!-- Video Preview (Keep original implementation as YGImage is for images) -->
+        <!-- 视频预览 -->
         <div
           v-else
           class="w-full h-40 bg-[#050505] border border-[#333] relative p-1 overflow-hidden flex justify-center"
         >
           <video
-            :src="tempUrl"
+            :src="previewUrl"
             class="w-auto h-full object-cover opacity-80 transition-opacity duration-500 group-hover:opacity-100"
             autoplay
             muted
@@ -91,12 +91,12 @@
           <div
             class="absolute bottom-2 right-2 bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono z-20"
           >
-            RES: {{ tempFile?.name ? "NEW" : "CURRENT" }}
+            RES: {{ isPending ? "NEW" : "CURRENT" }}
           </div>
         </div>
       </div>
 
-      <!-- Execute Button -->
+      <!-- 确定按钮 -->
       <YGButton
         @click="applySettings"
         block
@@ -110,7 +110,7 @@
 <script setup lang="ts">
 import useApp from "@/store/app";
 import { setItem } from "@/utils/indexedDb";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import YGUpload from "@/components_ui/YGUpload.vue";
 import YGImage from "@/components_ui/YGImage.vue";
 import CoverMessage from "@/components_ui/CoverMessage";
@@ -125,89 +125,87 @@ const modeOptions = [
   { label: "视频", value: "video" },
 ];
 
-// 临时状态，用于预览和配置
-const tempType = ref<"none" | "image" | "video">("none");
-const tempUrl = ref("");
-const tempFile = ref<File | undefined>();
+// 当前激活的 tab 类型
+const activeType = ref<"none" | "image" | "video">("none");
 
-// 初始化状态
-onMounted(() => {
-  if (appStore.bgCfn.type) {
-    tempType.value = appStore.bgCfn.type;
-    tempUrl.value = appStore.bgCfn.url;
-    tempFile.value = appStore.bgCfn.file;
-  }
+// 待确认状态：用户选择了新文件后才会设置
+const pendingFile = ref<File | undefined>();
+const pendingUrl = ref("");
+
+// 预览地址：优先显示待确认的新文件，其次显示当前背景
+const previewUrl = computed(() => {
+  if (pendingUrl.value) return pendingUrl.value;
+  if (appStore.bgCfn.type === activeType.value) return appStore.bgCfn.url;
+  return "";
 });
 
-// 清理 URL 对象，防止内存泄漏
-onUnmounted(() => {
-  if (tempUrl.value && tempUrl.value !== appStore.bgCfn.url) {
-    URL.revokeObjectURL(tempUrl.value);
-  }
+// 是否显示上传区域：当前 tab 无匹配背景或有待确认文件时显示
+const showUpload = computed(() => {
+  if (activeType.value === "none") return false;
+  if (appStore.bgCfn.type === activeType.value && !pendingUrl.value) return false;
+  return true;
 });
 
-// 切换类型
-const handleTypeChange = (type: "none" | "image" | "video") => {
-  tempType.value = type;
-  if (type === "none") {
-    tempUrl.value = "";
-    tempFile.value = undefined;
-  } else {
-    // 如果已有的文件类型不匹配新类型，则清空
-    if (tempFile.value) {
-      const fileType = tempFile.value.type.split("/")[0];
-      if (fileType !== type) {
-        tempUrl.value = "";
-        tempFile.value = undefined;
-      }
-    }
+// 是否有待确认的文件
+const isPending = computed(() => !!pendingUrl.value);
+
+// 释放临时 URL，排除当前背景正在使用的地址
+const releaseUrl = (url: string) => {
+  if (url && url !== appStore.bgCfn.url) {
+    URL.revokeObjectURL(url);
   }
 };
 
+// 初始化：根据当前背景类型激活对应 tab
+onMounted(() => {
+  activeType.value = appStore.bgCfn.type ?? "none";
+});
+
+// 卸载时释放临时 URL
+onUnmounted(() => {
+  releaseUrl(pendingUrl.value);
+});
+
+// 切换类型：清空待确认状态，显示上传模块
+const handleTypeChange = (type: "none" | "image" | "video") => {
+  activeType.value = type;
+  releaseUrl(pendingUrl.value);
+  pendingFile.value = undefined;
+  pendingUrl.value = "";
+};
+
+// 文件选择校验
 const validateAndSetFile = (file: File) => {
   if (!file) return;
 
-  // 简单的类型校验
   const fileType = file.type.split("/")[0];
-  if (tempType.value !== "none" && fileType !== tempType.value) {
+  if (activeType.value !== "none" && fileType !== activeType.value) {
     new CoverMessage({
-      message: `请选择 ${tempType.value === "image" ? "图片" : "视频"} 文件`,
+      message: `请选择 ${activeType.value === "image" ? "图片" : "视频"} 文件`,
     }).open();
     return;
   }
 
-  // 释放之前的临时 URL
-  if (tempUrl.value && tempUrl.value !== appStore.bgCfn.url) {
-    URL.revokeObjectURL(tempUrl.value);
-  }
-
-  const url = URL.createObjectURL(file);
-  tempUrl.value = url;
-  tempFile.value = file;
+  releaseUrl(pendingUrl.value);
+  pendingUrl.value = URL.createObjectURL(file);
+  pendingFile.value = file;
 };
 
-// 应用设置
+// 应用设置：只有选了新文件或选了"无"才会实际变更背景
 const applySettings = () => {
-  if (tempType.value === "none") {
-    // 清除背景
-    appStore.bgCfn = {
-      url: "",
-      type: undefined,
-      file: undefined,
-    };
+  if (activeType.value === "none") {
+    appStore.bgCfn = { url: "", type: undefined, file: undefined };
     setItem("bg", "bg_img", null);
-  } else {
-    if (tempFile.value) {
-      appStore.bgCfn = {
-        url: tempUrl.value,
-        type: tempType.value,
-        file: tempFile.value,
-      };
-      setItem("bg", "bg_img", {
-        type: tempType.value,
-        imgFile: tempFile.value,
-      });
-    }
+  } else if (pendingFile.value && pendingUrl.value) {
+    appStore.bgCfn = {
+      url: pendingUrl.value,
+      type: activeType.value,
+      file: pendingFile.value,
+    };
+    setItem("bg", "bg_img", {
+      type: activeType.value,
+      imgFile: pendingFile.value,
+    });
   }
   emits("close");
 };

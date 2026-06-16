@@ -7,6 +7,7 @@
   >
     <video
       v-if="appStore.bgCfn.type === 'video'"
+      ref="videoRef"
       loop
       muted
       autoplay
@@ -30,11 +31,12 @@
 
 <script setup lang="ts">
 import useApp from "@/store/app";
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import gsap from "gsap";
 const appStore = useApp();
 const bgMaskRef = ref();
 const bgRef = ref();
+const videoRef = ref<HTMLVideoElement>();
 const reset = () => {
   appStore.isMore = false;
 };
@@ -68,4 +70,21 @@ const animate = () => {
     }
   );
 };
+
+const handleVisibility = () => {
+  if (!videoRef.value) return;
+  if (document.hidden) {
+    videoRef.value.pause();
+  } else {
+    videoRef.value.play().catch(() => {});
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("visibilitychange", handleVisibility);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("visibilitychange", handleVisibility);
+});
 </script>
