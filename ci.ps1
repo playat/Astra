@@ -174,6 +174,7 @@ function New-AndPushTag {
 
 # test
 if ($t) {
+    Write-BoxedText "-" -BorderColor Red -TextColor Green
     Write-BoxedText "Named: Red border, Green text" -BorderColor Red -TextColor Green
     Write-BoxedText "HEX with #: #d7834f border, #3498db text" -BorderColor '#d7834f' -TextColor '#3498db'
     Write-BoxedText "HEX without #: d7834f border, 3498db text" -BorderColor 'd7834f' -TextColor '3498db'
