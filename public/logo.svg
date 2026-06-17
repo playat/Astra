@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+    <linearGradient id="tower" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e5e7eb"/>
+      <stop offset="50%" stop-color="#f3f4f6"/>
+      <stop offset="100%" stop-color="#d1d5db"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8e6ff7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#8e6ff7" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#8e6ff7" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="lightGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c4b5fd" stop-opacity="0.9"/>
+      <stop offset="40%" stop-color="#8e6ff7" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#8e6ff7" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"/>
+    </filter>
+    <filter id="bigGlow">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="18"/>
+    </filter>
+    <clipPath id="circleClip">
+      <circle cx="256" cy="256" r="220"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <circle cx="256" cy="256" r="240" fill="url(#sky)"/>
+  <circle cx="256" cy="256" r="220" fill="none" stroke="white" stroke-opacity="0.06" stroke-width="1"/>
+
+  <!-- Stars -->
+  <g opacity="0.8">
+    <circle cx="120" cy="100" r="2" fill="#e2e8f0"/>
+    <circle cx="180" cy="80" r="1.5" fill="#cbd5e1"/>
+    <circle cx="320" cy="90" r="2.5" fill="#e2e8f0"/>
+    <circle cx="380" cy="120" r="1.5" fill="#cbd5e1"/>
+    <circle cx="100" cy="180" r="1" fill="#94a3b8"/>
+    <circle cx="400" cy="170" r="2" fill="#e2e8f0"/>
+    <circle cx="150" cy="200" r="1.5" fill="#cbd5e1"/>
+    <circle cx="360" cy="210" r="1" fill="#94a3b8"/>
+    <circle cx="130" cy="280" r="1.5" fill="#cbd5e1"/>
+    <circle cx="390" cy="260" r="1" fill="#94a3b8"/>
+    <circle cx="170" cy="140" r="1" fill="#f1f5f9"/>
+    <circle cx="340" cy="150" r="1.5" fill="#f1f5f9"/>
+    <circle cx="200" cy="110" r="1" fill="#e2e8f0"/>
+    <circle cx="300" cy="130" r="1" fill="#e2e8f0"/>
+  </g>
+
+  <!-- 4-point star decorations -->
+  <g fill="#c4b5fd" opacity="0.5">
+    <path d="M140 130 L142 134 L146 136 L142 138 L140 142 L138 138 L134 136 L138 134 Z"/>
+    <path d="M370 150 L372 153 L375 155 L372 157 L370 160 L368 157 L365 155 L368 153 Z"/>
+    <path d="M110 230 L111 232 L113 233 L111 234 L110 236 L109 234 L107 233 L109 232 Z"/>
+  </g>
+
+  <!-- Light beam glow (background) -->
+  <ellipse cx="256" cy="200" rx="120" ry="50" fill="url(#lightGlow)" filter="url(#bigGlow)" opacity="0.3"/>
+
+  <!-- Lighthouse body -->
+  <g clip-path="url(#circleClip)">
+    <!-- Main tower -->
+    <polygon points="232,360 280,360 272,210 240,210" fill="url(#tower)"/>
+
+    <!-- Tower stripes -->
+    <rect x="232" y="240" width="48" height="18" rx="2" fill="#8e6ff7" opacity="0.25"/>
+    <rect x="234" y="280" width="44" height="18" rx="2" fill="#8e6ff7" opacity="0.25"/>
+    <rect x="236" y="320" width="40" height="16" rx="2" fill="#8e6ff7" opacity="0.25"/>
+
+    <!-- Tower top / lantern room -->
+    <rect x="238" y="198" width="36" height="14" rx="3" fill="#374151"/>
+    <polygon points="242,198 270,198 266,188 246,188" fill="#4b5563"/>
+
+    <!-- Lantern dome -->
+    <path d="M246 188 Q256 174 266 188" fill="#6b7280" stroke="#9ca3af" stroke-width="0.5"/>
+
+    <!-- Light in lantern -->
+    <circle cx="256" cy="205" r="8" fill="#c4b5fd" filter="url(#softGlow)"/>
+    <circle cx="256" cy="205" r="5" fill="#e9d5ff"/>
+    <circle cx="256" cy="205" r="2.5" fill="white"/>
+
+    <!-- Light beams -->
+    <polygon points="256,205 180,170 170,190" fill="url(#beam)" opacity="0.5"/>
+    <polygon points="256,205 332,170 342,190" fill="url(#beam)" opacity="0.5"/>
+
+    <!-- Base / rocks -->
+    <ellipse cx="256" cy="362" rx="50" ry="8" fill="#374151"/>
+    <path d="M210 360 Q220 350 232 360" fill="#4b5563"/>
+    <path d="M280 360 Q292 348 302 360" fill="#4b5563"/>
+  </g>
+
+  <!-- Water reflection hint -->
+  <ellipse cx="256" cy="390" rx="80" ry="6" fill="#8e6ff7" opacity="0.08"/>
+  <ellipse cx="256" cy="400" rx="60" ry="4" fill="#8e6ff7" opacity="0.05"/>
+
+  <!-- Text -->
+  <text x="256" y="450" text-anchor="middle" font-family="'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif"
+        font-size="42" font-weight="700" fill="white" fill-opacity="0.9" letter-spacing="8">灯塔</text>
+</svg>
