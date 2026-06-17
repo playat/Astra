@@ -44,7 +44,7 @@ const glassOptions = computed(() => ({
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   background: transparent;
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
@@ -54,10 +54,16 @@ const glassOptions = computed(() => ({
   font-size: 0.75rem;
   transition: all 0.3s ease;
   user-select: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+              inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .glass-btn:hover {
   color: white;
+  border-color: rgba(142, 111, 247, 0.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+              inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+              0 0 12px rgba(142, 111, 247, 0.3);
 }
 
 .glass-btn:active {

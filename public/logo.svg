@@ -101,7 +101,4 @@
   <ellipse cx="256" cy="390" rx="80" ry="6" fill="#8e6ff7" opacity="0.08"/>
   <ellipse cx="256" cy="400" rx="60" ry="4" fill="#8e6ff7" opacity="0.05"/>
 
-  <!-- Text -->
-  <text x="256" y="450" text-anchor="middle" font-family="'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif"
-        font-size="42" font-weight="700" fill="white" fill-opacity="0.9" letter-spacing="8">灯塔</text>
 </svg>
