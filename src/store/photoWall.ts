@@ -27,8 +27,8 @@ const META_KEY = "photos_metadata";
 let zCounter = 1;
 
 const usePhotoWall = defineStore("photoWall", () => {
-  const hidden = ref(false);    // 是否完全隐藏照片墙
-  const visible = ref(false);   // 是否进入编辑模式
+  const visible = ref(true);    // 照片墙是否显示
+  const editing = ref(false);   // 是否处于编辑模式（拖拽、缩放、旋转）
   const photos = shallowRef<PhotoItem[]>([]);
 
   const saveMeta = () => {
@@ -38,12 +38,14 @@ const usePhotoWall = defineStore("photoWall", () => {
     setItem(TABLE, META_KEY, meta);
   };
 
-  const toggleHidden = () => {
-    hidden.value = !hidden.value;
-  };
-
   const toggle = () => {
     visible.value = !visible.value;
+    // 打开照片墙时自动进入编辑模式
+    if (visible.value) editing.value = true;
+  };
+
+  const toggleEditing = () => {
+    editing.value = !editing.value;
   };
 
   const addPhoto = async (file: File) => {
@@ -118,11 +120,11 @@ const usePhotoWall = defineStore("photoWall", () => {
   loadPhotos();
 
   return {
-    hidden,
     visible,
+    editing,
     photos,
-    toggleHidden,
     toggle,
+    toggleEditing,
     addPhoto,
     removePhoto,
     updatePhoto,

@@ -1,53 +1,56 @@
+const DB_NAME = "app";
+const STORE = "data";
+const DB_VERSION = 1;
+
 let db: IDBDatabase | null = null;
-const open = (tableKey: string) => {
-  return new Promise<IDBDatabase>((resolve, reject) => {
-    const request = indexedDB.open("app", 1);
 
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      // 检查数据表是否已存在
-      if (!db.objectStoreNames.contains(tableKey)) {
-        db.createObjectStore(tableKey);
-      }
+const open = (): Promise<IDBDatabase> => {
+  if (db) return Promise.resolve(db);
+
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(STORE);
     };
 
-    request.onerror = () => {
-      reject(request.error);
-    };
-
+    request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       db = request.result;
+      db.onversionchange = () => { db?.close(); db = null; };
       resolve(db);
     };
   });
 };
 
-export const setItem = async (tableKey: string, key: string, value: any) => {
-  const db: IDBDatabase = await open(tableKey);
-  db.transaction(tableKey, "readwrite")
-    .objectStore(tableKey)
-    .put(value, key);
+const makeKey = (namespace: string, key: string) => `${namespace}:${key}`;
+
+export const setItem = async (namespace: string, key: string, value: any) => {
+  const database = await open();
+  return new Promise<void>((resolve, reject) => {
+    const tx = database.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).put(value, makeKey(namespace, key));
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
 };
 
-export const deleteData = async (tableKey: string, key: string) => {
-  const db: IDBDatabase = await open(tableKey);
-  db.transaction(tableKey, "readwrite").objectStore(tableKey).delete(key);
+export const deleteData = async (namespace: string, key: string) => {
+  const database = await open();
+  return new Promise<void>((resolve, reject) => {
+    const tx = database.transaction(STORE, "readwrite");
+    tx.objectStore(STORE).delete(makeKey(namespace, key));
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
 };
 
-export const getItem = async (tableKey: string, key: string) => {
-  const db: IDBDatabase = await open(tableKey);
+export const getItem = async <T = any>(namespace: string, key: string): Promise<T | undefined> => {
+  const database = await open();
   return new Promise((resolve, reject) => {
-    const request = db
-      .transaction(tableKey, "readonly")
-      .objectStore(tableKey)
-      .get(key);
-
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
-
-    request.onerror = () => {
-      reject(request.error);
-    };
+    const tx = database.transaction(STORE, "readonly");
+    const request = tx.objectStore(STORE).get(makeKey(namespace, key));
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 };

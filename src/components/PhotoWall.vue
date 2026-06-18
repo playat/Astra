@@ -1,111 +1,155 @@
 <template>
-  <!-- Photos layer: visible when not hidden and there are photos -->
+  <!-- Photos layer: shown when visible -->
   <div
-    v-if="!photoWallStore.hidden && photoWallStore.photos.length > 0"
-    class="fixed inset-0 z-10"
-    :class="{ 'pointer-events-none': !photoWallStore.visible }"
-    @contextmenu.prevent="photoWallStore.visible"
+    v-if="photoWallStore.visible"
+    class="fixed inset-0 z-10 pointer-events-none"
   >
+    <!-- Toolbar -->
+    <Transition name="toolbar">
+      <div
+        v-show="showToolbar"
+        class="fixed top-0 left-0 right-0 mx-auto w-fit z-999 pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-b-2xl bg-black/60 backdrop-blur-xl border border-white/10 border-t-0 shadow-2xl"
+        @mouseleave="onToolbarLeave"
+        @mouseenter="onToolbarEnter"
+      >
+        <button
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+          @click="triggerFileInput"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          添加照片
+        </button>
+        <button
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+          @click="photoWallStore.resetLayout()"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+          </svg>
+          重置布局
+        </button>
+        <button
+          class="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm transition-colors"
+          :class="photoWallStore.editing
+            ? 'bg-red-500/20 hover:bg-red-500/40 text-red-300'
+            : 'bg-green-500/20 hover:bg-green-500/40 text-green-300'"
+          @click="photoWallStore.toggleEditing()"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          {{ photoWallStore.editing ? '关闭编辑' : '开启编辑' }}
+        </button>
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept="image/*"
+          multiple
+          class="hidden"
+          @change="onFileChange"
+        />
+      </div>
+    </Transition>
+
+    <!-- Photos: outer div for position, inner div for GSAP pop animation -->
     <div
       v-for="photo in photoWallStore.photos"
       :key="photo.id"
       class="absolute select-none"
-      :class="photoWallStore.visible ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'"
       :style="{
         left: 0,
         top: 0,
-        transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg) scale(${photo.scale})`,
+        transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg)`,
         zIndex: photo.zIndex,
         transformOrigin: 'center center',
       }"
-      @mousedown.left="onDragStart($event, photo)"
-      @touchstart.passive="onTouchStart($event, photo)"
-      @wheel.prevent="onWheel($event, photo)"
-      @mousedown.right.prevent="onRotateStart($event, photo)"
-      @dblclick="onDoubleClick(photo)"
-      @click.left.stop="photoWallStore.bringToFront(photo.id)"
     >
-      <img
-        :src="photo.url"
-        class="pointer-events-none rounded-lg shadow-2xl border-2 border-white/10 max-w-[300px] max-h-[300px] object-contain"
-        draggable="false"
-      />
-      <!-- Rotate handle: only in edit mode -->
       <div
-        v-if="photoWallStore.visible"
-        class="absolute -top-3 -right-3 w-6 h-6 bg-white/80 rounded-full flex items-center justify-pointer cursor-grab shadow-md hover:bg-white transition-colors"
-        @mousedown.left.stop="onRotateHandleStart($event, photo)"
+        :ref="(el) => onPhotoMount(el as HTMLElement, photo)"
+        class="pointer-events-auto"
+        :class="photoWallStore.editing && 'cursor-grab active:cursor-grabbing'"
+        :style="{ scale: photo.scale }"
+        @mousedown.left="photoWallStore.editing && onDragStart($event, photo)"
+        @touchstart.passive="photoWallStore.editing && onTouchStart($event, photo)"
+        @wheel.prevent="photoWallStore.editing && onWheel($event, photo)"
+        @mousedown.right="onPhotoRightClick($event, photo)"
+        @dblclick="onDoubleClick(photo)"
+        @click.left.stop="photoWallStore.bringToFront(photo.id)"
       >
-        <svg class="w-3 h-3 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M1 4v6h6" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-        </svg>
+        <img
+          :src="photo.url"
+          class="pointer-events-none rounded-lg shadow-2xl border-2 border-white/10 max-w-[300px] max-h-[300px] object-contain"
+          draggable="false"
+        />
+        <!-- Rotate handle: only in editing mode -->
+        <div
+          v-if="photoWallStore.editing"
+          class="absolute -top-3 -right-3 w-6 h-6 bg-white/80 rounded-full flex items-center justify-center cursor-grab shadow-md hover:bg-white transition-colors"
+          @mousedown.left.stop="onRotateHandleStart($event, photo)"
+        >
+          <svg class="w-3 h-3 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M1 4v6h6" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+          </svg>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Edit mode overlay + toolbar -->
-  <div
-    v-if="photoWallStore.visible"
-    class="fixed inset-0 z-20 pointer-events-none"
-  >
-    <!-- Toolbar -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl">
-      <button
-        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
-        @click="triggerFileInput"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-        </svg>
-        添加照片
-      </button>
-      <button
-        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
-        @click="photoWallStore.resetLayout()"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-        </svg>
-        重置布局
-      </button>
-      <button
-        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
-        @click="photoWallStore.toggleHidden()"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
-          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
-          <line x1="1" y1="1" x2="23" y2="23" />
-        </svg>
-        隐藏照片墙
-      </button>
-      <button
-        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-300 text-sm transition-colors"
-        @click="photoWallStore.toggle()"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-        关闭编辑
-      </button>
-      <input
-        ref="fileInputRef"
-        type="file"
-        accept="image/*"
-        multiple
-        class="hidden"
-        @change="onFileChange"
-      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from "vue";
+import gsap from "gsap";
 import usePhotoWall, { type PhotoItem } from "@/store/photoWall";
 
 const photoWallStore = usePhotoWall();
 const fileInputRef = ref<HTMLInputElement>();
+const showToolbar = ref(false);
+let toolbarHideTimer: ReturnType<typeof setTimeout> | null = null;
+
+const onMouseMove = (e: MouseEvent) => {
+  if (!photoWallStore.visible) return;
+  if (e.clientY < 60) {
+    if (toolbarHideTimer) { clearTimeout(toolbarHideTimer); toolbarHideTimer = null; }
+    showToolbar.value = true;
+  } else if (showToolbar.value && !toolbarHideTimer) {
+    toolbarHideTimer = setTimeout(() => { showToolbar.value = false; toolbarHideTimer = null; }, 300);
+  }
+};
+
+const onToolbarLeave = () => {
+  toolbarHideTimer = setTimeout(() => { showToolbar.value = false; toolbarHideTimer = null; }, 300);
+};
+
+const onToolbarEnter = () => {
+  if (toolbarHideTimer) { clearTimeout(toolbarHideTimer); toolbarHideTimer = null; }
+};
+
+const animatedIds = new Set<string>();
+const PHOTO_BASE_DELAY = 1.2; // 等背景动画接近结束再开始
+const PHOTO_STAGGER = 0.15;
+
+const onPhotoMount = (el: HTMLElement | null, photo: PhotoItem) => {
+  if (!el || animatedIds.has(photo.id)) return;
+  animatedIds.add(photo.id);
+
+  gsap.fromTo(
+    el,
+    { scale: 0, opacity: 0 },
+    {
+      scale: 1,
+      opacity: 1,
+      duration: 0.45,
+      ease: "back.out(1.7)",
+      delay: PHOTO_BASE_DELAY + animatedIds.size * PHOTO_STAGGER,
+      onComplete: () => {
+        gsap.set(el, { clearProps: "scale,opacity" });
+      },
+    }
+  );
+};
 
 const triggerFileInput = () => {
   fileInputRef.value?.click();
@@ -139,7 +183,6 @@ const onDragMove = (e: MouseEvent) => {
     x: e.clientX - dragOffsetX,
     y: e.clientY - dragOffsetY,
   });
-  // update local ref for smooth dragging
   dragPhoto.x = e.clientX - dragOffsetX;
   dragPhoto.y = e.clientY - dragOffsetY;
 };
@@ -245,6 +288,14 @@ const onHandleEnd = () => {
   window.removeEventListener("mouseup", onHandleEnd);
 };
 
+// --- Right Click: rotate in editing mode, pass through otherwise ---
+const onPhotoRightClick = (e: MouseEvent, photo: PhotoItem) => {
+  if (photoWallStore.editing) {
+    e.preventDefault();
+    // onRotateStart(e, photo);
+  }
+};
+
 // --- Double Click Delete ---
 const onDoubleClick = (photo: PhotoItem) => {
   photoWallStore.removePhoto(photo.id);
@@ -259,9 +310,31 @@ const onKeyDown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("mousemove", onMouseMove);
 });
 
 onUnmounted(() => {
   document.removeEventListener("keydown", onKeyDown);
+  document.removeEventListener("mousemove", onMouseMove);
+});
+
+onBeforeUnmount(() => {
+  // 清理所有 GSAP 动画
+  document.querySelectorAll(".photo-inner").forEach((el) => {
+    gsap.killTweensOf(el);
+  });
 });
 </script>
+
+<style scoped>
+.toolbar-enter-active,
+.toolbar-leave-active {
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.toolbar-enter-from,
+.toolbar-leave-to {
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+</style>
