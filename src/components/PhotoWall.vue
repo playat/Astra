@@ -66,7 +66,7 @@
         transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg) scale(${photo.scale})`,
         zIndex: photo.zIndex,
         transformOrigin: 'center center',
-        animationDelay: `${PHOTO_BASE_DELAY + index * PHOTO_STAGGER}s`,
+        animationDelay: index < initialCount ? `${PHOTO_BASE_DELAY + index * PHOTO_STAGGER}s` : '0s',
       }"
       @mousedown.left="photoWallStore.editing && onDragStart($event, photo)"
       @touchstart.passive="photoWallStore.editing && onTouchStart($event, photo)"
@@ -123,6 +123,8 @@ const onToolbarEnter = () => {
 
 const PHOTO_BASE_DELAY = 1.2;
 const PHOTO_STAGGER = 0.15;
+// 记录初始照片数量，新增的照片不需要延迟
+const initialCount = photoWallStore.photos.length;
 
 const triggerFileInput = () => {
   fileInputRef.value?.click();
