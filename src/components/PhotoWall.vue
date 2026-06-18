@@ -59,7 +59,9 @@
       v-for="(photo, index) in photoWallStore.photos"
       :key="photo.id"
       class="absolute select-none pointer-events-auto photo-anim"
-      :class="photoWallStore.editing && 'cursor-grab active:cursor-grabbing'"
+      :class="[photoWallStore.editing && 'cursor-grab active:cursor-grabbing']"
+      @animationstart="$event.currentTarget.classList.add('photo-anim-active')"
+      @animationend="$event.currentTarget.classList.remove('photo-anim-active')"
       :style="{
         left: 0,
         top: 0,
@@ -83,7 +85,8 @@
         <!-- Rotate handle: only in editing mode -->
         <div
           v-if="photoWallStore.editing"
-          class="absolute -top-3 -right-3 w-6 h-6 bg-white/80 rounded-full flex items-center justify-center cursor-grab shadow-md hover:bg-white transition-colors"
+          class="absolute w-6 h-6 bg-white/80 rounded-full flex items-center justify-center cursor-grab shadow-md hover:bg-white transition-colors"
+          :style="{ top: `${-12 / photo.scale}px`, right: `${-12 / photo.scale}px`, scale: 1 / photo.scale }"
           @mousedown.left.stop="onRotateHandleStart($event, photo)"
         >
           <svg class="w-3 h-3 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -302,8 +305,11 @@ onUnmounted(() => {
 }
 
 .photo-anim {
-  will-change: scale, opacity;
   animation: photoPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.photo-anim-active {
+  will-change: scale, opacity;
 }
 
 @keyframes photoPop {
