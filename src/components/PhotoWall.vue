@@ -54,31 +54,28 @@
       </div>
     </Transition>
 
-    <!-- Photos: outer div for position, inner div for GSAP pop animation -->
+    <!-- Photos -->
     <div
-      v-for="photo in photoWallStore.photos"
+      v-for="(photo, index) in photoWallStore.photos"
       :key="photo.id"
-      class="absolute select-none"
+      class="absolute select-none pointer-events-auto photo-anim"
+      :class="photoWallStore.editing && 'cursor-grab active:cursor-grabbing'"
       :style="{
         left: 0,
         top: 0,
         transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg)`,
+        scale: photo.scale,
         zIndex: photo.zIndex,
         transformOrigin: 'center center',
+        animationDelay: `${PHOTO_BASE_DELAY + index * PHOTO_STAGGER}s`,
       }"
+      @mousedown.left="photoWallStore.editing && onDragStart($event, photo)"
+      @touchstart.passive="photoWallStore.editing && onTouchStart($event, photo)"
+      @wheel.prevent="photoWallStore.editing && onWheel($event, photo)"
+      @mousedown.right="onPhotoRightClick($event, photo)"
+      @dblclick="onDoubleClick(photo)"
+      @click.left.stop="photoWallStore.bringToFront(photo.id)"
     >
-      <div
-        :ref="(el) => onPhotoMount(el as HTMLElement, photo)"
-        class="pointer-events-auto"
-        :class="photoWallStore.editing && 'cursor-grab active:cursor-grabbing'"
-        :style="{ scale: photo.scale }"
-        @mousedown.left="photoWallStore.editing && onDragStart($event, photo)"
-        @touchstart.passive="photoWallStore.editing && onTouchStart($event, photo)"
-        @wheel.prevent="photoWallStore.editing && onWheel($event, photo)"
-        @mousedown.right="onPhotoRightClick($event, photo)"
-        @dblclick="onDoubleClick(photo)"
-        @click.left.stop="photoWallStore.bringToFront(photo.id)"
-      >
         <img
           :src="photo.url"
           class="pointer-events-none rounded-lg shadow-2xl border-2 border-white/10 max-w-[300px] max-h-[300px] object-contain"
@@ -94,14 +91,12 @@
             <path d="M1 4v6h6" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
           </svg>
         </div>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from "vue";
-import gsap from "gsap";
+import { ref, onMounted, onUnmounted } from "vue";
 import usePhotoWall, { type PhotoItem } from "@/store/photoWall";
 
 const photoWallStore = usePhotoWall();
@@ -127,29 +122,8 @@ const onToolbarEnter = () => {
   if (toolbarHideTimer) { clearTimeout(toolbarHideTimer); toolbarHideTimer = null; }
 };
 
-const animatedIds = new Set<string>();
-const PHOTO_BASE_DELAY = 1.2; // 等背景动画接近结束再开始
+const PHOTO_BASE_DELAY = 1.2;
 const PHOTO_STAGGER = 0.15;
-
-const onPhotoMount = (el: HTMLElement | null, photo: PhotoItem) => {
-  if (!el || animatedIds.has(photo.id)) return;
-  animatedIds.add(photo.id);
-
-  gsap.fromTo(
-    el,
-    { scale: 0, opacity: 0 },
-    {
-      scale: 1,
-      opacity: 1,
-      duration: 0.45,
-      ease: "back.out(1.7)",
-      delay: PHOTO_BASE_DELAY + animatedIds.size * PHOTO_STAGGER,
-      onComplete: () => {
-        gsap.set(el, { clearProps: "scale,opacity" });
-      },
-    }
-  );
-};
 
 const triggerFileInput = () => {
   fileInputRef.value?.click();
@@ -317,13 +291,6 @@ onUnmounted(() => {
   document.removeEventListener("keydown", onKeyDown);
   document.removeEventListener("mousemove", onMouseMove);
 });
-
-onBeforeUnmount(() => {
-  // 清理所有 GSAP 动画
-  document.querySelectorAll(".photo-inner").forEach((el) => {
-    gsap.killTweensOf(el);
-  });
-});
 </script>
 
 <style scoped>
@@ -336,5 +303,17 @@ onBeforeUnmount(() => {
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
+}
+
+.photo-anim {
+  will-change: scale, opacity;
+  animation: photoPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes photoPop {
+  from {
+    scale: 0;
+    opacity: 0;
+  }
 }
 </style>
