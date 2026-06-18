@@ -1,6 +1,7 @@
 <template>
   <template v-if="authStore.token">
     <BG />
+    <PhotoWall />
     <BottomBar />
     <TimeNumber />
     <SearchBar />
@@ -26,10 +27,16 @@
     @click="openChartPhysiology">
     <img :src="ShenLiSvg" class="w-4 h-4" />
   </div>
+  <div v-if="authStore.token"
+    class="fixed left-4 bottom-8 bg-black/50 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
+    @click="photoWallStore.toggle()">
+    <img :src="PhotoWallSvg" class="w-4 h-4" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import ShenLiSvg from "@/assets/svg/shen_li.svg";
+import PhotoWallSvg from "@/assets/svg/photo_wall.svg";
 import BottomBar from "@/components/BottomBar.vue";
 import SearchBar from "@/components/SearchBar.vue";
 
@@ -45,9 +52,12 @@ import CoverDialog from "./components_ui/CoverDialog";
 import User from "./components/User.vue";
 import YGDatePicker from "./components_ui/YGDatePicker/index.vue";
 import DefaultApps from "@/components_system/DefaultApps.vue";
+import PhotoWall from "@/components/PhotoWall.vue";
+import usePhotoWall from "./store/photoWall";
 
 const appStore = useApp();
 const authStore = useAuthStore();
+const photoWallStore = usePhotoWall();
 document.addEventListener(
   "mousedown",
   (event) => {
