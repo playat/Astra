@@ -29,7 +29,7 @@
   </div>
   <div v-if="authStore.token"
     class="fixed left-4 bottom-8 bg-black/50 rounded-full p-2 shadow cursor-pointer z-[999] text-white"
-    @click="photoWallStore.toggle()">
+    @click="photoWallStore.toggleHidden()">
     <img :src="PhotoWallSvg" class="w-4 h-4" />
   </div>
 </template>

@@ -1,14 +1,16 @@
 <template>
+  <!-- Photos layer: visible when not hidden and there are photos -->
   <div
-    v-if="photoWallStore.visible"
+    v-if="!photoWallStore.hidden && photoWallStore.photos.length > 0"
     class="fixed inset-0 z-10"
-    @contextmenu.prevent
+    :class="{ 'pointer-events-none': !photoWallStore.visible }"
+    @contextmenu.prevent="photoWallStore.visible"
   >
-    <!-- Photos -->
     <div
       v-for="photo in photoWallStore.photos"
       :key="photo.id"
-      class="absolute cursor-grab active:cursor-grabbing select-none"
+      class="absolute select-none"
+      :class="photoWallStore.visible ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none'"
       :style="{
         left: 0,
         top: 0,
@@ -28,9 +30,10 @@
         class="pointer-events-none rounded-lg shadow-2xl border-2 border-white/10 max-w-[300px] max-h-[300px] object-contain"
         draggable="false"
       />
-      <!-- Rotate handle -->
+      <!-- Rotate handle: only in edit mode -->
       <div
-        class="absolute -top-3 -right-3 w-6 h-6 bg-white/80 rounded-full flex items-center justify-center cursor-rotate shadow-md hover:bg-white transition-colors"
+        v-if="photoWallStore.visible"
+        class="absolute -top-3 -right-3 w-6 h-6 bg-white/80 rounded-full flex items-center justify-pointer cursor-grab shadow-md hover:bg-white transition-colors"
         @mousedown.left.stop="onRotateHandleStart($event, photo)"
       >
         <svg class="w-3 h-3 text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -38,9 +41,15 @@
         </svg>
       </div>
     </div>
+  </div>
 
+  <!-- Edit mode overlay + toolbar -->
+  <div
+    v-if="photoWallStore.visible"
+    class="fixed inset-0 z-20 pointer-events-none"
+  >
     <!-- Toolbar -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl">
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/10 shadow-2xl">
       <button
         class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
         @click="triggerFileInput"
@@ -60,13 +69,24 @@
         重置布局
       </button>
       <button
+        class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm transition-colors"
+        @click="photoWallStore.toggleHidden()"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+          <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+        隐藏照片墙
+      </button>
+      <button
         class="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/40 text-red-300 text-sm transition-colors"
         @click="photoWallStore.toggle()"
       >
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
         </svg>
-        关闭
+        关闭编辑
       </button>
       <input
         ref="fileInputRef"

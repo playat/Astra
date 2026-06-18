@@ -27,7 +27,8 @@ const META_KEY = "photos_metadata";
 let zCounter = 1;
 
 const usePhotoWall = defineStore("photoWall", () => {
-  const visible = ref(false);
+  const hidden = ref(false);    // 是否完全隐藏照片墙
+  const visible = ref(false);   // 是否进入编辑模式
   const photos = shallowRef<PhotoItem[]>([]);
 
   const saveMeta = () => {
@@ -35,6 +36,10 @@ const usePhotoWall = defineStore("photoWall", () => {
       id, x, y, rotation, scale, zIndex,
     }));
     setItem(TABLE, META_KEY, meta);
+  };
+
+  const toggleHidden = () => {
+    hidden.value = !hidden.value;
   };
 
   const toggle = () => {
@@ -113,8 +118,10 @@ const usePhotoWall = defineStore("photoWall", () => {
   loadPhotos();
 
   return {
+    hidden,
     visible,
     photos,
+    toggleHidden,
     toggle,
     addPhoto,
     removePhoto,
