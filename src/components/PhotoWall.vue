@@ -63,8 +63,7 @@
       :style="{
         left: 0,
         top: 0,
-        transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg)`,
-        scale: photo.scale,
+        transform: `translate(${photo.x}px, ${photo.y}px) rotate(${photo.rotation}deg) scale(${photo.scale})`,
         zIndex: photo.zIndex,
         transformOrigin: 'center center',
         animationDelay: `${PHOTO_BASE_DELAY + index * PHOTO_STAGGER}s`,
@@ -145,6 +144,7 @@ let dragOffsetY = 0;
 
 const onDragStart = (e: MouseEvent, photo: PhotoItem) => {
   dragPhoto = photo;
+  // 偏移 = 鼠标 - 原点(x,y)，和 scale 无关
   dragOffsetX = e.clientX - photo.x;
   dragOffsetY = e.clientY - photo.y;
   window.addEventListener("mousemove", onDragMove);
@@ -153,12 +153,9 @@ const onDragStart = (e: MouseEvent, photo: PhotoItem) => {
 
 const onDragMove = (e: MouseEvent) => {
   if (!dragPhoto) return;
-  photoWallStore.updatePhoto(dragPhoto.id, {
-    x: e.clientX - dragOffsetX,
-    y: e.clientY - dragOffsetY,
-  });
   dragPhoto.x = e.clientX - dragOffsetX;
   dragPhoto.y = e.clientY - dragOffsetY;
+  photoWallStore.updatePhoto(dragPhoto.id, { x: dragPhoto.x, y: dragPhoto.y });
 };
 
 const onDragEnd = () => {
@@ -188,10 +185,7 @@ const onTouchMove = (e: TouchEvent) => {
   const touch = e.touches[0];
   touchPhoto.x = touch.clientX - touchOffsetX;
   touchPhoto.y = touch.clientY - touchOffsetY;
-  photoWallStore.updatePhoto(touchPhoto.id, {
-    x: touchPhoto.x,
-    y: touchPhoto.y,
-  });
+  photoWallStore.updatePhoto(touchPhoto.id, { x: touchPhoto.x, y: touchPhoto.y });
 };
 
 const onTouchEnd = () => {
