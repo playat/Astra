@@ -216,18 +216,17 @@ const validateAndSetFile = (file: File) => {
   forceUpload.value = false;
 };
 
-// 应用设置：只有选了新文件或选了"无"才会实际变更背景
-const applySettings = () => {
+const applySettings = async () => {
   if (activeType.value === "none") {
     appStore.bgCfn = { url: "", type: undefined, file: undefined };
-    setItem("bg", "bg_img", null);
+    await setItem("bg", "bg_img", null);
   } else if (pendingFile.value && pendingUrl.value) {
     appStore.bgCfn = {
       url: pendingUrl.value,
       type: activeType.value,
       file: pendingFile.value,
     };
-    setItem("bg", "bg_img", {
+    await setItem("bg", "bg_img", {
       type: activeType.value,
       imgFile: pendingFile.value,
     });

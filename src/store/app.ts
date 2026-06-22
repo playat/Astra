@@ -1,4 +1,4 @@
-import { getItem } from "@/utils/indexedDb.js";
+import { getItem } from "@/utils/indexedDb";
 import { defineStore } from "pinia";
 import { Component, computed, reactive, ref } from "vue";
 import { getAppLsit } from "@/api/app.js";
