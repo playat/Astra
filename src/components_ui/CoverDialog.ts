@@ -47,33 +47,6 @@ class CoverDialog extends BaseCover {
     document.addEventListener("touchmove", this._onMouseMove);
   }
 
-  // ── tilt (card-hover) state ──
-
-  private _tiltRAF = 0;
-
-  private _onTiltMove = (e: MouseEvent) => {
-    const el = this._dialogRef.value;
-    if (!el || this._isDown) return;
-    cancelAnimationFrame(this._tiltRAF);
-    this._tiltRAF = requestAnimationFrame(() => {
-      const rect = el.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
-      const rotateY = (x - 0.5) * 10;
-      const rotateX = (0.5 - y) * 10;
-      el.style.transition = "transform 0.1s ease-out";
-      el.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    });
-  };
-
-  private _onTiltLeave = () => {
-    const el = this._dialogRef.value;
-    if (!el) return;
-    cancelAnimationFrame(this._tiltRAF);
-    el.style.transition = "transform 0.4s ease-out";
-    el.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-  };
-
   // ── drag handlers ──
 
   private _onMouseDown(e: MouseEvent & TouchEvent) {
@@ -185,9 +158,6 @@ class CoverDialog extends BaseCover {
         document.addEventListener("keydown", handleKeydown);
 
         if (self._dialogRef.value) {
-          self._dialogRef.value.addEventListener("mousemove", self._onTiltMove);
-          self._dialogRef.value.addEventListener("mouseleave", self._onTiltLeave);
-
           if (self.draggable) {
             resizeObserver = new ResizeObserver(() => {
               if (!self._hasMoved && self._dialogRef.value) {
@@ -206,11 +176,6 @@ class CoverDialog extends BaseCover {
         document.removeEventListener("touchmove", self._onMouseMove);
         document.removeEventListener("mouseup", self._onMouseUp);
         document.removeEventListener("touchend", self._onMouseUp);
-        if (self._dialogRef.value) {
-          self._dialogRef.value.removeEventListener("mousemove", self._onTiltMove);
-          self._dialogRef.value.removeEventListener("mouseleave", self._onTiltLeave);
-        }
-        cancelAnimationFrame(self._tiltRAF);
       });
 
       return () =>
