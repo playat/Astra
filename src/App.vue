@@ -4,10 +4,10 @@
     <PhotoWall />
     <BottomBar />
     <TimeNumber />
-    <SalaryCounter />
     <SearchBar />
     <SuList />
     <User />
+    <SalaryCounter />
   </template>
 
   <Login v-else />

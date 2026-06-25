@@ -1,11 +1,12 @@
 <template>
-  <div
-    ref="elRef"
-    class="fixed z-[9999] select-none cursor-move text-white/90"
-    :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
-    @mousedown="onDragStart"
-    @touchstart.passive="onDragStart"
-  >
+  <div>
+    <div
+      ref="elRef"
+      class="fixed select-none cursor-move text-white/90"
+      :style="{ left: pos.x + 'px', top: pos.y + 'px' }"
+      @mousedown="onDragStart"
+      @touchstart.passive="onDragStart"
+    >
     <div
       class="px-3 py-1.5 rounded-full backdrop-blur-sm text-sm font-mono whitespace-nowrap flex items-center gap-2 shadow-lg"
       :class="isWorking ? 'bg-green-600/80' : 'bg-gray-600/80'"
@@ -45,25 +46,17 @@
       </span>
     </div>
   </div>
-
-  <Teleport to="body">
-    <div
-      v-for="coin in coins"
-      :key="coin.id"
-      class="fixed pointer-events-none z-[10000]"
-      :style="{
-        left: `${coin.x}px`,
-        top: `${coin.y}px`,
-      }"
-    >
+    <Teleport to="body">
       <div
-        class="coin w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shadow-lg"
-        :class="coin.phase"
+        v-for="coin in coins"
+        :key="coin.id"
+        class="coin fixed pointer-events-none z-[10000] w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
+        :style="coin.style"
       >
         ¥
       </div>
-    </div>
-  </Teleport>
+    </Teleport>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -81,9 +74,7 @@ interface SalaryConfig {
 
 interface Coin {
   id: number;
-  x: number;
-  y: number;
-  phase: "fall" | "bounce" | "done";
+  style: Record<string, string>;
 }
 
 interface DigitChar {
@@ -100,7 +91,7 @@ const toDigitChars = (s: string): DigitChar[] =>
   }));
 
 const elRef = ref<HTMLElement>();
-const pos = ref({ x: window.innerWidth - 120, y: 8 });
+const pos = ref({ x: 50, y: 100 });
 const todayDisplay = ref("¥0.00");
 const isWorking = ref(false);
 const coins = reactive<Coin[]>([]);
@@ -156,26 +147,31 @@ const spawnCoin = () => {
   if (!elRef.value) return;
   const rect = elRef.value.getBoundingClientRect();
   const id = ++coinId;
+
+  const endX = rect.left + Math.random() * rect.width - 10;
+  const endY = rect.top + Math.random() * rect.height - 10;
+  const startOffsetX = (Math.random() - 0.5) * 120;
+  const startOffsetY = -(80 + Math.random() * 60);
+  const driftX = 60 + Math.random() * 80;
+  const duration = 1800 + Math.random() * 600;
+
   const coin: Coin = {
     id,
-    x: rect.left + rect.width / 2 - 10,
-    y: -20,
-    phase: "fall",
+    style: {
+      left: `${endX}px`,
+      top: `${endY}px`,
+      animation: `coinLife ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
+      "--sx": `${startOffsetX}px`,
+      "--sy": `${startOffsetY}px`,
+      "--dx": `${driftX}px`,
+    },
   };
   coins.push(coin);
-
-  requestAnimationFrame(() => {
-    coin.y = rect.top + rect.height / 2 - 10;
-  });
-
-  setTimeout(() => {
-    coin.phase = "bounce";
-  }, 500);
 
   setTimeout(() => {
     const idx = coins.findIndex((c) => c.id === id);
     if (idx !== -1) coins.splice(idx, 1);
-  }, 1200);
+  }, duration + 50);
 };
 
 const tick = (timestamp: number) => {
@@ -297,7 +293,9 @@ onUnmounted(() => {
   height: 1.2em;
   line-height: 1.2em;
 }
+</style>
 
+<style>
 .coin {
   background: linear-gradient(135deg, #ffd700, #ffaa00, #ff8800);
   color: #8b4513;
@@ -305,46 +303,22 @@ onUnmounted(() => {
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.3),
     inset 0 1px 2px rgba(255, 255, 255, 0.4);
-  animation-fill-mode: forwards;
 }
 
-.coin.fall {
-  animation: coinDrop 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-}
-
-.coin.bounce {
-  animation: coinBounce 0.7s ease-out forwards;
-}
-
-@keyframes coinDrop {
+@keyframes coinLife {
   0% {
-    transform: translateY(-30px) rotate(0deg);
+    transform: translate(var(--sx), var(--sy)) rotate(0deg) scale(0.3);
     opacity: 0;
   }
-  20% {
+  8% {
+    opacity: 1;
+  }
+  35% {
+    transform: translate(0, 0) rotate(180deg) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translateY(0) rotate(360deg);
-    opacity: 1;
-  }
-}
-
-@keyframes coinBounce {
-  0% {
-    transform: scale(1.2) rotate(360deg);
-    opacity: 1;
-  }
-  30% {
-    transform: scale(0.9) rotate(400deg);
-    opacity: 1;
-  }
-  60% {
-    transform: scale(1.05) rotate(420deg);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(0.5) rotate(450deg);
+    transform: translate(var(--dx), -20px) rotate(540deg) scale(0.3);
     opacity: 0;
   }
 }
