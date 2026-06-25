@@ -50,8 +50,9 @@
       <div
         v-for="coin in coins"
         :key="coin.id"
+        ref="coinRefs"
         class="coin fixed pointer-events-none z-[10000] w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
-        :style="coin.style"
+        :style="{ left: `${coin.x}px`, top: `${coin.y}px` }"
       >
         ¥
       </div>
@@ -60,7 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, onUnmounted } from "vue";
+import { ref, reactive, computed, onMounted, onUnmounted, nextTick } from "vue";
+import { gsap } from "gsap";
 import { getSalaryConfig } from "@/api/salary.js";
 import { isWorkday, fetchHolidayData } from "@/utils/holiday.js";
 import useSalaryStore from "@/store/salary.js";
@@ -70,11 +72,16 @@ interface SalaryConfig {
   workHoursPerDay: number;
   workStartHour: number;
   workStartMinute: number;
+  lunchStartHour: number;
+  lunchStartMinute: number;
+  lunchEndHour: number;
+  lunchEndMinute: number;
 }
 
 interface Coin {
   id: number;
-  style: Record<string, string>;
+  x: number;
+  y: number;
 }
 
 interface DigitChar {
@@ -91,6 +98,7 @@ const toDigitChars = (s: string): DigitChar[] =>
   }));
 
 const elRef = ref<HTMLElement>();
+const coinRefs = ref<HTMLElement[]>([]);
 const pos = ref({ x: 50, y: 100 });
 const todayDisplay = ref("¥0.00");
 const isWorking = ref(false);
@@ -131,45 +139,80 @@ const calcTick = (now: Date): TickResult => {
   if (!isWorkday(now)) return { salary: 0, working: false };
 
   const workStartSec = config.workStartHour * 3600 + config.workStartMinute * 60;
-  const workEndSec = workStartSec + config.workHoursPerDay * 3600;
+  const lunchStartSec = config.lunchStartHour * 3600 + config.lunchStartMinute * 60;
+  const lunchEndSec = config.lunchEndHour * 3600 + config.lunchEndMinute * 60;
+  const lunchDuration = lunchEndSec - lunchStartSec;
+  const workEndSec = workStartSec + config.workHoursPerDay * 3600 + lunchDuration;
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
   if (nowSec < workStartSec || nowSec >= workEndSec) return { salary: 0, working: false };
 
-  const elapsedSec = nowSec - workStartSec;
+  let elapsedSec = nowSec - workStartSec;
+
+  if (nowSec >= lunchEndSec) {
+    elapsedSec -= (lunchEndSec - lunchStartSec);
+  } else if (nowSec >= lunchStartSec) {
+    elapsedSec = lunchStartSec - workStartSec;
+  }
+
   const workDaysThisMonth = getWorkDaysInMonth(now.getFullYear(), now.getMonth());
   const salaryPerSec = config.monthlySalary / (workDaysThisMonth * config.workHoursPerDay * 3600);
 
   return { salary: salaryPerSec * elapsedSec, working: true };
 };
 
-const spawnCoin = () => {
+const spawnCoins = (count = 3) => {
   if (!elRef.value) return;
   const rect = elRef.value.getBoundingClientRect();
-  const id = ++coinId;
 
-  const startX = rect.left + Math.random() * rect.width - 10;
-  const endY = rect.top - 10;
-  const startY = -30;
-  const endX = 60 + Math.random() * 80;
-  const duration = 800 + Math.random() * 400;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      if (!elRef.value) return;
+      const id = ++coinId;
 
-  const coin: Coin = {
-    id,
-    style: {
-      left: `${startX}px`,
-      top: `${startY}px`,
-      animation: `coinLife ${duration}ms cubic-bezier(0.55, 0, 1, 0.45) forwards`,
-      "--endY": `${endY}px`,
-      "--endX": `${endX}px`,
-    },
-  };
-  coins.push(coin);
+      const coinX = rect.left + Math.random() * rect.width - 10;
+      const targetY = rect.top + rect.height / 2 - 10;
+      const driftDir = Math.random() > 0.5 ? 1 : -1;
+      const maxDrift = driftDir > 0
+        ? rect.right - coinX - 10
+        : coinX - rect.left - 10;
+      const drift = driftDir * (Math.random() * Math.max(0, maxDrift));
 
-  setTimeout(() => {
-    const idx = coins.findIndex((c) => c.id === id);
-    if (idx !== -1) coins.splice(idx, 1);
-  }, duration + 50);
+      const coin: Coin = {
+        id,
+        x: coinX,
+        y: -20,
+      };
+      coins.push(coin);
+
+      nextTick(() => {
+        const el = coinRefs.value[coinRefs.value.length - 1];
+        if (!el) return;
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            const idx = coins.findIndex((c) => c.id === id);
+            if (idx !== -1) coins.splice(idx, 1);
+          },
+        });
+
+        tl.to(el, {
+          y: targetY,
+          rotateY: 720,
+          duration: 0.6,
+          ease: "bounce.out",
+        });
+
+        tl.to(el, {
+          x: `+=${drift}`,
+          rotateY: 920,
+          opacity: 0,
+          duration: 0.8,
+          ease: "power2.in",
+        }, "-=0.3");
+      });
+    }, i * 120);
+  }
 };
 
 const tick = (timestamp: number) => {
@@ -181,7 +224,7 @@ const tick = (timestamp: number) => {
 
     if (working) {
       salaryStore.recordSalary(salary);
-      spawnCoin();
+      spawnCoins(10);
     }
   }
   rafId = requestAnimationFrame(tick);
@@ -243,10 +286,12 @@ onMounted(async () => {
   const now = new Date();
   if (isWorkday(now)) {
     const { salary } = calcTick(now);
+    
     todayDisplay.value = `¥${salary.toFixed(2)}`;
     salaryStore.recordSalary(salary);
     startLoop();
   } else {
+    
     todayDisplay.value = "¥0.00";
   }
 
@@ -301,16 +346,5 @@ onUnmounted(() => {
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.3),
     inset 0 1px 2px rgba(255, 255, 255, 0.4);
-}
-
-@keyframes coinLife {
-  0% {
-    transform: translateY(0) rotateY(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(var(--endY)) translateX(var(--endX)) rotateY(360deg);
-    opacity: 0;
-  }
 }
 </style>

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { shallowRef, triggerRef } from "vue";
+import { shallowRef, triggerRef, ref } from "vue";
 import { getItem, setItem, deleteData } from "@/utils/indexedDb";
 
 export interface PhotoItem {
