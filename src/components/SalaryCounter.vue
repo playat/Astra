@@ -148,22 +148,20 @@ const spawnCoin = () => {
   const rect = elRef.value.getBoundingClientRect();
   const id = ++coinId;
 
-  const endX = rect.left + Math.random() * rect.width - 10;
-  const endY = rect.top + Math.random() * rect.height - 10;
-  const startOffsetX = (Math.random() - 0.5) * 120;
-  const startOffsetY = -(80 + Math.random() * 60);
-  const driftX = 60 + Math.random() * 80;
-  const duration = 1800 + Math.random() * 600;
+  const startX = rect.left + Math.random() * rect.width - 10;
+  const endY = rect.top - 10;
+  const startY = -30;
+  const endX = 60 + Math.random() * 80;
+  const duration = 800 + Math.random() * 400;
 
   const coin: Coin = {
     id,
     style: {
-      left: `${endX}px`,
-      top: `${endY}px`,
-      animation: `coinLife ${duration}ms cubic-bezier(0.22, 1, 0.36, 1) forwards`,
-      "--sx": `${startOffsetX}px`,
-      "--sy": `${startOffsetY}px`,
-      "--dx": `${driftX}px`,
+      left: `${startX}px`,
+      top: `${startY}px`,
+      animation: `coinLife ${duration}ms cubic-bezier(0.55, 0, 1, 0.45) forwards`,
+      "--endY": `${endY}px`,
+      "--endX": `${endX}px`,
     },
   };
   coins.push(coin);
@@ -307,18 +305,11 @@ onUnmounted(() => {
 
 @keyframes coinLife {
   0% {
-    transform: translate(var(--sx), var(--sy)) rotate(0deg) scale(0.3);
-    opacity: 0;
-  }
-  8% {
-    opacity: 1;
-  }
-  35% {
-    transform: translate(0, 0) rotate(180deg) scale(1);
+    transform: translateY(0) rotateY(0deg);
     opacity: 1;
   }
   100% {
-    transform: translate(var(--dx), -20px) rotate(540deg) scale(0.3);
+    transform: translateY(var(--endY)) translateX(var(--endX)) rotateY(360deg);
     opacity: 0;
   }
 }
