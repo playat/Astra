@@ -1,10 +1,5 @@
 <template>
-  <!-- Photos layer: shown when visible -->
-  <div
-    v-if="photoWallStore.visible"
-    class="fixed inset-0 z-10 pointer-events-none"
-  >
-    <!-- Toolbar -->
+  <div class="fixed inset-0 z-10 pointer-events-none">
     <Transition name="toolbar">
       <div
         v-show="showToolbar"
@@ -54,7 +49,6 @@
       </div>
     </Transition>
 
-    <!-- Photos -->
     <div
       v-for="(photo, index) in photoWallStore.photos"
       :key="photo.id"
@@ -73,7 +67,6 @@
       @mousedown.left="photoWallStore.editing && onDragStart($event, photo)"
       @touchstart.passive="photoWallStore.editing && onTouchStart($event, photo)"
       @wheel.prevent="photoWallStore.editing && onWheel($event, photo)"
-      @mousedown.right="onPhotoRightClick($event, photo)"
       @dblclick="onDoubleClick(photo)"
       @click.left.stop="photoWallStore.bringToFront(photo.id)"
     >
@@ -82,7 +75,6 @@
           class="pointer-events-none rounded-lg shadow-2xl border-2 border-white/10 max-w-[300px] max-h-[300px] object-contain"
           draggable="false"
         />
-        <!-- Rotate handle: only in editing mode -->
         <div
           v-if="photoWallStore.editing"
           class="absolute w-6 h-6 bg-white/80 rounded-full flex items-center justify-center cursor-grab shadow-md hover:bg-white transition-colors"
@@ -100,6 +92,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import usePhotoWall, { type PhotoItem } from "@/store/photoWall";
+import CoverMessageBox from "@/components_ui/CoverMessageBox.js";
 
 const photoWallStore = usePhotoWall();
 const fileInputRef = ref<HTMLInputElement>();
@@ -107,7 +100,6 @@ const showToolbar = ref(false);
 let toolbarHideTimer: ReturnType<typeof setTimeout> | null = null;
 
 const onMouseMove = (e: MouseEvent) => {
-  if (!photoWallStore.visible) return;
   if (e.clientY < 60) {
     if (toolbarHideTimer) { clearTimeout(toolbarHideTimer); toolbarHideTimer = null; }
     showToolbar.value = true;
@@ -126,7 +118,6 @@ const onToolbarEnter = () => {
 
 const PHOTO_BASE_DELAY = 1.2;
 const PHOTO_STAGGER = 0.15;
-// 记录初始照片数量，新增的照片不需要延迟
 const initialCount = photoWallStore.photos.length;
 
 const triggerFileInput = () => {
@@ -142,6 +133,8 @@ const onFileChange = (e: Event) => {
   input.value = "";
 };
 
+const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
 // --- Drag ---
 let dragPhoto: PhotoItem | null = null;
 let dragOffsetX = 0;
@@ -149,7 +142,6 @@ let dragOffsetY = 0;
 
 const onDragStart = (e: MouseEvent, photo: PhotoItem) => {
   dragPhoto = photo;
-  // 偏移 = 鼠标 - 原点(x,y)，和 scale 无关
   dragOffsetX = e.clientX - photo.x;
   dragOffsetY = e.clientY - photo.y;
   window.addEventListener("mousemove", onDragMove);
@@ -158,8 +150,10 @@ const onDragStart = (e: MouseEvent, photo: PhotoItem) => {
 
 const onDragMove = (e: MouseEvent) => {
   if (!dragPhoto) return;
-  dragPhoto.x = e.clientX - dragOffsetX;
-  dragPhoto.y = e.clientY - dragOffsetY;
+  const imgW = 300 * dragPhoto.scale;
+  const imgH = 300 * dragPhoto.scale;
+  dragPhoto.x = clamp(e.clientX - dragOffsetX, -imgW + 50, window.innerWidth - 50);
+  dragPhoto.y = clamp(e.clientY - dragOffsetY, -imgH + 50, window.innerHeight - 50);
   photoWallStore.updatePhoto(dragPhoto.id, { x: dragPhoto.x, y: dragPhoto.y });
 };
 
@@ -188,8 +182,10 @@ const onTouchMove = (e: TouchEvent) => {
   if (!touchPhoto || e.touches.length !== 1) return;
   e.preventDefault();
   const touch = e.touches[0];
-  touchPhoto.x = touch.clientX - touchOffsetX;
-  touchPhoto.y = touch.clientY - touchOffsetY;
+  const imgW = 300 * touchPhoto.scale;
+  const imgH = 300 * touchPhoto.scale;
+  touchPhoto.x = clamp(touch.clientX - touchOffsetX, -imgW + 50, window.innerWidth - 50);
+  touchPhoto.y = clamp(touch.clientY - touchOffsetY, -imgH + 50, window.innerHeight - 50);
   photoWallStore.updatePhoto(touchPhoto.id, { x: touchPhoto.x, y: touchPhoto.y });
 };
 
@@ -206,34 +202,7 @@ const onWheel = (e: WheelEvent, photo: PhotoItem) => {
   photoWallStore.updatePhoto(photo.id, { scale: newScale });
 };
 
-// --- Rotate (right-click drag) ---
-let rotatePhoto: PhotoItem | null = null;
-let rotateStartX = 0;
-let rotateStartRotation = 0;
-
-const onRotateStart = (e: MouseEvent, photo: PhotoItem) => {
-  rotatePhoto = photo;
-  rotateStartX = e.clientX;
-  rotateStartRotation = photo.rotation;
-  window.addEventListener("mousemove", onRotateMove);
-  window.addEventListener("mouseup", onRotateEnd);
-};
-
-const onRotateMove = (e: MouseEvent) => {
-  if (!rotatePhoto) return;
-  const dx = e.clientX - rotateStartX;
-  const newRotation = rotateStartRotation + dx * 0.5;
-  rotatePhoto.rotation = newRotation;
-  photoWallStore.updatePhoto(rotatePhoto.id, { rotation: newRotation });
-};
-
-const onRotateEnd = () => {
-  rotatePhoto = null;
-  window.removeEventListener("mousemove", onRotateMove);
-  window.removeEventListener("mouseup", onRotateEnd);
-};
-
-// --- Rotate Handle (left-click on handle) ---
+// --- Rotate Handle ---
 let handlePhoto: PhotoItem | null = null;
 let handleStartX = 0;
 let handleStartRotation = 0;
@@ -261,34 +230,24 @@ const onHandleEnd = () => {
   window.removeEventListener("mouseup", onHandleEnd);
 };
 
-// --- Right Click: rotate in editing mode, pass through otherwise ---
-const onPhotoRightClick = (e: MouseEvent, photo: PhotoItem) => {
-  if (photoWallStore.editing) {
-    e.preventDefault();
-    // onRotateStart(e, photo);
-  }
-};
-
 // --- Double Click Delete ---
 const onDoubleClick = (photo: PhotoItem) => {
-  photoWallStore.removePhoto(photo.id);
-};
-
-// --- Escape to close ---
-const onKeyDown = (e: KeyboardEvent) => {
-  if (e.key === "Escape" && photoWallStore.visible) {
-    photoWallStore.toggle();
-  }
+  new CoverMessageBox({
+    title: "删除照片",
+    message: "确定要删除这张照片吗？",
+    onConfirm: () => {
+      photoWallStore.removePhoto(photo.id);
+    },
+  }).open();
 };
 
 onMounted(() => {
-  document.addEventListener("keydown", onKeyDown);
   document.addEventListener("mousemove", onMouseMove);
 });
 
 onUnmounted(() => {
-  document.removeEventListener("keydown", onKeyDown);
   document.removeEventListener("mousemove", onMouseMove);
+  photoWallStore.dispose();
 });
 </script>
 

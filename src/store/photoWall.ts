@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, shallowRef } from "vue";
+import { shallowRef, triggerRef } from "vue";
 import { getItem, setItem, deleteData } from "@/utils/indexedDb";
 
 export interface PhotoItem {
@@ -27,21 +27,27 @@ const META_KEY = "photos_metadata";
 let zCounter = 1;
 
 const usePhotoWall = defineStore("photoWall", () => {
-  const visible = ref(true);    // 照片墙是否显示
-  const editing = ref(false);   // 是否处于编辑模式（拖拽、缩放、旋转）
+  const editing = ref(false);
   const photos = shallowRef<PhotoItem[]>([]);
 
-  const saveMeta = () => {
+  let saveTimer: ReturnType<typeof setTimeout> | null = null;
+  const saveMeta = (immediate = false) => {
+    if (!immediate) {
+      if (saveTimer) return;
+      saveTimer = setTimeout(() => {
+        saveTimer = null;
+        doSaveMeta();
+      }, 300);
+      return;
+    }
+    doSaveMeta();
+  };
+
+  const doSaveMeta = () => {
     const meta: PhotoMeta[] = photos.value.map(({ id, x, y, rotation, scale, zIndex }) => ({
       id, x, y, rotation, scale, zIndex,
     }));
     setItem(TABLE, META_KEY, meta);
-  };
-
-  const toggle = () => {
-    visible.value = !visible.value;
-    // 打开照片墙时自动进入编辑模式
-    if (visible.value) editing.value = true;
   };
 
   const toggleEditing = () => {
@@ -63,7 +69,7 @@ const usePhotoWall = defineStore("photoWall", () => {
     };
 
     photos.value = [...photos.value, item];
-    saveMeta();
+    saveMeta(true);
   };
 
   const removePhoto = (id: string) => {
@@ -73,13 +79,14 @@ const usePhotoWall = defineStore("photoWall", () => {
     }
     photos.value = photos.value.filter((p) => p.id !== id);
     deleteData(TABLE, id);
-    saveMeta();
+    saveMeta(true);
   };
 
   const updatePhoto = (id: string, changes: Partial<Omit<PhotoItem, "id" | "url">>) => {
-    photos.value = photos.value.map((p) =>
-      p.id === id ? { ...p, ...changes } : p
-    );
+    const photo = photos.value.find((p) => p.id === id);
+    if (!photo) return;
+    Object.assign(photo, changes);
+    triggerRef(photos);
     saveMeta();
   };
 
@@ -96,40 +103,44 @@ const usePhotoWall = defineStore("photoWall", () => {
       scale: 1,
       zIndex: ++zCounter,
     }));
-    saveMeta();
+    saveMeta(true);
   };
 
   const loadPhotos = async () => {
     const meta: PhotoMeta[] | undefined = await getItem(TABLE, META_KEY);
     if (!meta || !Array.isArray(meta)) return;
 
-    const loaded: PhotoItem[] = [];
+    const loadedPhotos: PhotoItem[] = [];
     for (const m of meta) {
       const file: File | undefined = await getItem(TABLE, m.id);
       if (file) {
-        loaded.push({
+        loadedPhotos.push({
           ...m,
           url: URL.createObjectURL(file),
         });
         if (m.zIndex > zCounter) zCounter = m.zIndex;
       }
     }
-    photos.value = loaded;
+    photos.value = loadedPhotos;
+  };
+
+  const dispose = () => {
+    photos.value.forEach((p) => URL.revokeObjectURL(p.url));
+    photos.value = [];
   };
 
   loadPhotos();
 
   return {
-    visible,
     editing,
     photos,
-    toggle,
     toggleEditing,
     addPhoto,
     removePhoto,
     updatePhoto,
     bringToFront,
     resetLayout,
+    dispose,
   };
 });
 
