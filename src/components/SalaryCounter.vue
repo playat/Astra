@@ -7,50 +7,49 @@
       @mousedown="onDragStart"
       @touchstart.passive="onDragStart"
     >
-    <div
-      class="px-3 py-1.5 rounded-full backdrop-blur-sm text-sm font-mono whitespace-nowrap flex items-center gap-2 shadow-lg"
-      :class="isWorking ? 'bg-green-600/80' : 'bg-gray-600/80'"
-    >
-      <span class="text-[10px] opacity-60">今日</span>
-      <span
-        v-for="(ch, i) in todayChars"
-        :key="'t' + i"
-        class="digit-slot"
-        :class="{ 'digit-slot--symbol': !ch.isDigit }"
+      <div
+        class="px-3 py-1.5 rounded-full backdrop-blur-sm text-sm font-mono whitespace-nowrap flex items-center gap-2 shadow-lg"
+        :class="isWorking ? 'bg-green-600/80' : 'bg-gray-600/80'"
       >
+        <span class="text-[10px] opacity-60">今日</span>
         <span
-          v-if="ch.isDigit"
-          class="digit-strip"
-          :style="{ transform: `translateY(-${ch.value * 1.2}em)` }"
+          v-for="(ch, i) in todayChars"
+          :key="'t' + i"
+          class="digit-slot"
+          :class="{ 'digit-slot--symbol': !ch.isDigit }"
         >
-          <span v-for="n in 10" :key="n" class="digit-row">{{ n - 1 }}</span>
+          <span
+            v-if="ch.isDigit"
+            class="digit-strip"
+            :style="{ transform: `translateY(-${ch.value * 1.2}em)` }"
+          >
+            <span v-for="n in 10" :key="n" class="digit-row">{{ n - 1 }}</span>
+          </span>
+          <span v-else class="digit-static">{{ ch.char }}</span>
         </span>
-        <span v-else class="digit-static">{{ ch.char }}</span>
-      </span>
-      <span class="text-[10px] opacity-60 mx-1">|</span>
-      <span class="text-[10px] opacity-60">累计</span>
-      <span
-        v-for="(ch, i) in totalChars"
-        :key="'p' + i"
-        class="digit-slot"
-        :class="{ 'digit-slot--symbol': !ch.isDigit }"
-      >
+        <span class="text-[10px] opacity-60 mx-1">|</span>
+        <span class="text-[10px] opacity-60">累计</span>
         <span
-          v-if="ch.isDigit"
-          class="digit-strip"
-          :style="{ transform: `translateY(-${ch.value * 1.2}em)` }"
+          v-for="(ch, i) in totalChars"
+          :key="'p' + i"
+          class="digit-slot"
+          :class="{ 'digit-slot--symbol': !ch.isDigit }"
         >
-          <span v-for="n in 10" :key="n" class="digit-row">{{ n - 1 }}</span>
+          <span
+            v-if="ch.isDigit"
+            class="digit-strip"
+            :style="{ transform: `translateY(-${ch.value * 1.2}em)` }"
+          >
+            <span v-for="n in 10" :key="n" class="digit-row">{{ n - 1 }}</span>
+          </span>
+          <span v-else class="digit-static">{{ ch.char }}</span>
         </span>
-        <span v-else class="digit-static">{{ ch.char }}</span>
-      </span>
+      </div>
     </div>
-  </div>
     <Teleport to="body">
       <div
         v-for="coin in coins"
         :key="coin.id"
-        ref="coinRefs"
         class="coin fixed pointer-events-none z-[10000] w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
         :style="{ left: `${coin.x}px`, top: `${coin.y}px` }"
       >
@@ -98,7 +97,6 @@ const toDigitChars = (s: string): DigitChar[] =>
   }));
 
 const elRef = ref<HTMLElement>();
-const coinRefs = ref<HTMLElement[]>([]);
 const pos = ref({ x: 50, y: 100 });
 const todayDisplay = ref("¥0.00");
 const isWorking = ref(false);
@@ -114,19 +112,33 @@ let config: SalaryConfig | null = null;
 let rafId = 0;
 let lastTick = 0;
 let coinId = 0;
-let workDaysCache: { key: string; count: number } | null = null;
+let activeTimelines: gsap.core.Timeline[] = [];
+
+let cachedMonth = -1;
+let cachedWorkDays = 0;
+let cachedSalaryPerSec = 0;
 
 const getWorkDaysInMonth = (year: number, month: number): number => {
-  const key = `${year}-${month}`;
-  if (workDaysCache?.key === key) return workDaysCache.count;
+  if (month === cachedMonth) return cachedWorkDays;
 
   let count = 0;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   for (let d = 1; d <= daysInMonth; d++) {
     if (isWorkday(new Date(year, month, d))) count++;
   }
-  workDaysCache = { key, count };
+  cachedMonth = month;
+  cachedWorkDays = count;
   return count;
+};
+
+const getSalaryPerSec = (now: Date): number => {
+  if (!config) return 0;
+  const month = now.getMonth();
+  if (month === cachedMonth && cachedSalaryPerSec > 0) return cachedSalaryPerSec;
+
+  const workDays = getWorkDaysInMonth(now.getFullYear(), month);
+  cachedSalaryPerSec = config.monthlySalary / (workDays * config.workHoursPerDay * 3600);
+  return cachedSalaryPerSec;
 };
 
 interface TickResult {
@@ -145,73 +157,79 @@ const calcTick = (now: Date): TickResult => {
   const workEndSec = workStartSec + config.workHoursPerDay * 3600 + lunchDuration;
   const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-  if (nowSec < workStartSec || nowSec >= workEndSec) return { salary: 0, working: false };
+  const salaryPerSec = getSalaryPerSec(now);
+  const fullDaySalary = salaryPerSec * config.workHoursPerDay * 3600;
 
-  let elapsedSec = nowSec - workStartSec;
+  if (nowSec < workStartSec) return { salary: 0, working: false };
 
-  if (nowSec >= lunchEndSec) {
-    elapsedSec -= (lunchEndSec - lunchStartSec);
-  } else if (nowSec >= lunchStartSec) {
-    elapsedSec = lunchStartSec - workStartSec;
+  if (nowSec >= workEndSec) {
+    return { salary: fullDaySalary, working: false };
   }
 
-  const workDaysThisMonth = getWorkDaysInMonth(now.getFullYear(), now.getMonth());
-  const salaryPerSec = config.monthlySalary / (workDaysThisMonth * config.workHoursPerDay * 3600);
+  let elapsedSec = nowSec - workStartSec;
+  let working = true;
 
-  return { salary: salaryPerSec * elapsedSec, working: true };
+  if (nowSec >= lunchEndSec) {
+    elapsedSec -= lunchDuration;
+  } else if (nowSec >= lunchStartSec) {
+    elapsedSec = lunchStartSec - workStartSec;
+    working = false;
+  }
+
+  return { salary: salaryPerSec * elapsedSec, working };
+};
+
+const killTimelines = () => {
+  activeTimelines.forEach((tl) => tl.kill());
+  activeTimelines = [];
 };
 
 const spawnCoins = (count = 3) => {
   if (!elRef.value) return;
   const rect = elRef.value.getBoundingClientRect();
+  const duration = 1.4;
 
   for (let i = 0; i < count; i++) {
-    setTimeout(() => {
-      if (!elRef.value) return;
-      const id = ++coinId;
+    const id = ++coinId;
+    const coinX = rect.left + Math.random() * rect.width - 10;
+    const targetY = rect.top + rect.height / 2 - 10;
+    const driftDir = Math.random() > 0.5 ? 1 : -1;
+    const maxDrift = driftDir > 0
+      ? rect.right - coinX - 10
+      : coinX - rect.left - 10;
+    const drift = driftDir * (Math.random() * Math.max(0, maxDrift));
 
-      const coinX = rect.left + Math.random() * rect.width - 10;
-      const targetY = rect.top + rect.height / 2 - 10;
-      const driftDir = Math.random() > 0.5 ? 1 : -1;
-      const maxDrift = driftDir > 0
-        ? rect.right - coinX - 10
-        : coinX - rect.left - 10;
-      const drift = driftDir * (Math.random() * Math.max(0, maxDrift));
+    const coin: Coin = { id, x: coinX, y: -20 };
+    coins.push(coin);
 
-      const coin: Coin = {
-        id,
-        x: coinX,
-        y: -20,
-      };
-      coins.push(coin);
+    nextTick(() => {
+      const el = document.querySelector(`.coin:last-child`) as HTMLElement;
+      if (!el) return;
 
-      nextTick(() => {
-        const el = coinRefs.value[coinRefs.value.length - 1];
-        if (!el) return;
-
-        const tl = gsap.timeline({
-          onComplete: () => {
-            const idx = coins.findIndex((c) => c.id === id);
-            if (idx !== -1) coins.splice(idx, 1);
-          },
-        });
-
-        tl.to(el, {
-          y: targetY,
-          rotateY: 720,
-          duration: 0.6,
-          ease: "bounce.out",
-        });
-
-        tl.to(el, {
-          x: `+=${drift}`,
-          rotateY: 920,
-          opacity: 0,
-          duration: 0.8,
-          ease: "power2.in",
-        }, "-=0.3");
+      const tl = gsap.timeline({
+        onComplete: () => {
+          const idx = coins.findIndex((c) => c.id === id);
+          if (idx !== -1) coins.splice(idx, 1);
+        },
       });
-    }, i * 120);
+      activeTimelines.push(tl);
+
+      tl.to(el, {
+        y: targetY,
+        rotateY: 720,
+        duration: 0.6,
+        ease: "bounce.out",
+        delay: i * 0.1,
+      });
+
+      tl.to(el, {
+        x: `+=${drift}`,
+        rotateY: 920,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.in",
+      }, "-=0.3");
+    });
   }
 };
 
@@ -224,7 +242,7 @@ const tick = (timestamp: number) => {
 
     if (working) {
       salaryStore.recordSalary(salary);
-      spawnCoins(10);
+      spawnCoins(5);
     }
   }
   rafId = requestAnimationFrame(tick);
@@ -233,6 +251,13 @@ const tick = (timestamp: number) => {
 const startLoop = () => {
   lastTick = 0;
   rafId = requestAnimationFrame(tick);
+};
+
+const stopLoop = () => {
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
 };
 
 const onDragStart = (e: MouseEvent | TouchEvent) => {
@@ -286,12 +311,10 @@ onMounted(async () => {
   const now = new Date();
   if (isWorkday(now)) {
     const { salary } = calcTick(now);
-    
     todayDisplay.value = `¥${salary.toFixed(2)}`;
     salaryStore.recordSalary(salary);
     startLoop();
   } else {
-    
     todayDisplay.value = "¥0.00";
   }
 
@@ -300,7 +323,8 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
-  if (rafId) cancelAnimationFrame(rafId);
+  stopLoop();
+  killTimelines();
   window.removeEventListener("beforeunload", onBeforeUnload);
   document.removeEventListener("visibilitychange", onVisibilityChange);
 });
