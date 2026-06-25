@@ -4,6 +4,7 @@
     <PhotoWall />
     <BottomBar />
     <TimeNumber />
+    <SalaryCounter />
     <SearchBar />
     <SuList />
     <User />
@@ -53,6 +54,7 @@ import User from "./components/User.vue";
 import YGDatePicker from "./components_ui/YGDatePicker/index.vue";
 import DefaultApps from "@/components_system/DefaultApps.vue";
 import PhotoWall from "@/components/PhotoWall.vue";
+import SalaryCounter from "@/components/SalaryCounter.vue";
 import usePhotoWall from "./store/photoWall";
 
 const appStore = useApp();
