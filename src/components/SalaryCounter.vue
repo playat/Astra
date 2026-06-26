@@ -50,6 +50,7 @@
       <div
         v-for="coin in coins"
         :key="coin.id"
+        ref="coinEls"
         class="coin fixed pointer-events-none z-[10000] w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
         :style="{ left: `${coin.x}px`, top: `${coin.y}px` }"
       >
@@ -97,6 +98,7 @@ const toDigitChars = (s: string): DigitChar[] =>
   }));
 
 const elRef = ref<HTMLElement>();
+const coinEls = ref<HTMLElement[]>([]);
 const pos = ref({ x: 50, y: 100 });
 const todayDisplay = ref("¥0.00");
 const isWorking = ref(false);
@@ -187,7 +189,6 @@ const killTimelines = () => {
 const spawnCoins = (count = 3) => {
   if (!elRef.value) return;
   const rect = elRef.value.getBoundingClientRect();
-  const duration = 1.4;
 
   for (let i = 0; i < count; i++) {
     const id = ++coinId;
@@ -203,13 +204,14 @@ const spawnCoins = (count = 3) => {
     coins.push(coin);
 
     nextTick(() => {
-      const el = document.querySelector(`.coin:last-child`) as HTMLElement;
+      const idx = coins.findIndex((c) => c.id === id);
+      const el = coinEls.value[idx];
       if (!el) return;
 
       const tl = gsap.timeline({
         onComplete: () => {
-          const idx = coins.findIndex((c) => c.id === id);
-          if (idx !== -1) coins.splice(idx, 1);
+          const i = coins.findIndex((c) => c.id === id);
+          if (i !== -1) coins.splice(i, 1);
         },
       });
       activeTimelines.push(tl);
