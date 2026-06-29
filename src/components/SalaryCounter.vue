@@ -99,7 +99,8 @@ const toDigitChars = (s: string): DigitChar[] =>
 
 const elRef = ref<HTMLElement>();
 const coinEls = ref<HTMLElement[]>([]);
-const pos = ref({ x: 50, y: 100 });
+const savedPos = JSON.parse(localStorage.getItem("salaryCounterPos") || "null");
+const pos = ref(savedPos || { x: 50, y: 100 });
 const todayDisplay = ref("¥0.00");
 const isWorking = ref(false);
 const coins = reactive<Coin[]>([]);
@@ -280,6 +281,7 @@ const onDragStart = (e: MouseEvent | TouchEvent) => {
   };
 
   const onUp = () => {
+    localStorage.setItem("salaryCounterPos", JSON.stringify(pos.value));
     window.removeEventListener("mousemove", onMove);
     window.removeEventListener("touchmove", onMove);
     window.removeEventListener("mouseup", onUp);
