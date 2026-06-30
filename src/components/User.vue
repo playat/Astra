@@ -28,7 +28,6 @@ import { ref } from "vue";
 import UserSvg from "@/assets/svg/user.svg";
 import useAuthStore from "@/store/auth";
 import CoverMessageBox from "@/components_ui/CoverMessageBox";
-import Message from "@/components_ui/CoverMessage";
 
 const authStore = useAuthStore();
 const expanded = ref(false);
@@ -40,7 +39,6 @@ const handleLogout = () => {
     message: "确定要退出登录吗？",
     onConfirm: () => {
       authStore.loginOut();
-      Message.open({ message: "已退出登录" });
     },
     onCancel: () => {},
   }).open();
