@@ -55,3 +55,15 @@
   -webkit-filter: var(--lg-filter);
   pointer-events: none;
 }
+
+/* ── 多弹窗重叠：弱化背景弹窗的扭曲/模糊，仅保留顶层全效果 ── */
+.fixed:has(.liquid-glass):has(~ .fixed:has(.liquid-glass)) .liquid-glass::after {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  filter: none;
+  -webkit-filter: none;
+}
+
+.fixed:has(.liquid-glass):has(~ .fixed:has(.liquid-glass)) .liquid-glass::before {
+  background-color: rgba(18, 18, 22, 0.65);
+}
