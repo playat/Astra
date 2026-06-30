@@ -201,7 +201,7 @@ const spawnCoins = (count = 3) => {
       : coinX - rect.left - 10;
     const drift = driftDir * (Math.random() * Math.max(0, maxDrift));
 
-    const coin: Coin = { id, x: coinX, y: -20 };
+    const coin: Coin = { id, x: coinX, y: rect.top - 20 };
     coins.push(coin);
 
     nextTick(() => {
