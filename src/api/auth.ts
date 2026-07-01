@@ -21,3 +21,13 @@ export const getPublicKey = async () => {
     method: "GET",
   });
 };
+
+/**
+ * 退出登录
+ * @returns
+ */
+export const logout = () => {
+  return _fetch(`/auth/logout`, {
+    method: "POST",
+  });
+};
