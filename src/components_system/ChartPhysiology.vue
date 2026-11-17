@@ -622,8 +622,8 @@ onMounted(load);
 /* ── 指标卡 ── */
 .stat-card {
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-line);
+  background: var(--glass-inset);
   padding: 10px 12px 11px;
 }
 
@@ -718,8 +718,8 @@ onMounted(load);
 /* ── 多年总览 ── */
 .heat-wrap {
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-line);
+  background: var(--glass-inset);
   padding: 10px 12px;
 }
 

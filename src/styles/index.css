@@ -14,6 +14,21 @@ body {
   --yg-color: #8e6ff7;
   --yg-color-dark: #7953f5;
   --yg-border: #9CA3AF;
+
+  /* ── 玻璃质感统一变量：所有弹窗/浮层都从这里取值 ── */
+  /* 面板底色：偏实，保证上面的文字可读，同时仍透出背景色 */
+  --glass-panel: rgba(30, 26, 43, 0.84);
+  --glass-panel-border: rgba(255, 255, 255, 0.14);
+  --glass-panel-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  --glass-blur: 28px;
+  --glass-saturate: 135%;
+  /* 面板内部的次级块（输入框、预览区、折叠区） */
+  --glass-inset: rgba(255, 255, 255, 0.055);
+  --glass-inset-hover: rgba(255, 255, 255, 0.09);
+  /* 面板内的分隔线 / 描边 */
+  --glass-line: rgba(255, 255, 255, 0.12);
+  /* 浮层（下拉、右键菜单）：几乎不透明，避免背景干扰阅读 */
+  --glass-popover: rgba(28, 24, 40, 0.97);
 }
 
 input, textarea {
@@ -26,17 +41,37 @@ input, textarea {
   display: none;
 }
 
-/* 弹窗面板：毛玻璃质感（半透明深色底 + 背景虚化） */
-.dialog-panel {
-  background-color: rgba(26, 22, 38, 0.44);
-  backdrop-filter: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: blur(26px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+/* ── 弹窗面板：全站统一的毛玻璃 ── */
+@layer components {
+  .dialog-panel {
+    background-color: var(--glass-panel);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    border: 1px solid var(--glass-panel-border);
+    border-radius: 12px;
+    box-shadow:
+      var(--glass-panel-shadow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* 面板内部的次级块（输入框、预览区、容器） */
+  .glass-inset {
+    background-color: var(--glass-inset);
+    border: 1px solid var(--glass-line);
+  }
+
+  /* 从面板上浮起的菜单 / 下拉：高不透明度 + 轻虚化，保证上面的文字清晰 */
+  .glass-popover {
+    background-color: var(--glass-popover);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+    border: 1px solid var(--glass-line);
+    box-shadow:
+      0 18px 40px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
 }
 
 * {

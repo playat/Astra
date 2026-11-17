@@ -61,8 +61,12 @@ class CoverMessage {
               this._messageRef = el;
             },
             class: [
-              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full bg-neutral-950 text-xs",
+              "flex items-center cursor-pointer justify-center whitespace-nowrap overflow-hidden text-white rounded-full text-xs",
             ],
+            style: {
+              backgroundColor: "var(--glass-popover)",
+              border: "1px solid var(--glass-line)",
+            },
           },
           this.options.message
         );

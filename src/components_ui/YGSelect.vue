@@ -10,14 +10,14 @@
     <Transition name="dropdown">
       <div
         v-if="isOpen"
-        class="absolute top-full bg-[#111] border border-[#333] min-w-30 z-999 shadow-xl"
+        class="glass-popover absolute top-full min-w-30 z-999"
         :style="popperStyle"
       >
         <div
           v-for="item in options"
           :key="item.value"
-          class="flex items-center gap-2 px-3 py-2 text-white uppercase tracking-[0.2em] text-xs transition-all duration-200 cursor-pointer border-b border-[#333] last:border-b-0 hover:bg-white hover:text-black"
-          :class="{ 'bg-white/10': item.value === modelValue }"
+          class="flex items-center gap-2 px-3 py-2 text-white/85 uppercase tracking-[0.2em] text-xs transition-all duration-200 cursor-pointer border-b border-white/8 last:border-b-0 hover:bg-white hover:text-black"
+          :class="{ 'bg-white/10 text-white': item.value === modelValue }"
           @mousedown.prevent
           @click="handleSelect(item)"
         >

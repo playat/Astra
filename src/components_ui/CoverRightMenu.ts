@@ -63,7 +63,7 @@ class RightMenu extends BaseCover {
             },
             tabindex: 0,
             class: [
-              "transition-all focus-visible:outline-none absolute bg-[#111] border border-[#333] min-w-[140px] z-[9999] shadow-xl",
+              "glass-popover transition-all focus-visible:outline-none absolute rounded-lg overflow-hidden min-w-[140px] z-[9999]",
             ],
             style: {
               left: `${menuX.value}px`,
@@ -82,7 +82,7 @@ class RightMenu extends BaseCover {
               {
                 key: index,
                 class:
-                  "flex items-center px-4 py-3 text-white uppercase tracking-[0.2em] text-xs transition-all duration-200 cursor-pointer border-b border-[#333] last:border-b-0 hover:bg-white hover:text-black active:scale-[0.99]",
+                  "flex items-center px-4 py-3 text-white/85 uppercase tracking-[0.2em] text-xs transition-all duration-200 cursor-pointer border-b border-white/10 last:border-b-0 hover:bg-white hover:text-black active:scale-[0.99]",
                 onClick: (e) => {
                   e.stopPropagation();
                   this.onOptionClick(item);

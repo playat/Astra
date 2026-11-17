@@ -17,7 +17,7 @@
     <div
       v-for="(item, index) in numList"
       :key="index"
-      class="h-[50px] w-full absolute flex items-center bg-gray-600 top-1/2 -translate-y-1/2 transition-all justify-center border-white border-y"
+      class="h-[50px] w-full absolute flex items-center bg-white/10 top-1/2 -translate-y-1/2 transition-all justify-center border-white/25 border-y"
       :style="{
         transform: `rotateX(${135 - index * 45}deg) translateZ(62px)`,
       }"

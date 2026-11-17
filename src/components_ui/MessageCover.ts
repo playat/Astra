@@ -37,7 +37,11 @@ const createMoreCom = () => {
             {
               key: "dot",
               class:
-                "w-7.5 h-7.5 bg-neutral-950 text text-white rounded-full flex items-center justify-center",
+                "w-7.5 h-7.5 text text-white rounded-full flex items-center justify-center",
+              style: {
+                backgroundColor: "var(--glass-popover)",
+                border: "1px solid var(--glass-line)",
+              },
             },
             "···"
           )

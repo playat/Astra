@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white bg-neutral-800 flex items-center gap-3">
+  <div class="text-white flex items-center gap-3">
     <!-- 年 -->
     <NumItem v-model="year" :min="1900" :max="2100" />
     <!-- - -->

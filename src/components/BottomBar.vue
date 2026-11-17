@@ -6,7 +6,7 @@
     :class="{ 'bottom-bar--expanded': appStore.isMore }"
     :style="{
       width: `${baseCount * 3.25 + 0.75}rem`,
-      background: appStore.isMore ? 'rgba(26, 22, 38, 0.5)' : 'rgba(255, 255, 255, 0.1)',
+      background: appStore.isMore ? 'var(--glass-panel)' : 'rgba(255, 255, 255, 0.1)',
     }"
   >
     <!-- 应用名称展示 -->
@@ -250,10 +250,11 @@ onMounted(() => {
   transition: background-color 0.3s ease;
 }
 
-/* 右键展开「全部应用」面板：在原有玻璃层上加强虚化，形成毛玻璃面板 */
+/* 右键展开「全部应用」面板：与弹窗共用同一套玻璃变量 */
 .bottom-bar--expanded {
-  backdrop-filter: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-panel-border);
 }
 
 .bottom-bar--expanded::after {
@@ -269,7 +270,7 @@ onMounted(() => {
 
 /* 展开面板内的应用图标：浅色实底，避免在毛玻璃上糊成一团 */
 .bottom-bar--expanded .drawer-card :deep(> div:first-child) {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: var(--glass-inset) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
@@ -293,7 +294,7 @@ onMounted(() => {
 }
 
 .drawer-card:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--glass-inset-hover);
 }
 
 .drawer-card :deep(> div:first-child) {
@@ -328,11 +329,11 @@ onMounted(() => {
   color: rgba(255, 255, 255, 0.5);
   font-size: 10px;
   transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--glass-inset);
 }
 
 .drawer-action-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--glass-inset-hover);
   color: rgba(255, 255, 255, 0.9);
 }
 </style>

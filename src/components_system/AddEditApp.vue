@@ -2,7 +2,7 @@
   <div class="text-white flex flex-col w-125">
     <!-- Header -->
     <div
-      class="border-b border-[#333] px-6 py-4 flex items-center justify-between"
+      class="border-b border-white/10 px-6 py-4 flex items-center justify-between"
     >
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -11,14 +11,14 @@
         >
       </div>
       <div class="flex items-center gap-4">
-        <div class="text-[10px] text-[#666] font-mono">SYS.APP.V1.0</div>
+        <div class="text-[10px] text-white/30 font-mono">SYS.APP.V1.0</div>
       </div>
     </div>
 
     <div class="p-8 space-y-6">
       <!-- URL Input -->
       <div class="space-y-3">
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >应用地址</label
         >
         <YGInput 
@@ -30,7 +30,7 @@
 
       <!-- Name Input -->
       <div class="space-y-3">
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >应用名称</label
         >
         <YGInput 
@@ -42,7 +42,7 @@
 
       <!-- Icon Input -->
       <div class="space-y-3">
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >应用图标</label
         >
         <YGInput

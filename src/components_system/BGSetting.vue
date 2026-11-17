@@ -2,7 +2,7 @@
   <div class="text-white flex flex-col w-150">
     <!-- 标题栏 -->
     <div
-      class="border-b border-[#333] px-6 py-4 flex items-center justify-between"
+      class="border-b border-white/10 px-6 py-4 flex items-center justify-between"
     >
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
@@ -11,17 +11,17 @@
         >
       </div>
       <div class="flex items-center gap-4">
-        <div class="text-[10px] text-[#666] font-mono">SYS.BG.V1.0</div>
+        <div class="text-[10px] text-white/30 font-mono">SYS.BG.V1.0</div>
       </div>
     </div>
 
     <div class="p-8 space-y-8">
       <!-- 模式选择 -->
       <div class="space-y-3">
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >模式选择</label
         >
-        <div class="flex w-full border border-[#333]">
+        <div class="flex w-full border border-white/12 overflow-hidden rounded-lg">
           <button
             v-for="opt in modeOptions"
             :key="opt.value"
@@ -30,7 +30,7 @@
               'flex-1 py-3 text-sm uppercase tracking-wider transition-colors duration-200',
               activeType === opt.value
                 ? 'bg-white text-black font-bold'
-                : 'bg-transparent text-[#666] hover:text-white hover:bg-[#1a1a1a]',
+                : 'bg-transparent text-white/45 hover:text-white hover:bg-white/8',
             ]"
           >
             {{ opt.label }}
@@ -40,7 +40,7 @@
 
       <!-- 上传区域：切换类型后或无当前背景时显示 -->
       <div v-if="showUpload" class="space-y-3">
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >本地资源</label
         >
         <YGUpload
@@ -55,7 +55,7 @@
         v-if="activeType !== 'none' && previewUrl"
         class="space-y-3 animate-fade-in"
       >
-        <label class="block text-xs text-[#666] uppercase tracking-[0.2em]"
+        <label class="block text-xs text-white/40 uppercase tracking-[0.2em]"
           >效果预览</label
         >
 
@@ -70,13 +70,13 @@
                 class="absolute bottom-2 right-2 flex items-center gap-2 z-20"
               >
                 <div
-                  class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono"
+                  class="bg-black/55 backdrop-blur-sm text-white/80 text-[10px] px-2 py-0.5 border border-white/15 font-mono"
                 >
                   RES: {{ isPending ? "NEW" : "CURRENT" }}
                 </div>
                 <button
                   @click="forceUpload = true"
-                  class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono cursor-pointer hover:bg-white/20 transition-colors"
+                  class="bg-black/55 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-white/15 font-mono cursor-pointer hover:bg-white/20 transition-colors"
                 >
                   更换
                 </button>
@@ -88,7 +88,7 @@
         <!-- 视频预览 -->
         <div
           v-else
-          class="w-full h-40 bg-[#050505] border border-[#333] relative p-1 overflow-hidden flex justify-center"
+          class="glass-inset w-full h-40 relative p-1 overflow-hidden flex justify-center"
         >
           <video
             :src="previewUrl"
@@ -102,13 +102,13 @@
             class="absolute bottom-2 right-2 flex items-center gap-2 z-20"
           >
             <div
-              class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono"
+              class="bg-black/55 backdrop-blur-sm text-white/80 text-[10px] px-2 py-0.5 border border-white/15 font-mono"
             >
               RES: {{ isPending ? "NEW" : "CURRENT" }}
             </div>
             <button
               @click="forceUpload = true"
-              class="bg-black/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-[#333] font-mono cursor-pointer hover:bg-white/20 transition-colors"
+              class="bg-black/55 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 border border-white/15 font-mono cursor-pointer hover:bg-white/20 transition-colors"
             >
               更换
             </button>

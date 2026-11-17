@@ -4,10 +4,10 @@
 
     <div
       v-else
-      class="relative w-full h-full border border-dashed border-[#333] bg-[#0f0f0f] transition-all duration-300 group cursor-pointer"
+      class="relative w-full h-full border border-dashed border-white/15 bg-white/5 transition-all duration-300 group cursor-pointer"
       :class="{
-        'border-white bg-[#1a1a1a]': isDragging,
-        'hover:border-[#666] hover:bg-[#1a1a1a]': !isDragging
+        'border-white/70 bg-white/10': isDragging,
+        'hover:border-white/35 hover:bg-white/8': !isDragging
       }"
       @click="clickSelectFile"
       @dragenter.prevent="isDragging = true"
