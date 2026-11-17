@@ -21,7 +21,12 @@ interface DialogOption {
 class CoverDialog extends BaseCover {
   private options: DialogOption;
   private _dialogRef = ref<HTMLElement>();
-  private _from: { x: number; y: number } = { x: 0, y: 0 };
+  /** 点击位置（动画起点锚点），未捕获到点击时为 null */
+  private _anchor: { x: number; y: number } | null = null;
+  /** 弹窗最终位置的中心，相对点击位置的偏移量 */
+  private _offset = { x: 0, y: 0 };
+  /** 关闭动画进行中，避免 ResizeObserver 抢位置 */
+  private _closing = false;
 
   // drag state
   private _isDown = false;
@@ -98,44 +103,89 @@ class CoverDialog extends BaseCover {
     gsap.set(el, { top, left, xPercent: 0, yPercent: 0 });
   }
 
-  // ── 立即将元素定位到点击位置并隐藏（防止闪烁）──
-
-  private _initPosition = () => {
-    const el = this._dialogRef.value;
-    const appStore = useApp();
-    this._from = { ...appStore.globlePosition };
-    gsap.set(el, { top: this._from.y, left: this._from.x, scale: 0, opacity: 0, translateX: "-50%", translateY: "-50%" });
-  };
-
-  // ── open / close animations ──
+  // ── 打开动画：先把元素摆到最终位置，再用 transform 从点击点「生长」出来 ──
 
   private _visibleFn = () => {
     const el = this._dialogRef.value;
-    this._initPosition()
-    if (!this._hasMoved) {
-      const { top, left } = this._getTargetPos(el);
-      gsap.to(el, { top, left, scale: 1, opacity: 1, duration: 0.3, ease: "power2.out", translateX: "0", translateY: "0" });
-    } else {
-      gsap.to(el, { scale: 1, opacity: 1, duration: 0.3, ease: "power2.out", translateX: "0", translateY: "0" });
-    }
+    if (!el) return;
+
+    this._closing = false;
+    const appStore = useApp();
+    const { x, y } = appStore.globlePosition;
+    this._anchor = x > 0 || y > 0 ? { x, y } : null;
+
+    // 1. 直接落到最终位置（不含位移动画，避免拖动 top/left 引起的抖动）
+    const { top, left } = this._getTargetPos(el);
+    gsap.set(el, {
+      top,
+      left,
+      xPercent: 0,
+      yPercent: 0,
+      x: 0,
+      y: 0,
+      scale: 1,
+      opacity: 0,
+      transformOrigin: "50% 50%",
+    });
+
+    // 2. 计算点击点相对弹窗中心的偏移
+    const w = el.offsetWidth;
+    const h = el.offsetHeight;
+    const offset = {
+      x: this._anchor ? this._anchor.x - (left + w / 2) : 0,
+      y: this._anchor ? this._anchor.y - (top + h / 2) : 12,
+    };
+    this._offset = offset;
+
+    // 3. 从点击点放大 + 淡入；没有点击坐标时退化为轻微上浮淡入
+    const scales = this._anchor ? 0.5 : 0.96;
+    gsap.fromTo(
+      el,
+      { x: offset.x, y: offset.y, scale: scales, opacity: 0 },
+      {
+        x: 0,
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        duration: this._anchor ? 0.46 : 0.26,
+        ease: this._anchor ? "expo.out" : "power2.out",
+        overwrite: "auto",
+      }
+    );
   };
+
+  // ── 关闭动画：沿原路缩回点击位置 ──
 
   protected hiddenFn = () => {
     const el = this._dialogRef.value;
+    if (!el) {
+      this.close();
+      return;
+    }
+    this._closing = true;
     gsap.killTweensOf(el);
+
+    // 被拖动过：原地淡出，不强行飞回鼠标位置
+    if (this._hasMoved) {
+      gsap.to(el, {
+        scale: 0.96,
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.in",
+        onComplete: () => this.close(),
+      });
+      return;
+    }
+
     gsap.to(el, {
-      top: this._from.y,
-      left: this._from.x,
-      scale: 0,
+      x: this._offset.x,
+      y: this._offset.y,
+      scale: this._anchor ? 0.5 : 0.96,
       opacity: 0,
-      duration: 0.3,
-      ease: "power2.in",
-      translateX: "-50%", translateY: "-50%",
-      onComplete: () => {
-        this.close();
-      },
+      duration: 0.26,
+      ease: "power3.in",
+      onComplete: () => this.close(),
     });
-    this._from = { x: 0, y: 0 };
   };
 
   // ── render ──
@@ -155,15 +205,15 @@ class CoverDialog extends BaseCover {
         self._visibleFn();
         document.addEventListener("keydown", handleKeydown);
 
+        // 尺寸变化时（图片/字体加载完成）重新对齐到目标位置，拖拽过或正在关闭则不处理
         if (self._dialogRef.value) {
-          if (self.draggable) {
-            resizeObserver = new ResizeObserver(() => {
-              if (!self._hasMoved && self._dialogRef.value) {
-                self._applyPosition(self._dialogRef.value);
-              }
-            });
-            resizeObserver.observe(self._dialogRef.value);
-          }
+          resizeObserver = new ResizeObserver(() => {
+            const el = self._dialogRef.value;
+            if (el && !self._hasMoved && !self._closing) {
+              self._applyPosition(el);
+            }
+          });
+          resizeObserver.observe(self._dialogRef.value);
         }
       });
 
@@ -184,6 +234,8 @@ class CoverDialog extends BaseCover {
               self._dialogRef.value = el;
             },
             class: "fixed min-w-75 max-w-11/12",
+            // 首帧先隐藏，等 gsap 接管后再显示，避免在左上角闪一下
+            style: { opacity: 0 },
             onClick: (e: Event) => e.stopPropagation(),
           },
           [
