@@ -2,10 +2,11 @@
   <div
     v-liquid-glass="{innerShadowBlur: 2, borderRadius: '30px', height: '64px'}"
     ref="bottomBarRef"
-    class="py-3! absolute! top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
-    style="background: rgba(255, 255, 255, 0.1)"
+    class="bottom-bar py-3! absolute! top-[calc(100%-78px)] left-1/2 z-10 -translate-x-1/2 gap-2 scrollbar-none box-border"
+    :class="{ 'bottom-bar--expanded': appStore.isMore }"
     :style="{
       width: `${baseCount * 3.25 + 0.75}rem`,
+      background: appStore.isMore ? '#0c0c10' : 'rgba(255, 255, 255, 0.1)',
     }"
   >
     <!-- 应用名称展示 -->
@@ -245,6 +246,29 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.bottom-bar {
+  transition: background-color 0.3s ease;
+}
+
+/* 右键展开「全部应用」面板：关闭玻璃虚化与透明底，改为完全不透明 */
+.bottom-bar--expanded::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.bottom-bar--expanded::before {
+  background-color: transparent !important;
+}
+
+/* 展开面板内的应用图标同样不用半透明玻璃底 */
+.bottom-bar--expanded .drawer-card :deep(> div:first-child) {
+  background-color: #191a20 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 .drawer-grid :deep(> div) {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, 4.5rem) !important;

@@ -26,6 +26,19 @@ input, textarea {
   display: none;
 }
 
+/* 弹窗面板：不使用透明玻璃效果，保持完全不透明 */
+.dialog-panel {
+  background-color: #0c0c10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  filter: none;
+  -webkit-filter: none;
+}
+
 * {
   /* 滚动条宽度和高度 */
   &::-webkit-scrollbar {

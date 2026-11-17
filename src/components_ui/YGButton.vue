@@ -1,6 +1,5 @@
 <template>
   <button
-    v-liquid-glass="glassOptions"
     :disabled="disabled || loading"
     :class="[
       'glass-btn',
@@ -15,25 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
 import LoadingSvg from "@/assets/svg/loading.svg";
 
-const props = defineProps<{
+defineProps<{
   loading?: boolean;
   disabled?: boolean;
   block?: boolean;
 }>();
-
-const glassOptions = computed(() => ({
-  borderRadius: 12,
-  width: props.block ? '100%' : 'auto',
-  height: 'auto',
-  noiseStrength: 50,
-  glassTintColor: '#ffffff',
-  glassTintOpacity: 0.15,
-  frostBlurRadius: 6,
-  block: props.block,
-}));
 </script>
 
 <style scoped>
@@ -45,7 +32,7 @@ const glassOptions = computed(() => ({
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: transparent;
+  background: #1a1b21;
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   min-width: 100px;
@@ -54,15 +41,16 @@ const glassOptions = computed(() => ({
   font-size: 0.75rem;
   transition: all 0.3s ease;
   user-select: none;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-              inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .glass-btn:hover {
+  background: #24252c;
   color: white;
   border-color: rgba(142, 111, 247, 0.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1),
-              inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
+              inset 0 -1px 0 rgba(0, 0, 0, 0.2),
               0 0 12px rgba(142, 111, 247, 0.3);
 }
 

@@ -6,13 +6,11 @@ import {
   onMounted,
   onUnmounted,
   ref,
-  withDirectives,
 } from "vue";
 import BaseCover from "./BaseCover.js";
 import useApp from "@/store/app.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import gsap from "gsap";
-import { vLiquidGlass } from "@/directives/liquidGlass";
 
 interface DialogOption {
   component: Component;
@@ -189,36 +187,33 @@ class CoverDialog extends BaseCover {
             onClick: (e: Event) => e.stopPropagation(),
           },
           [
-            withDirectives(
-              h(
-                "div",
-                { class: "flex flex-col" },
-                [
-                  h(
-                    "div",
-                    {
-                      class: "h-5 w-full border-b border-white/10 px-1 flex items-center select-none",
-                      style: self.draggable ? "cursor: move" : undefined,
-                      onMousedown: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
-                      onMouseup: self._onMouseUp,
-                      onTouchstart: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
-                      onTouchend: self._onMouseUp,
-                    },
-                    [
-                      h("div", {
-                        className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
-                        onClick: self.hiddenFn,
-                        onTouchend: self.hiddenFn,
-                      }),
-                      self.draggable
-                        ? h("img", { src: MoveSvg, alt: "", className: "w-3 h-3 ml-auto" })
-                        : null,
-                    ],
-                  ),
-                  h(self.options.component, { onClose: self.hiddenFn }),
-                ],
-              ),
-              [[vLiquidGlass, { borderRadius: 8, width: 'auto', height: 'auto' }]],
+            h(
+              "div",
+              { class: "dialog-panel flex flex-col" },
+              [
+                h(
+                  "div",
+                  {
+                    class: "h-5 w-full border-b border-white/10 px-1 flex items-center select-none",
+                    style: self.draggable ? "cursor: move" : undefined,
+                    onMousedown: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
+                    onMouseup: self._onMouseUp,
+                    onTouchstart: (e: MouseEvent & TouchEvent) => self._onMouseDown(e),
+                    onTouchend: self._onMouseUp,
+                  },
+                  [
+                    h("div", {
+                      className: "w-3 h-3 cursor-pointer rounded-full bg-[#ff3b30]",
+                      onClick: self.hiddenFn,
+                      onTouchend: self.hiddenFn,
+                    }),
+                    self.draggable
+                      ? h("img", { src: MoveSvg, alt: "", className: "w-3 h-3 ml-auto" })
+                      : null,
+                  ],
+                ),
+                h(self.options.component, { onClose: self.hiddenFn }),
+              ],
             ),
           ],
         );
