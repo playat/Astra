@@ -44,6 +44,7 @@ input, textarea {
 /* ── 弹窗面板：全站统一的毛玻璃 ── */
 @layer components {
   .dialog-panel {
+    position: relative;
     background-color: var(--glass-panel);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -54,6 +55,56 @@ input, textarea {
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
     overflow: hidden;
     color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* 入场扫光：一道斜向高光掠过面板 */
+  .dialog-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+    transform: translate3d(-120%, 0, 0);
+    background: linear-gradient(
+      115deg,
+      transparent 32%,
+      rgba(255, 255, 255, 0.05) 44%,
+      rgba(255, 255, 255, 0.15) 50%,
+      rgba(255, 255, 255, 0.05) 56%,
+      transparent 68%
+    );
+  }
+
+  /* 入场扫描线：顶部一道光带由中间向两侧拉开 */
+  .dialog-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 51;
+    width: 0;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(142, 111, 247, 0.85),
+      rgba(255, 255, 255, 0.95),
+      rgba(142, 111, 247, 0.85),
+      transparent
+    );
+  }
+
+  .dialog-shell.is-entering .dialog-panel::after {
+    animation: dialog-sheen 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s both;
+  }
+
+  .dialog-shell.is-entering .dialog-panel::before {
+    animation: dialog-scan 0.66s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 
   /* 面板内部的次级块（输入框、预览区、容器） */
@@ -71,6 +122,34 @@ input, textarea {
     box-shadow:
       0 18px 40px rgba(0, 0, 0, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+@keyframes dialog-sheen {
+  0% {
+    opacity: 0;
+    transform: translate3d(-120%, 0, 0);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(120%, 0, 0);
+  }
+}
+
+@keyframes dialog-scan {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
   }
 }
 

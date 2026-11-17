@@ -1,14 +1,5 @@
-import {
-  Component,
-  createVNode,
-  defineComponent,
-  h,
-  onMounted,
-  onUnmounted,
-  ref,
-} from "vue";
+import { Component, createVNode, defineComponent, h, onMounted, onUnmounted, ref } from "vue";
 import BaseCover from "./BaseCover.js";
-import useApp from "@/store/app.js";
 import MoveSvg from "@/assets/svg/move.svg";
 import gsap from "gsap";
 
@@ -21,10 +12,6 @@ interface DialogOption {
 class CoverDialog extends BaseCover {
   private options: DialogOption;
   private _dialogRef = ref<HTMLElement>();
-  /** 点击位置（动画起点锚点），未捕获到点击时为 null */
-  private _anchor: { x: number; y: number } | null = null;
-  /** 弹窗最终位置的中心，相对点击位置的偏移量 */
-  private _offset = { x: 0, y: 0 };
   /** 关闭动画进行中，避免 ResizeObserver 抢位置 */
   private _closing = false;
 
@@ -103,58 +90,51 @@ class CoverDialog extends BaseCover {
     gsap.set(el, { top, left, xPercent: 0, yPercent: 0 });
   }
 
-  // ── 打开动画：先把元素摆到最终位置，再用 transform 从点击点「生长」出来 ──
+  // ── 打开动画：3D 轻翻 + 缩放上浮淡入，配合面板扫光 ──
 
   private _visibleFn = () => {
     const el = this._dialogRef.value;
     if (!el) return;
 
     this._closing = false;
-    const appStore = useApp();
-    const { x, y } = appStore.globlePosition;
-    this._anchor = x > 0 || y > 0 ? { x, y } : null;
 
-    // 1. 直接落到最终位置（不含位移动画，避免拖动 top/left 引起的抖动）
+    // 直接落到最终位置，transform 只做入场变换
     const { top, left } = this._getTargetPos(el);
     gsap.set(el, {
       top,
       left,
       xPercent: 0,
       yPercent: 0,
-      x: 0,
-      y: 0,
-      scale: 1,
-      opacity: 0,
       transformOrigin: "50% 50%",
     });
 
-    // 2. 计算点击点相对弹窗中心的偏移
-    const w = el.offsetWidth;
-    const h = el.offsetHeight;
-    const offset = {
-      x: this._anchor ? this._anchor.x - (left + w / 2) : 0,
-      y: this._anchor ? this._anchor.y - (top + h / 2) : 12,
-    };
-    this._offset = offset;
-
-    // 3. 从点击点放大 + 淡入；没有点击坐标时退化为轻微上浮淡入
-    const scales = this._anchor ? 0.5 : 0.96;
+    // 只用 2D transform：3D 变换会让后代的 backdrop-filter 采样异常
     gsap.fromTo(
       el,
-      { x: offset.x, y: offset.y, scale: scales, opacity: 0 },
+      { scale: 0.9, y: 18, opacity: 0 },
       {
-        x: 0,
-        y: 0,
         scale: 1,
+        y: 0,
         opacity: 1,
-        duration: this._anchor ? 0.46 : 0.26,
-        ease: this._anchor ? "expo.out" : "power2.out",
+        duration: 0.44,
+        ease: "expo.out",
         overwrite: "auto",
+        clearProps: "transform",
       }
     );
+
+    this._playSheen(el);
   };
 
-  // ── 关闭动画：沿原路缩回点击位置 ──
+  /** 面板上扫过一道高光，纯 CSS 动画，动画结束自动移除类 */
+  private _playSheen = (el: HTMLElement) => {
+    el.classList.remove("is-entering");
+    void el.offsetWidth; // 强制重排，保证重复打开时动画能重放
+    el.classList.add("is-entering");
+    window.setTimeout(() => el.classList.remove("is-entering"), 1000);
+  };
+
+  // ── 关闭动画：反向变换后淡出 ──
 
   protected hiddenFn = () => {
     const el = this._dialogRef.value;
@@ -163,27 +143,16 @@ class CoverDialog extends BaseCover {
       return;
     }
     this._closing = true;
+    el.classList.remove("is-entering");
     gsap.killTweensOf(el);
 
-    // 被拖动过：原地淡出，不强行飞回鼠标位置
-    if (this._hasMoved) {
-      gsap.to(el, {
-        scale: 0.96,
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.in",
-        onComplete: () => this.close(),
-      });
-      return;
-    }
-
     gsap.to(el, {
-      x: this._offset.x,
-      y: this._offset.y,
-      scale: this._anchor ? 0.5 : 0.96,
+      scale: 0.94,
+      y: 8,
+      rotateX: 6,
       opacity: 0,
-      duration: 0.26,
-      ease: "power3.in",
+      duration: 0.2,
+      ease: "power2.in",
       onComplete: () => this.close(),
     });
   };
@@ -233,7 +202,7 @@ class CoverDialog extends BaseCover {
             ref: (el: HTMLElement) => {
               self._dialogRef.value = el;
             },
-            class: "fixed min-w-75 max-w-11/12",
+            class: "dialog-shell fixed min-w-75 max-w-11/12",
             // 首帧先隐藏，等 gsap 接管后再显示，避免在左上角闪一下
             style: { opacity: 0 },
             onClick: (e: Event) => e.stopPropagation(),
