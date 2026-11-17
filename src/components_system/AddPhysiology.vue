@@ -47,6 +47,7 @@ import { onMounted, ref } from "vue";
 
 const props = defineProps<{
   isToday?: boolean;
+  onSuccess?: () => void;
 }>();
 const form = ref({
   happen: "",
@@ -61,6 +62,7 @@ const confirm = () => {
   loading.value = true;
   addPhysiology(form.value)
     .then(() => {
+      props.onSuccess?.();
       emits("close");
     })
     .finally(() => {

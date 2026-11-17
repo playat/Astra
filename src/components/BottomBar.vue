@@ -6,7 +6,7 @@
     :class="{ 'bottom-bar--expanded': appStore.isMore }"
     :style="{
       width: `${baseCount * 3.25 + 0.75}rem`,
-      background: appStore.isMore ? '#0c0c10' : 'rgba(255, 255, 255, 0.1)',
+      background: appStore.isMore ? 'rgba(26, 22, 38, 0.5)' : 'rgba(255, 255, 255, 0.1)',
     }"
   >
     <!-- 应用名称展示 -->
@@ -250,7 +250,12 @@ onMounted(() => {
   transition: background-color 0.3s ease;
 }
 
-/* 右键展开「全部应用」面板：关闭玻璃虚化与透明底，改为完全不透明 */
+/* 右键展开「全部应用」面板：在原有玻璃层上加强虚化，形成毛玻璃面板 */
+.bottom-bar--expanded {
+  backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+}
+
 .bottom-bar--expanded::after {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -262,9 +267,9 @@ onMounted(() => {
   background-color: transparent !important;
 }
 
-/* 展开面板内的应用图标同样不用半透明玻璃底 */
+/* 展开面板内的应用图标：浅色实底，避免在毛玻璃上糊成一团 */
 .bottom-bar--expanded .drawer-card :deep(> div:first-child) {
-  background-color: #191a20 !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }

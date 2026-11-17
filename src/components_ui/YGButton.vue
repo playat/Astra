@@ -32,7 +32,7 @@ defineProps<{
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  background: #1a1b21;
+  background: rgba(255, 255, 255, 0.07);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
   min-width: 100px;
@@ -46,7 +46,7 @@ defineProps<{
 }
 
 .glass-btn:hover {
-  background: #24252c;
+  background: rgba(255, 255, 255, 0.13);
   color: white;
   border-color: rgba(142, 111, 247, 0.5);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08),
