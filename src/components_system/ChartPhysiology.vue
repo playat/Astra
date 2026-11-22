@@ -9,13 +9,13 @@
           class="w-[3px] h-9 rounded-full bg-gradient-to-b from-pink-300 to-violet-500"
         ></div>
         <div>
-          <div class="text-[10px] uppercase tracking-[0.35em] text-white/35">
+          <div class="text-xs uppercase tracking-[0.28em] text-white/35">
             cycle log
           </div>
           <div class="text-base font-semibold tracking-wide">生理期记录</div>
         </div>
       </div>
-      <div class="text-right font-mono text-[11px] leading-5 text-white/40">
+      <div class="text-right font-mono text-xs leading-5 text-white/40">
         <div>{{ sorted.length }} 次记录</div>
         <div v-if="spanText">{{ spanText }}</div>
       </div>
@@ -48,9 +48,13 @@
 
       <!-- ── 周期长度趋势 ── -->
       <section v-if="cycles.length" class="mt-5">
-        <div class="flex items-center justify-between px-1 pb-2">
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-1 pb-2"
+        >
           <div class="text-xs tracking-[0.2em] text-white/70">周期长度趋势</div>
-          <div class="flex items-center gap-3 text-[10px] text-white/35">
+          <div
+            class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-white/40"
+          >
             <span class="flex items-center gap-1.5">
               <i class="legend-band"></i>
               常见区间 {{ bandLabel }}
@@ -66,169 +70,183 @@
           </div>
         </div>
 
-        <div
-          ref="scrollRef"
-          class="overflow-x-auto overflow-y-hidden scrollbar-none"
-        >
+        <!-- tip 挂在滚动容器外层，避免被 overflow 裁掉 -->
+        <div ref="chartShell" class="relative">
           <div
-            class="relative"
-            :style="{ width: chartWidth + 'px', height: chartH + 'px' }"
-            @mouseleave="hoverIndex = -1"
+            ref="scrollRef"
+            class="overflow-x-auto overflow-y-hidden scrollbar-none"
+            @scroll="syncTip"
           >
-            <svg
-              :width="chartWidth"
-              :height="chartH"
-              :viewBox="`0 0 ${chartWidth} ${chartH}`"
-              class="block"
-            >
-              <defs>
-                <linearGradient id="phyBar" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#f9a8d4" />
-                  <stop offset="100%" stop-color="#8e6ff7" />
-                </linearGradient>
-              </defs>
-
-              <!-- 常见区间：用你自己数据的中间 50%（Q1–Q3），不是拍一个标准值 -->
-              <rect
-                x="0"
-                :y="bandY"
-                :width="chartWidth"
-                :height="Math.max(1, bandH)"
-                fill="rgba(142,111,247,0.13)"
-              />
-              <line
-                x1="0"
-                :x2="chartWidth"
-                :y1="bandY"
-                :y2="bandY"
-                stroke="rgba(142,111,247,0.3)"
-                stroke-dasharray="3 5"
-              />
-              <line
-                x1="0"
-                :x2="chartWidth"
-                :y1="bandY + bandH"
-                :y2="bandY + bandH"
-                stroke="rgba(142,111,247,0.3)"
-                stroke-dasharray="3 5"
-              />
-
-              <!-- 年份分隔 -->
-              <g v-for="t in yearTicks" :key="'year-' + t.i">
-                <line
-                  :x1="t.x"
-                  :x2="t.x"
-                  :y1="padT - 6"
-                  :y2="chartH - padB"
-                  stroke="rgba(255,255,255,0.08)"
-                  stroke-dasharray="2 6"
-                />
-                <text :x="t.x + 6" :y="padT - 14" class="ct-year">
-                  {{ t.year }}
-                </text>
-              </g>
-
-              <!-- 平均线 -->
-              <line
-                x1="0"
-                :x2="chartWidth"
-                :y1="avgY"
-                :y2="avgY"
-                stroke="rgba(255,255,255,0.42)"
-                stroke-dasharray="6 5"
-              />
-              <text
-                :x="chartWidth - 8"
-                :y="avgY - 7"
-                text-anchor="end"
-                class="ct-avg"
-              >
-                平均 {{ avgLabel }}
-              </text>
-
-              <!-- 柱子 -->
-              <g v-for="(c, i) in cycles" :key="'bar-' + i">
-                <rect
-                  :x="barX(i)"
-                  :y="barTop(c.days)"
-                  :width="barW"
-                  :height="Math.max(3, chartH - padB - barTop(c.days))"
-                  rx="4"
-                  :fill="barFill(c)"
-                  :stroke="c.approx ? 'rgba(255,255,255,0.42)' : 'none'"
-                  :stroke-width="c.approx ? 1 : 0"
-                  :stroke-dasharray="c.approx ? '3 3' : undefined"
-                  :opacity="hoverIndex === -1 || hoverIndex === i ? 1 : 0.35"
-                  class="bar-rect"
-                />
-                <text
-                  :x="barX(i) + barW / 2"
-                  :y="valY(c)"
-                  text-anchor="middle"
-                  class="ct-val"
-                  :class="{
-                    'ct-val--warn': !c.approx && isOutlier(c.days),
-                    'ct-val--soft': c.approx,
-                    'ct-val--in': isClipped(c.days),
-                  }"
-                >
-                  {{ c.approx ? "~" : ""
-                  }}{{ isClipped(c.days) ? c.days + "+" : c.days }}
-                </text>
-                <text
-                  v-if="showLabel(i)"
-                  :x="barX(i) + barW / 2"
-                  :y="chartH - padB + 16"
-                  text-anchor="middle"
-                  class="ct-x"
-                >
-                  {{ monthLabel(c.start) }}
-                </text>
-                <!-- hover 热区 -->
-                <rect
-                  :x="barX(i) - (barStep - barW) / 2"
-                  :y="padT"
-                  :width="barStep"
-                  :height="chartH - padT - padB"
-                  fill="transparent"
-                  @mouseenter="hoverIndex = i"
-                />
-              </g>
-            </svg>
-
-            <!-- 悬浮提示 -->
             <div
-              v-if="hoverCycle"
-              class="chart-tip"
-              :style="{ left: tipLeft + 'px', top: tipTop + 'px' }"
+              class="relative"
+              :style="{ width: chartWidth + 'px', height: chartH + 'px' }"
+              @mouseleave="hoverIndex = -1"
             >
-              <div class="font-mono text-[10px] text-white/80">
-                {{ hoverCycle.startLabel }} → {{ hoverCycle.endLabel }}
-              </div>
-              <div class="mt-0.5 text-[10px]">
-                <span
-                  class="font-semibold"
-                  :class="
-                    hoverCycle.approx
-                      ? 'text-white/60'
-                      : isOutlier(hoverCycle.days)
-                      ? 'text-amber-300'
-                      : 'text-violet-300'
-                  "
-                  >{{ hoverCycle.approx ? "约 " : ""
-                  }}{{ hoverCycle.days }} 天</span
+              <svg
+                :width="chartWidth"
+                :height="chartH"
+                :viewBox="`0 0 ${chartWidth} ${chartH}`"
+                class="block"
+              >
+                <defs>
+                  <linearGradient id="phyBar" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#f9a8d4" />
+                    <stop offset="100%" stop-color="#8e6ff7" />
+                  </linearGradient>
+                </defs>
+
+                <!-- 常见区间：用你自己数据的中间 50%（Q1–Q3），不是拍一个标准值 -->
+                <rect
+                  x="0"
+                  :y="bandY"
+                  :width="chartWidth"
+                  :height="Math.max(1, bandH)"
+                  fill="rgba(142,111,247,0.13)"
+                />
+                <line
+                  x1="0"
+                  :x2="chartWidth"
+                  :y1="bandY"
+                  :y2="bandY"
+                  stroke="rgba(142,111,247,0.3)"
+                  stroke-dasharray="3 5"
+                />
+                <line
+                  x1="0"
+                  :x2="chartWidth"
+                  :y1="bandY + bandH"
+                  :y2="bandY + bandH"
+                  stroke="rgba(142,111,247,0.3)"
+                  stroke-dasharray="3 5"
+                />
+
+                <!-- 年份分隔 -->
+                <g v-for="t in yearTicks" :key="'year-' + t.i">
+                  <line
+                    :x1="t.x"
+                    :x2="t.x"
+                    :y1="padT - 6"
+                    :y2="chartH - padB"
+                    stroke="rgba(255,255,255,0.08)"
+                    stroke-dasharray="2 6"
+                  />
+                  <text :x="t.x + 6" :y="padT - 14" class="ct-year">
+                    {{ t.year }}
+                  </text>
+                </g>
+
+                <!-- 平均线 -->
+                <line
+                  x1="0"
+                  :x2="chartWidth"
+                  :y1="avgY"
+                  :y2="avgY"
+                  stroke="rgba(255,255,255,0.42)"
+                  stroke-dasharray="6 5"
+                />
+                <text
+                  :x="chartWidth - 8"
+                  :y="avgY - 7"
+                  text-anchor="end"
+                  class="ct-avg"
                 >
-                <span class="text-white/45 ml-2">{{
-                  statusText(hoverCycle)
-                }}</span>
-              </div>
+                  平均 {{ avgLabel }}
+                </text>
+
+                <!-- 柱子 -->
+                <g v-for="(c, i) in cycles" :key="'bar-' + i">
+                  <rect
+                    :x="barX(i)"
+                    :y="barTop(c.days)"
+                    :width="barW"
+                    :height="Math.max(3, chartH - padB - barTop(c.days))"
+                    rx="4"
+                    :fill="barFill(c)"
+                    :stroke="c.approx ? 'rgba(255,255,255,0.42)' : 'none'"
+                    :stroke-width="c.approx ? 1 : 0"
+                    :stroke-dasharray="c.approx ? '3 3' : undefined"
+                    :opacity="hoverIndex === -1 || hoverIndex === i ? 1 : 0.35"
+                    class="bar-rect"
+                  />
+                  <text
+                    :x="barX(i) + barW / 2"
+                    :y="valY(c)"
+                    text-anchor="middle"
+                    class="ct-val"
+                    :class="{
+                      'ct-val--warn': !c.approx && isOutlier(c.days),
+                      'ct-val--soft': c.approx,
+                      'ct-val--in': valInside(c),
+                    }"
+                  >
+                    {{ c.approx ? "~" : ""
+                    }}{{ isClipped(c.days) ? c.days + "+" : c.days }}
+                  </text>
+                  <text
+                    v-if="showLabel(i)"
+                    :x="barX(i) + barW / 2"
+                    :y="chartH - padB + 16"
+                    text-anchor="middle"
+                    class="ct-x"
+                  >
+                    {{ monthLabel(c.start) }}
+                  </text>
+                  <!-- hover 热区 -->
+                  <rect
+                    :x="barX(i) - (barStep - barW) / 2"
+                    :y="padT"
+                    :width="barStep"
+                    :height="chartH - padT - padB"
+                    fill="transparent"
+                    @mouseenter="hoverIndex = i"
+                  />
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- 悬浮提示：位置由 JS 按可视区域夹取，靠边自动翻转 -->
+          <div
+            v-if="hoverCycle"
+            ref="tipEl"
+            class="chart-tip"
+            :style="{
+              left: tipPos.left + 'px',
+              top: tipPos.top + 'px',
+              opacity: tipReady ? 1 : 0,
+            }"
+          >
+            <i
+              class="chart-tip-arrow"
+              :class="{ 'chart-tip-arrow--below': tipPos.below }"
+              :style="{ left: tipArrowX + 'px' }"
+            ></i>
+            <div class="font-mono text-xs text-white/80">
+              {{ hoverCycle.startLabel }} → {{ hoverCycle.endLabel }}
+            </div>
+            <div class="mt-1 text-xs">
+              <span
+                class="font-semibold"
+                :class="
+                  hoverCycle.approx
+                    ? 'text-white/60'
+                    : isOutlier(hoverCycle.days)
+                    ? 'text-amber-300'
+                    : 'text-violet-300'
+                "
+                >{{ hoverCycle.approx ? "约 " : ""
+                }}{{ hoverCycle.days }} 天</span
+              >
+              <span class="text-white/45 ml-2">{{
+                statusText(hoverCycle)
+              }}</span>
             </div>
           </div>
         </div>
 
         <!-- 图例说明：把读图规则写清楚 -->
         <div
-          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 pt-2 text-[10px] text-white/25"
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 pt-2 text-xs text-white/30"
         >
           <span>每根柱子 = 相邻两次记录的间隔天数</span>
           <span>
@@ -242,16 +260,16 @@
       <div class="mt-4 flex flex-col gap-3 md:flex-row">
         <!-- 多年总览：一年一行，12 列 = 12 个月，格内数字是当月真实记录的「日」 -->
         <section class="min-w-0 flex-1">
-          <div class="flex items-baseline justify-between px-1 pb-2">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-3 px-1 pb-2">
             <div class="text-xs tracking-[0.2em] text-white/70">多年总览</div>
-            <div class="text-[10px] text-white/35">
+            <div class="text-xs text-white/35">
               格内数字 = 当月记录的真实日，空白 = 无记录
             </div>
           </div>
 
           <div class="cal-wrap">
             <div class="cal-head">
-              <div class="cal-corner">年 \ 月</div>
+              <div class="cal-corner">年月</div>
               <div v-for="m in 12" :key="'cm-' + m" class="cal-month">
                 {{ m }}
               </div>
@@ -288,9 +306,9 @@
             <div
               v-for="(r, i) in recent"
               :key="'rc-' + i"
-              class="flex items-center gap-2 border-b border-white/[0.06] py-1.5 text-[11px] last:border-b-0"
+              class="flex items-center gap-2 border-b border-white/[0.06] py-2 text-xs last:border-b-0"
             >
-              <span class="w-[74px] font-mono text-white/75">{{ r.start }}</span>
+              <span class="w-[76px] font-mono text-white/80">{{ r.start }}</span>
               <span
                 class="font-mono"
                 :class="
@@ -302,7 +320,7 @@
                 "
                 >{{ r.days ? (r.approx ? "~" : "") + r.days + "d" : "—" }}</span
               >
-              <span class="ml-auto text-[10px]" :class="r.tagClass">{{
+              <span class="ml-auto text-xs" :class="r.tagClass">{{
                 r.tag
               }}</span>
             </div>
@@ -329,7 +347,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, nextTick, onMounted, ref } from "vue";
+import { computed, h, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import {
   exportPhysiology,
   getPhysiology,
@@ -364,14 +382,19 @@ const REF_MAX = 35;
 /* ── 布局常量 ── */
 const barStep = 34;
 const barW = 20;
-const chartH = 200;
-const padT = 22;
-const padB = 30;
+const chartH = 214;
+const padT = 26;
+const padB = 34;
+/** tip 与柱顶的间距 */
+const TIP_GAP = 8;
 
 const records = ref<PhyRecord[]>([]);
 const loading = ref(false);
 const hoverIndex = ref(-1);
 const scrollRef = ref<HTMLElement>();
+/** 定位壳：tip 相对它定位，因此不会被横向滚动容器的 overflow 裁掉 */
+const chartShell = ref<HTMLElement>();
+const tipEl = ref<HTMLElement>();
 
 /** 拆出年 / 月 / 日；「日」缺失时为 null（例如记录写成 "2023-6"） */
 const splitDate = (s: string) => {
@@ -545,8 +568,9 @@ const statusText = (c: Cycle) =>
 
 const barTop = (d: number) => Math.max(padT, yOf(d));
 const isClipped = (d: number) => yOf(d) < padT;
-const valY = (c: Cycle) =>
-  isClipped(c.days) ? padT + 11 : Math.max(padT + 8, yOf(c.days) - 6);
+/** 柱子太高，柱顶上方放不下数字，就把数字压进柱身里 */
+const valInside = (c: Cycle) => barTop(c.days) < padT + 16;
+const valY = (c: Cycle) => (valInside(c) ? padT + 13 : barTop(c.days) - 8);
 const barFill = (c: Cycle) =>
   c.approx
     ? "rgba(255,255,255,0.12)"
@@ -577,12 +601,59 @@ const monthLabel = (s: string) => `${Number(s.slice(5, 7))}月`;
 const hoverCycle = computed(() =>
   hoverIndex.value >= 0 ? cycles.value[hoverIndex.value] : null
 );
-const tipLeft = computed(() =>
-  hoverCycle.value ? barX(hoverIndex.value) + barW / 2 : 0
-);
-const tipTop = computed(() =>
-  hoverCycle.value ? Math.max(28, yOf(hoverCycle.value.days) - 14) : 0
-);
+
+/* ── 悬浮提示定位 ──
+ * tip 挂在横向滚动容器外层的定位壳里，坐标相对可视区域计算：
+ * 水平靠边时自动收进边界，顶部空间不足时翻到柱顶下方。
+ */
+const tipPos = ref({ left: 0, top: 0, below: false });
+const tipReady = ref(false);
+const tipArrowX = ref(0);
+
+const computeTip = () => {
+  const i = hoverIndex.value;
+  const shell = chartShell.value;
+  const tip = tipEl.value;
+  if (i < 0 || !shell || !tip) return;
+
+  const c = cycles.value[i];
+  const sw = shell.clientWidth;
+  const sh = shell.clientHeight;
+  const tw = tip.offsetWidth;
+  const th = tip.offsetHeight;
+
+  // 柱子中心换算到可视区域（减掉横向滚动量）
+  const cx = barX(i) + barW / 2 - (scrollRef.value?.scrollLeft ?? 0);
+  const barY = barTop(c.days);
+
+  // 竖直：优先放柱顶上方，放不下就翻到柱顶下方，最后夹在画布内
+  let below = false;
+  let top = barY - th - TIP_GAP;
+  if (top < 2) {
+    below = true;
+    top = barY + TIP_GAP;
+  }
+  top = Math.max(2, Math.min(top, sh - th - 2));
+
+  // 水平：左右都留 4px，避免贴边被裁
+  const left = Math.max(4, Math.min(cx - tw / 2, sw - tw - 4));
+
+  tipArrowX.value = Math.max(12, Math.min(cx - left, tw - 12));
+  tipPos.value = { left, top, below };
+  tipReady.value = true;
+};
+
+/** 横向滚动时同步位置，避免 tip 与柱子错位 */
+const syncTip = () => {
+  if (hoverIndex.value >= 0) computeTip();
+};
+
+watch(hoverIndex, (i) => {
+  tipReady.value = false;
+  if (i < 0) return;
+  // 等 tip 渲染出来量到真实宽高，再算最终位置
+  nextTick(computeTip);
+});
 
 /* ── 多年总览：年份 × 月份，直接落原始记录里的「日」 ── */
 const yearRows = computed(() => {
@@ -725,7 +796,14 @@ const importData = () => {
   input.click();
 };
 
-onMounted(load);
+/** 窗口尺寸变化后可视区宽度也变了，重新夹一次 tip 位置 */
+onMounted(() => {
+  window.addEventListener("resize", syncTip);
+  load();
+});
+onUnmounted(() => {
+  window.removeEventListener("resize", syncTip);
+});
 </script>
 
 <style scoped>
@@ -738,16 +816,16 @@ onMounted(load);
 }
 
 .stat-label {
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.42);
   text-transform: uppercase;
 }
 
 .stat-value {
   margin-top: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
   line-height: 1.1;
   color: rgba(255, 255, 255, 0.94);
@@ -755,15 +833,15 @@ onMounted(load);
 
 .stat-unit {
   margin-left: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .stat-sub {
   margin-top: 5px;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.28);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.34);
 }
 
 /* ── 图例 ── */
@@ -790,58 +868,82 @@ onMounted(load);
   border-top: 1px dashed rgba(255, 255, 255, 0.5);
 }
 
-/* ── 图表文字 ── */
+/* ── 图表文字：最小 12px ── */
 .ct-val {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.5);
+  font-size: 12px;
+  fill: rgba(255, 255, 255, 0.58);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .ct-val--warn {
-  fill: rgba(251, 191, 36, 0.9);
+  fill: rgba(251, 191, 36, 0.95);
 }
 
 .ct-val--soft {
-  fill: rgba(255, 255, 255, 0.4);
+  fill: rgba(255, 255, 255, 0.45);
 }
 
 /* 超出纵轴、被截断的柱子，数字挪到柱内 */
 .ct-val--in {
-  fill: rgba(255, 255, 255, 0.92);
+  fill: rgba(255, 255, 255, 0.95);
   font-weight: 600;
 }
 
 .ct-x {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  fill: rgba(255, 255, 255, 0.38);
 }
 
 .ct-year {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.32);
+  font-size: 12px;
+  fill: rgba(255, 255, 255, 0.4);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .ct-avg {
-  font-size: 9px;
-  fill: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  fill: rgba(255, 255, 255, 0.52);
 }
 
 .bar-rect {
   transition: opacity 0.2s ease;
 }
 
+/* ── 悬浮提示 ── */
 .chart-tip {
   position: absolute;
   z-index: 5;
-  transform: translate(-50%, -100%);
-  padding: 6px 9px;
+  padding: 7px 10px;
   border-radius: 8px;
-  background: rgba(12, 10, 18, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  background: rgba(12, 10, 18, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   white-space: nowrap;
+  transition: opacity 0.12s ease;
+}
+
+/* 指向柱子的小箭头 */
+.chart-tip-arrow {
+  position: absolute;
+  bottom: -5px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  background: rgba(12, 10, 18, 0.94);
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  transform: rotate(45deg);
+}
+
+/* 翻到柱顶下方时，箭头朝上 */
+.chart-tip-arrow--below {
+  bottom: auto;
+  top: -5px;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 /* ── 通用块容器 ── */
@@ -863,7 +965,7 @@ onMounted(load);
 .cal-head,
 .cal-row {
   display: grid;
-  grid-template-columns: 38px repeat(12, minmax(0, 1fr)) 24px;
+  grid-template-columns: 44px repeat(12, minmax(0, 1fr)) 28px;
   gap: 3px;
 }
 
@@ -874,9 +976,9 @@ onMounted(load);
 .cal-corner,
 .cal-month,
 .cal-total-head {
-  font-size: 9px;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.26);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.34);
   text-align: center;
 }
 
@@ -899,17 +1001,17 @@ onMounted(load);
   display: flex;
   align-items: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .cal-cell {
-  min-height: 24px;
+  min-height: 28px;
   display: flex;
   flex-wrap: wrap;
   align-content: center;
   justify-content: center;
-  gap: 1px 3px;
+  gap: 2px 4px;
   padding: 2px 1px;
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.03);
@@ -927,9 +1029,9 @@ onMounted(load);
 
 .cal-date {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 /* 只记录到月份、没有「日」的记录 */
@@ -942,8 +1044,8 @@ onMounted(load);
   align-items: center;
   justify-content: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.38);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* ── 状态标签 ── */
