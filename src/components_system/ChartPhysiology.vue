@@ -74,8 +74,14 @@
         <div ref="chartShell" class="relative">
           <div
             ref="scrollRef"
-            class="overflow-x-auto overflow-y-hidden scrollbar-none"
+            class="chart-scroller overflow-x-auto overflow-y-hidden scrollbar-none"
+            :class="{ 'is-dragging': dragging }"
             @scroll="syncTip"
+            @wheel="onWheel"
+            @pointerdown="onPointerDown"
+            @pointermove="onPointerMove"
+            @pointerup="onPointerUp"
+            @pointercancel="onPointerUp"
           >
             <div
               class="relative"
@@ -249,6 +255,7 @@
           class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 pt-2 text-xs text-white/30"
         >
           <span>每根柱子 = 相邻两次记录的间隔天数</span>
+          <span class="text-white/25">滚轮或按住拖动可横向查看</span>
           <span>
             医学参考 {{ REF_MIN }}–{{ REF_MAX }} 天 · 超过
             {{ Math.round(highFence) }} 天计为长间隔
@@ -648,6 +655,62 @@ const syncTip = () => {
   if (hoverIndex.value >= 0) computeTip();
 };
 
+/* ── 横向浏览：滚轮直接横滚 + 按住拖拽平移 ── */
+const dragging = ref(false);
+const dragState = { active: false, startX: 0, startLeft: 0 };
+
+const maxScroll = () => {
+  const el = scrollRef.value;
+  return el ? Math.max(0, el.scrollWidth - el.clientWidth) : 0;
+};
+
+/** 普通滚轮（deltaY）也转成横向滚动；滚到两端后放行，交给对话框纵向滚动 */
+const onWheel = (e: WheelEvent) => {
+  const el = scrollRef.value;
+  const max = maxScroll();
+  if (!el || max <= 0) return;
+
+  // deltaMode: 0=像素 1=行 2=页
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? el.clientWidth : 1;
+  const raw = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  const delta = raw * unit;
+  if (!delta) return;
+
+  const next = el.scrollLeft + delta;
+  if ((delta < 0 && next <= 0) || (delta > 0 && next >= max)) return;
+  if (e.cancelable) e.preventDefault();
+  el.scrollLeft = Math.max(0, Math.min(max, next));
+};
+
+const onPointerDown = (e: PointerEvent) => {
+  const el = scrollRef.value;
+  if (!el || e.button !== 0 || e.pointerType === "touch") return;
+  if (maxScroll() <= 0) return;
+  dragState.active = true;
+  dragState.startX = e.clientX;
+  dragState.startLeft = el.scrollLeft;
+  dragging.value = true;
+  el.setPointerCapture?.(e.pointerId);
+};
+
+const onPointerMove = (e: PointerEvent) => {
+  if (!dragState.active) return;
+  const el = scrollRef.value;
+  if (!el) return;
+  e.preventDefault();
+  el.scrollLeft = dragState.startLeft - (e.clientX - dragState.startX);
+};
+
+const onPointerUp = (e?: PointerEvent) => {
+  if (!dragState.active) return;
+  dragState.active = false;
+  dragging.value = false;
+  const el = scrollRef.value;
+  if (el && e && el.hasPointerCapture?.(e.pointerId)) {
+    el.releasePointerCapture?.(e.pointerId);
+  }
+};
+
 watch(hoverIndex, (i) => {
   tipReady.value = false;
   if (i < 0) return;
@@ -868,8 +931,17 @@ onUnmounted(() => {
   border-top: 1px dashed rgba(255, 255, 255, 0.5);
 }
 
-/* ── 图表文字：最小 12px ── */
-.ct-val {
+/* ── 图表横向滚动区 ── */
+.chart-scroller {
+  cursor: grab;
+}
+
+.chart-scroller.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* ── 图表文字：最小 12px ── */.ct-val {
   font-size: 12px;
   fill: rgba(255, 255, 255, 0.58);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
