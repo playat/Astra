@@ -52,12 +52,12 @@
           <div class="text-xs tracking-[0.2em] text-white/70">周期长度趋势</div>
           <div class="flex items-center gap-3 text-[10px] text-white/35">
             <span class="flex items-center gap-1.5">
-              <i class="legend-dot bg-gradient-to-b from-pink-300 to-violet-500"></i>
-              正常
+              <i class="legend-band"></i>
+              常见区间 {{ bandLabel }}
             </span>
             <span class="flex items-center gap-1.5">
               <i class="legend-dot bg-amber-400/80"></i>
-              偏离
+              长间隔
             </span>
             <span class="flex items-center gap-1.5">
               <i class="legend-line"></i>
@@ -88,20 +88,20 @@
                 </linearGradient>
               </defs>
 
-              <!-- 正常区间底色 -->
+              <!-- 常见区间：用你自己数据的中间 50%（Q1–Q3），不是拍一个标准值 -->
               <rect
                 x="0"
                 :y="bandY"
                 :width="chartWidth"
-                :height="bandH"
-                fill="rgba(142,111,247,0.09)"
+                :height="Math.max(1, bandH)"
+                fill="rgba(142,111,247,0.13)"
               />
               <line
                 x1="0"
                 :x2="chartWidth"
                 :y1="bandY"
                 :y2="bandY"
-                stroke="rgba(142,111,247,0.25)"
+                stroke="rgba(142,111,247,0.3)"
                 stroke-dasharray="3 5"
               />
               <line
@@ -109,7 +109,7 @@
                 :x2="chartWidth"
                 :y1="bandY + bandH"
                 :y2="bandY + bandH"
-                stroke="rgba(142,111,247,0.25)"
+                stroke="rgba(142,111,247,0.3)"
                 stroke-dasharray="3 5"
               />
 
@@ -150,26 +150,30 @@
               <g v-for="(c, i) in cycles" :key="'bar-' + i">
                 <rect
                   :x="barX(i)"
-                  :y="yOf(c.days)"
+                  :y="barTop(c.days)"
                   :width="barW"
-                  :height="Math.max(3, chartH - padB - yOf(c.days))"
+                  :height="Math.max(3, chartH - padB - barTop(c.days))"
                   rx="4"
-                  :fill="
-                    isAbnormal(c.days)
-                      ? 'rgba(251,191,36,0.8)'
-                      : 'url(#phyBar)'
-                  "
+                  :fill="barFill(c)"
+                  :stroke="c.approx ? 'rgba(255,255,255,0.42)' : 'none'"
+                  :stroke-width="c.approx ? 1 : 0"
+                  :stroke-dasharray="c.approx ? '3 3' : undefined"
                   :opacity="hoverIndex === -1 || hoverIndex === i ? 1 : 0.35"
                   class="bar-rect"
                 />
                 <text
                   :x="barX(i) + barW / 2"
-                  :y="yOf(c.days) - 6"
+                  :y="valY(c)"
                   text-anchor="middle"
                   class="ct-val"
-                  :class="{ 'ct-val--warn': isAbnormal(c.days) }"
+                  :class="{
+                    'ct-val--warn': !c.approx && isOutlier(c.days),
+                    'ct-val--soft': c.approx,
+                    'ct-val--in': isClipped(c.days),
+                  }"
                 >
-                  {{ c.days }}
+                  {{ c.approx ? "~" : ""
+                  }}{{ isClipped(c.days) ? c.days + "+" : c.days }}
                 </text>
                 <text
                   v-if="showLabel(i)"
@@ -199,22 +203,38 @@
               :style="{ left: tipLeft + 'px', top: tipTop + 'px' }"
             >
               <div class="font-mono text-[10px] text-white/80">
-                {{ hoverCycle.start }} → {{ hoverCycle.end }}
+                {{ hoverCycle.startLabel }} → {{ hoverCycle.endLabel }}
               </div>
               <div class="mt-0.5 text-[10px]">
                 <span
                   class="font-semibold"
                   :class="
-                    isAbnormal(hoverCycle.days)
+                    hoverCycle.approx
+                      ? 'text-white/60'
+                      : isOutlier(hoverCycle.days)
                       ? 'text-amber-300'
                       : 'text-violet-300'
                   "
-                  >{{ hoverCycle.days }} 天</span
+                  >{{ hoverCycle.approx ? "约 " : ""
+                  }}{{ hoverCycle.days }} 天</span
                 >
-                <span class="text-white/45 ml-2">{{ statusText(hoverCycle.days) }}</span>
+                <span class="text-white/45 ml-2">{{
+                  statusText(hoverCycle)
+                }}</span>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 图例说明：把读图规则写清楚 -->
+        <div
+          class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 pt-2 text-[10px] text-white/25"
+        >
+          <span>每根柱子 = 相邻两次记录的间隔天数</span>
+          <span>
+            医学参考 {{ REF_MIN }}–{{ REF_MAX }} 天 · 超过
+            {{ Math.round(highFence) }} 天计为长间隔
+          </span>
         </div>
       </section>
 
@@ -245,12 +265,13 @@
                   v-for="(cell, m) in row.months"
                   :key="row.year + '-' + m"
                   class="cal-cell"
-                  :class="{ 'cal-cell--on': cell.days.length > 0 }"
+                  :class="{ 'cal-cell--on': cell.count > 0 }"
                   :title="cell.title"
                 >
                   <span v-for="d in cell.days" :key="d" class="cal-date">{{
                     d
                   }}</span>
+                  <span v-if="cell.unknown" class="cal-date cal-date--q">?</span>
                 </div>
                 <div class="cal-total">{{ row.total }}</div>
               </div>
@@ -273,11 +294,13 @@
               <span
                 class="font-mono"
                 :class="
-                  r.days && isAbnormal(r.days)
+                  r.approx
+                    ? 'text-white/35'
+                    : r.days && isOutlier(r.days)
                     ? 'text-amber-300'
                     : 'text-white/45'
                 "
-                >{{ r.days ? r.days + "d" : "—" }}</span
+                >{{ r.days ? (r.approx ? "~" : "") + r.days + "d" : "—" }}</span
               >
               <span class="ml-auto text-[10px]" :class="r.tagClass">{{
                 r.tag
@@ -322,14 +345,21 @@ interface PhyRecord {
 }
 
 interface Cycle {
+  /** 完整日期，缺「日」时按 1 号占位，只用于取年份 / 月份刻度 */
   start: string;
   end: string;
+  /** 展示用：缺「日」时只显示到月 */
+  startLabel: string;
+  endLabel: string;
   days: number;
+  /** 有一端只记录到月份，天数只是约值，不参与统计 */
+  approx: boolean;
 }
 
 const DAY_MS = 86400000;
-const NORMAL_MIN = 21;
-const NORMAL_MAX = 35;
+/** 医学参考区间，只做文字说明，不作为判定基准 */
+const REF_MIN = 21;
+const REF_MAX = 35;
 
 /* ── 布局常量 ── */
 const barStep = 34;
@@ -343,16 +373,23 @@ const loading = ref(false);
 const hoverIndex = ref(-1);
 const scrollRef = ref<HTMLElement>();
 
-/** 兼容 "2026-03-05" / "2026/03/05" / "2026-03-05T00:00:00" 等返回格式 */
-const parseDate = (s: string) => {
-  const [y, m, d] = String(s).slice(0, 10).split(/[-/.]/).map(Number);
-  return new Date(y || 1970, (m || 1) - 1, d || 1);
+/** 拆出年 / 月 / 日；「日」缺失时为 null（例如记录写成 "2023-6"） */
+const splitDate = (s: string) => {
+  const p = String(s).slice(0, 10).split(/[-/.]/).map(Number);
+  return {
+    y: Number.isFinite(p[0]) ? p[0] : 1970,
+    m: Number.isFinite(p[1]) ? p[1] : 1,
+    d: Number.isFinite(p[2]) && p[2] > 0 ? (p[2] as number) : null,
+  };
 };
-const fmt = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
 const pad = (n: number) => String(n).padStart(2, "0");
+const toDate = (p: { y: number; m: number; d: number | null }) =>
+  new Date(p.y, p.m - 1, p.d ?? 1);
+const fmtLabel = (p: { y: number; m: number; d: number | null }) =>
+  p.d === null ? `${p.y}-${pad(p.m)}` : `${p.y}-${pad(p.m)}-${pad(p.d)}`;
+const fmt = (d: Date) =>
+  `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseDate = (s: string) => toDate(splitDate(s));
 
 const sorted = computed(() =>
   [...records.value]
@@ -365,33 +402,64 @@ const cycles = computed<Cycle[]>(() => {
   const list = sorted.value;
   const out: Cycle[] = [];
   for (let i = 0; i < list.length - 1; i++) {
-    const s = parseDate(list[i].happen);
-    const e = parseDate(list[i + 1].happen);
+    const a = splitDate(list[i].happen);
+    const b = splitDate(list[i + 1].happen);
+    const s = toDate(a);
+    const e = toDate(b);
     out.push({
       start: fmt(s),
       end: fmt(e),
+      startLabel: fmtLabel(a),
+      endLabel: fmtLabel(b),
       days: Math.round((e.getTime() - s.getTime()) / DAY_MS),
+      approx: a.d === null || b.d === null,
     });
   }
   return out;
 });
 
+/** 缺「日」的周期天数不确定，统计一律排除 */
+const solidCycles = computed(() => cycles.value.filter((c) => !c.approx));
+const solidDays = computed(() => solidCycles.value.map((c) => c.days));
+
+const quantile = (arr: number[], p: number) => {
+  if (!arr.length) return 0;
+  const s = [...arr].sort((a, b) => a - b);
+  const pos = (s.length - 1) * p;
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  return s[lo] + (s[hi] - s[lo]) * (pos - lo);
+};
+
+const medianDays = computed(() => quantile(solidDays.value, 0.5));
+const q1Days = computed(() => quantile(solidDays.value, 0.25));
+const q3Days = computed(() => quantile(solidDays.value, 0.75));
+const iqr = computed(() => q3Days.value - q1Days.value);
+/** 1.5 倍四分位距之外视为长 / 短间隔（箱线图惯例） */
+const lowFence = computed(() => q1Days.value - 1.5 * iqr.value);
+const highFence = computed(() => q3Days.value + 1.5 * iqr.value);
+
 const lastRecord = computed(() => sorted.value[sorted.value.length - 1]);
 const sinceLast = computed(() => {
   if (!lastRecord.value) return null;
-  return Math.floor((Date.now() - parseDate(lastRecord.value.happen).getTime()) / DAY_MS);
+  return Math.floor(
+    (Date.now() - parseDate(lastRecord.value.happen).getTime()) / DAY_MS
+  );
 });
 
 const avgDays = computed(() => {
-  if (!cycles.value.length) return 0;
-  return cycles.value.reduce((a, c) => a + c.days, 0) / cycles.value.length;
+  if (!solidDays.value.length) return 0;
+  return solidDays.value.reduce((a, b) => a + b, 0) / solidDays.value.length;
 });
 const avgLabel = computed(() => `${avgDays.value.toFixed(1)} 天`);
 const minDays = computed(() =>
-  cycles.value.length ? Math.min(...cycles.value.map((c) => c.days)) : 0
+  solidDays.value.length ? Math.min(...solidDays.value) : 0
 );
 const maxDays = computed(() =>
-  cycles.value.length ? Math.max(...cycles.value.map((c) => c.days)) : 0
+  solidDays.value.length ? Math.max(...solidDays.value) : 0
+);
+const bandLabel = computed(
+  () => `${Math.round(q1Days.value)}–${Math.round(q3Days.value)} 天`
 );
 
 const spanText = computed(() => {
@@ -405,13 +473,19 @@ const spanText = computed(() => {
 const stats = computed(() => {
   const last = lastRecord.value;
   const since = sinceLast.value;
-  const lastFull = last ? fmt(parseDate(last.happen)) : "";
+  const lastParts = last ? splitDate(last.happen) : null;
   return [
     {
       label: "最近一次",
-      value: last ? lastFull.slice(5) : "--",
+      value: lastParts
+        ? lastParts.d === null
+          ? `${pad(lastParts.m)} 月`
+          : `${pad(lastParts.m)}-${pad(lastParts.d)}`
+        : "--",
       unit: "",
-      sub: last ? `${lastFull.slice(0, 4)} 年` : "暂无记录",
+      sub: lastParts
+        ? `${lastParts.y} 年${lastParts.d === null ? " · 未记到天" : ""}`
+        : "暂无记录",
     },
     {
       label: "距上次",
@@ -421,25 +495,30 @@ const stats = computed(() => {
     },
     {
       label: "平均周期",
-      value: cycles.value.length ? avgDays.value.toFixed(1) : "--",
+      value: solidCycles.value.length ? avgDays.value.toFixed(1) : "--",
       unit: "天",
-      sub: cycles.value.length
-        ? `基于 ${cycles.value.length} 个完整周期`
+      sub: solidCycles.value.length
+        ? `中位 ${Math.round(medianDays.value)} 天 · ${solidCycles.value.length} 个周期`
         : "至少需要两次记录",
     },
     {
       label: "最短 / 最长",
-      value: cycles.value.length
+      value: solidCycles.value.length
         ? `${minDays.value} / ${maxDays.value}`
         : "--",
-      unit: cycles.value.length ? "天" : "",
-      sub: `正常 ${NORMAL_MIN}–${NORMAL_MAX} 天`,
+      unit: solidCycles.value.length ? "天" : "",
+      sub: solidCycles.value.length
+        ? `常见 ${bandLabel.value}`
+        : "暂无完整周期",
     },
   ];
 });
 
 /* ── 图表刻度 ── */
-const yMax = computed(() => Math.max(40, maxDays.value + 6));
+/** 纵轴按 1.5 倍四分位距上界取值，极端长间隔不会把整体压扁 */
+const yMax = computed(() =>
+  Math.max(44, Math.ceil((highFence.value + 4) / 2) * 2)
+);
 const plotH = computed(() => chartH - padT - padB);
 const yOf = (v: number) => padT + (1 - v / yMax.value) * plotH.value;
 const chartWidth = computed(() =>
@@ -447,13 +526,33 @@ const chartWidth = computed(() =>
 );
 const barX = (i: number) => 8 + i * barStep + (barStep - barW) / 2;
 
-const bandY = computed(() => yOf(NORMAL_MAX));
-const bandH = computed(() => Math.max(0, yOf(NORMAL_MIN) - yOf(NORMAL_MAX)));
+const bandY = computed(() => yOf(q3Days.value));
+const bandH = computed(() =>
+  Math.max(0, yOf(q1Days.value) - yOf(q3Days.value))
+);
 const avgY = computed(() => yOf(avgDays.value));
 
-const isAbnormal = (d: number) => d < NORMAL_MIN || d > NORMAL_MAX;
-const statusText = (d: number) =>
-  d < NORMAL_MIN ? "偏短" : d > NORMAL_MAX ? "偏长" : "正常范围";
+const isOutlier = (d: number) =>
+  solidDays.value.length > 0 && (d > highFence.value || d < lowFence.value);
+const statusText = (c: Cycle) =>
+  c.approx
+    ? "日期未记到天，约值"
+    : c.days > highFence.value
+    ? "长间隔"
+    : c.days < lowFence.value
+    ? "短间隔"
+    : "常见范围";
+
+const barTop = (d: number) => Math.max(padT, yOf(d));
+const isClipped = (d: number) => yOf(d) < padT;
+const valY = (c: Cycle) =>
+  isClipped(c.days) ? padT + 11 : Math.max(padT + 8, yOf(c.days) - 6);
+const barFill = (c: Cycle) =>
+  c.approx
+    ? "rgba(255,255,255,0.12)"
+    : isOutlier(c.days)
+    ? "rgba(251,191,36,0.8)"
+    : "url(#phyBar)";
 
 const yearTicks = computed(() => {
   const out: { i: number; x: number; year: number }[] = [];
@@ -487,33 +586,38 @@ const tipTop = computed(() =>
 
 /* ── 多年总览：年份 × 月份，直接落原始记录里的「日」 ── */
 const yearRows = computed(() => {
-  const map = new Map<number, number[][]>();
+  const map = new Map<number, { days: number[]; unknown: boolean }[]>();
   for (const r of sorted.value) {
-    const d = parseDate(r.happen);
-    const y = d.getFullYear();
-    if (!map.has(y)) {
+    const p = splitDate(r.happen);
+    if (!map.has(p.y)) {
       map.set(
-        y,
-        Array.from({ length: 12 }, () => [] as number[])
+        p.y,
+        Array.from({ length: 12 }, () => ({ days: [] as number[], unknown: false }))
       );
     }
-    const cell = map.get(y)![d.getMonth()];
-    const day = d.getDate();
-    if (!cell.includes(day)) cell.push(day); // 同一天重复记录只显示一次
+    const cell = map.get(p.y)![p.m - 1];
+    if (p.d === null) {
+      cell.unknown = true; // 只记录到月份，不替它补一个「日」
+    } else if (!cell.days.includes(p.d)) {
+      cell.days.push(p.d); // 同一天重复记录只显示一次
+    }
   }
   return [...map.entries()]
     .sort((a, b) => b[0] - a[0]) // 最近的年份在最上面
     .map(([year, months]) => ({
       year,
-      total: months.reduce((a, m) => a + m.length, 0),
-      months: months.map((days, i) => {
-        const sortedDays = [...days].sort((x, y) => x - y);
+      total: months.reduce((a, m) => a + m.days.length + (m.unknown ? 1 : 0), 0),
+      months: months.map((cell, i) => {
+        const days = [...cell.days].sort((x, y) => x - y);
+        const parts: string[] = [];
+        if (days.length) parts.push(days.map((x) => `${x} 日`).join("、"));
+        if (cell.unknown) parts.push("日期只记到月份");
         return {
-          days: sortedDays,
-          title: sortedDays.length
-            ? `${year}-${pad(i + 1)} 月：${sortedDays
-                .map((x) => `${x} 日`)
-                .join("、")}`
+          days,
+          unknown: cell.unknown,
+          count: days.length + (cell.unknown ? 1 : 0),
+          title: parts.length
+            ? `${year}-${pad(i + 1)} 月：${parts.join(" · ")}`
             : `${year}-${pad(i + 1)} 月：无记录`,
         };
       }),
@@ -526,19 +630,23 @@ const recent = computed(() => {
     .slice(-6)
     .reverse()
     .map((c) => ({
-      start: c.start,
-      end: c.end,
+      start: c.startLabel,
       days: c.days,
-      tag: statusText(c.days),
-      tagClass: isAbnormal(c.days) ? "tag tag--warn" : "tag tag--ok",
+      approx: c.approx,
+      tag: statusText(c),
+      tagClass: c.approx
+        ? "tag tag--muted"
+        : isOutlier(c.days)
+        ? "tag tag--warn"
+        : "tag tag--ok",
     }));
 
   const last = lastRecord.value;
   if (last) {
     rows.unshift({
-      start: fmt(parseDate(last.happen)),
-      end: "至今",
+      start: fmtLabel(splitDate(last.happen)),
       days: 0,
+      approx: false,
       tag: sinceLast.value !== null ? `已 ${sinceLast.value} 天` : "",
       tagClass: "tag tag--live",
     });
@@ -666,6 +774,15 @@ onMounted(load);
   border-radius: 2px;
 }
 
+.legend-band {
+  display: inline-block;
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(142, 111, 247, 0.22);
+  border: 1px dashed rgba(142, 111, 247, 0.55);
+}
+
 .legend-line {
   display: inline-block;
   width: 12px;
@@ -682,6 +799,16 @@ onMounted(load);
 
 .ct-val--warn {
   fill: rgba(251, 191, 36, 0.9);
+}
+
+.ct-val--soft {
+  fill: rgba(255, 255, 255, 0.4);
+}
+
+/* 超出纵轴、被截断的柱子，数字挪到柱内 */
+.ct-val--in {
+  fill: rgba(255, 255, 255, 0.92);
+  font-weight: 600;
 }
 
 .ct-x {
@@ -805,6 +932,11 @@ onMounted(load);
   color: rgba(255, 255, 255, 0.9);
 }
 
+/* 只记录到月份、没有「日」的记录 */
+.cal-date--q {
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .cal-total {
   display: flex;
   align-items: center;
@@ -829,6 +961,11 @@ onMounted(load);
 .tag--warn {
   color: rgba(251, 191, 36, 0.95);
   background: rgba(251, 191, 36, 0.12);
+}
+
+.tag--muted {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .tag--live {
