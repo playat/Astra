@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative w-[86vw] max-w-[1040px] text-white max-h-[78vh] overflow-y-auto overflow-x-hidden scrollbar-none pr-1"
+    class="relative w-[86vw] max-w-[1040px] text-white max-h-[78vh] overflow-y-auto overflow-x-hidden scrollbar-none p-[5px]"
   >
     <!-- ── 顶部标题 ── -->
     <div class="flex items-end justify-between gap-4 px-1 pb-4">
@@ -220,44 +220,39 @@
 
       <!-- ── 多年总览 + 最近记录 ── -->
       <div class="mt-4 flex flex-col gap-3 md:flex-row">
-        <!-- 多年总览 -->
+        <!-- 多年总览：一年一行，12 列 = 12 个月，格内数字是当月真实记录的「日」 -->
         <section class="min-w-0 flex-1">
-          <div class="flex items-center justify-between px-1 pb-2">
+          <div class="flex items-baseline justify-between px-1 pb-2">
             <div class="text-xs tracking-[0.2em] text-white/70">多年总览</div>
-            <div class="text-[10px] text-white/30">每格为当月起经日</div>
+            <div class="text-[10px] text-white/35">
+              格内数字 = 当月记录的真实日，空白 = 无记录
+            </div>
           </div>
 
-          <div class="heat-wrap">
-            <div class="heat-head">
-              <div></div>
-              <div v-for="m in 12" :key="'hm-' + m" class="heat-month">
+          <div class="cal-wrap">
+            <div class="cal-head">
+              <div class="cal-corner">年 \ 月</div>
+              <div v-for="m in 12" :key="'cm-' + m" class="cal-month">
                 {{ m }}
               </div>
+              <div class="cal-total-head">次</div>
             </div>
 
-            <div class="heat-body">
-              <div v-for="row in yearMatrix" :key="row.year" class="heat-row">
-                <div class="heat-year">{{ row.year }}</div>
+            <div class="cal-body">
+              <div v-for="row in yearRows" :key="row.year" class="cal-row">
+                <div class="cal-year">{{ row.year }}</div>
                 <div
                   v-for="(cell, m) in row.months"
                   :key="row.year + '-' + m"
-                  class="heat-cell"
-                  :class="{ 'heat-cell--on': cell.count > 0 }"
-                  :style="
-                    cell.count > 0
-                      ? { backgroundColor: heatColor(cell.count) }
-                      : undefined
-                  "
-                  :title="
-                    cell.count > 0
-                      ? `${row.year}-${pad(m + 1)}：${cell.days.join('、')} 日`
-                      : `${row.year}-${pad(m + 1)}：无记录`
-                  "
+                  class="cal-cell"
+                  :class="{ 'cal-cell--on': cell.days.length > 0 }"
+                  :title="cell.title"
                 >
-                  <span v-if="cell.count" class="heat-day">{{
-                    cell.days.slice(0, 2).join("·")
+                  <span v-for="d in cell.days" :key="d" class="cal-date">{{
+                    d
                   }}</span>
                 </div>
+                <div class="cal-total">{{ row.total }}</div>
               </div>
             </div>
           </div>
@@ -268,7 +263,7 @@
           <div class="px-1 pb-2 text-xs tracking-[0.2em] text-white/70">
             最近记录
           </div>
-          <div class="heat-wrap">
+          <div class="panel-block">
             <div
               v-for="(r, i) in recent"
               :key="'rc-' + i"
@@ -348,9 +343,10 @@ const loading = ref(false);
 const hoverIndex = ref(-1);
 const scrollRef = ref<HTMLElement>();
 
+/** 兼容 "2026-03-05" / "2026/03/05" / "2026-03-05T00:00:00" 等返回格式 */
 const parseDate = (s: string) => {
-  const [y, m, d] = String(s).split(/[-/.]/).map(Number);
-  return new Date(y, (m || 1) - 1, d || 1);
+  const [y, m, d] = String(s).slice(0, 10).split(/[-/.]/).map(Number);
+  return new Date(y || 1970, (m || 1) - 1, d || 1);
 };
 const fmt = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
@@ -409,34 +405,34 @@ const spanText = computed(() => {
 const stats = computed(() => {
   const last = lastRecord.value;
   const since = sinceLast.value;
+  const lastFull = last ? fmt(parseDate(last.happen)) : "";
   return [
     {
       label: "最近一次",
-      value: last ? last.happen.slice(5) : "--",
+      value: last ? lastFull.slice(5) : "--",
       unit: "",
-      sub: last ? `${last.happen.slice(0, 4)} 年` : "暂无记录",
+      sub: last ? `${lastFull.slice(0, 4)} 年` : "暂无记录",
     },
     {
-      label: since !== null && since <= 90 ? "本次周期" : "距上次",
-      value: since === null ? "--" : String(since + (since <= 90 ? 1 : 0)),
+      label: "距上次",
+      value: since === null ? "--" : String(since),
       unit: "天",
-      sub:
-        since === null
-          ? "暂无记录"
-          : since <= 90
-          ? "从最近一次开始算起"
-          : "上次记录距今",
+      sub: since === null ? "暂无记录" : "今天 − 最近一次记录",
     },
     {
       label: "平均周期",
       value: cycles.value.length ? avgDays.value.toFixed(1) : "--",
       unit: "天",
-      sub: `共 ${cycles.value.length} 个完整周期`,
+      sub: cycles.value.length
+        ? `基于 ${cycles.value.length} 个完整周期`
+        : "至少需要两次记录",
     },
     {
-      label: "波动范围",
-      value: cycles.value.length ? `${minDays.value}–${maxDays.value}` : "--",
-      unit: "天",
+      label: "最短 / 最长",
+      value: cycles.value.length
+        ? `${minDays.value} / ${maxDays.value}`
+        : "--",
+      unit: cycles.value.length ? "天" : "",
       sub: `正常 ${NORMAL_MIN}–${NORMAL_MAX} 天`,
     },
   ];
@@ -489,34 +485,40 @@ const tipTop = computed(() =>
   hoverCycle.value ? Math.max(28, yOf(hoverCycle.value.days) - 14) : 0
 );
 
-/* ── 多年总览矩阵 ── */
-const yearMatrix = computed(() => {
-  const map = new Map<number, { count: number; days: number[] }[]>();
+/* ── 多年总览：年份 × 月份，直接落原始记录里的「日」 ── */
+const yearRows = computed(() => {
+  const map = new Map<number, number[][]>();
   for (const r of sorted.value) {
     const d = parseDate(r.happen);
     const y = d.getFullYear();
     if (!map.has(y)) {
       map.set(
         y,
-        Array.from({ length: 12 }, () => ({ count: 0, days: [] as number[] }))
+        Array.from({ length: 12 }, () => [] as number[])
       );
     }
     const cell = map.get(y)![d.getMonth()];
-    cell.count += 1;
-    cell.days.push(d.getDate());
+    const day = d.getDate();
+    if (!cell.includes(day)) cell.push(day); // 同一天重复记录只显示一次
   }
   return [...map.entries()]
-    .sort((a, b) => b[0] - a[0])
+    .sort((a, b) => b[0] - a[0]) // 最近的年份在最上面
     .map(([year, months]) => ({
       year,
-      months: months.map((m) => ({ count: m.count, days: [...m.days].sort((x, y) => x - y) })),
+      total: months.reduce((a, m) => a + m.length, 0),
+      months: months.map((days, i) => {
+        const sortedDays = [...days].sort((x, y) => x - y);
+        return {
+          days: sortedDays,
+          title: sortedDays.length
+            ? `${year}-${pad(i + 1)} 月：${sortedDays
+                .map((x) => `${x} 日`)
+                .join("、")}`
+            : `${year}-${pad(i + 1)} 月：无记录`,
+        };
+      }),
     }));
 });
-
-const heatColor = (n: number) => {
-  const alpha = Math.min(0.72, 0.3 + (n - 1) * 0.2);
-  return `rgba(244, 114, 182, ${alpha})`;
-};
 
 /* ── 最近记录 ── */
 const recent = computed(() => {
@@ -715,71 +717,101 @@ onMounted(load);
   white-space: nowrap;
 }
 
-/* ── 多年总览 ── */
-.heat-wrap {
+/* ── 通用块容器 ── */
+.panel-block {
   border-radius: 10px;
   border: 1px solid var(--glass-line);
   background: var(--glass-inset);
   padding: 10px 12px;
 }
 
-.heat-head,
-.heat-row {
+/* ── 多年总览：年份 × 月份日历表 ── */
+.cal-wrap {
+  border-radius: 10px;
+  border: 1px solid var(--glass-line);
+  background: var(--glass-inset);
+  padding: 8px 10px 9px;
+}
+
+.cal-head,
+.cal-row {
   display: grid;
-  grid-template-columns: 42px repeat(12, minmax(0, 1fr));
-  gap: 4px;
-  align-items: center;
+  grid-template-columns: 38px repeat(12, minmax(0, 1fr)) 24px;
+  gap: 3px;
 }
 
-.heat-head {
-  margin-bottom: 5px;
+.cal-head {
+  margin-bottom: 4px;
 }
 
-.heat-body {
-  max-height: 168px;
+.cal-corner,
+.cal-month,
+.cal-total-head {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.26);
+  text-align: center;
+}
+
+.cal-corner {
+  text-align: left;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.cal-body {
+  max-height: 186px;
   overflow-y: auto;
   padding-right: 2px;
 }
 
-.heat-month {
-  text-align: center;
-  font-size: 9px;
-  color: rgba(255, 255, 255, 0.25);
+.cal-row + .cal-row {
+  margin-top: 3px;
 }
 
-.heat-row + .heat-row {
-  margin-top: 4px;
-}
-
-.heat-year {
+.cal-year {
+  display: flex;
+  align-items: center;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.45);
 }
 
-.heat-cell {
-  height: 20px;
+.cal-cell {
+  min-height: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 1px 3px;
+  padding: 2px 1px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.03);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cal-cell--on {
+  background: rgba(244, 114, 182, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(244, 114, 182, 0.24);
+}
+
+.cal-cell--on:hover {
+  background: rgba(244, 114, 182, 0.26);
+}
+
+.cal-date {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cal-total {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.15s ease, background-color 0.15s ease;
-}
-
-.heat-day {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.85);
-  line-height: 1;
-}
-
-.heat-cell--on {
-  box-shadow: 0 0 10px rgba(244, 114, 182, 0.25);
-}
-
-.heat-cell:hover {
-  transform: scale(1.1);
+  color: rgba(255, 255, 255, 0.38);
 }
 
 /* ── 状态标签 ── */
