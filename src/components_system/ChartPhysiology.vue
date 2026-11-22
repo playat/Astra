@@ -182,8 +182,8 @@
                     :class="{
                       'ct-val--warn': !c.approx && isOutlier(c.days),
                       'ct-val--soft': c.approx,
-                      'ct-val--in': valInside(c),
                     }"
+                    :opacity="hoverIndex === -1 || hoverIndex === i ? 1 : 0.35"
                   >
                     {{ c.approx ? "~" : ""
                     }}{{ isClipped(c.days) ? c.days + "+" : c.days }}
@@ -575,9 +575,9 @@ const statusText = (c: Cycle) =>
 
 const barTop = (d: number) => Math.max(padT, yOf(d));
 const isClipped = (d: number) => yOf(d) < padT;
-/** 柱子太高，柱顶上方放不下数字，就把数字压进柱身里 */
-const valInside = (c: Cycle) => barTop(c.days) < padT + 16;
-const valY = (c: Cycle) => (valInside(c) ? padT + 13 : barTop(c.days) - 8);
+const barBottom = chartH - padB;
+/** 数字统一压在柱身内顶部：既不和平均线标签打架，也不会串到邻柱上方 */
+const valY = (c: Cycle) => Math.min(barTop(c.days) + 15, barBottom - 6);
 const barFill = (c: Cycle) =>
   c.approx
     ? "rgba(255,255,255,0.12)"
@@ -941,24 +941,25 @@ onUnmounted(() => {
   user-select: none;
 }
 
-/* ── 图表文字：最小 12px ── */.ct-val {
+/* ── 图表文字：最小 12px ── */
+/* 数字压在柱身内顶部：亮色（渐变/琥珀）柱身配深色字，约值柱（暗）配浅色字 */
+.ct-val {
   font-size: 12px;
-  fill: rgba(255, 255, 255, 0.58);
+  fill: rgba(38, 22, 48, 0.92);
+  font-weight: 700;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 .ct-val--warn {
-  fill: rgba(251, 191, 36, 0.95);
+  fill: rgba(66, 36, 4, 0.95);
 }
 
 .ct-val--soft {
-  fill: rgba(255, 255, 255, 0.45);
-}
-
-/* 超出纵轴、被截断的柱子，数字挪到柱内 */
-.ct-val--in {
-  fill: rgba(255, 255, 255, 0.95);
-  font-weight: 600;
+  fill: rgba(255, 255, 255, 0.86);
+  paint-order: stroke;
+  stroke: rgba(14, 10, 22, 0.55);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
 }
 
 .ct-x {
@@ -972,9 +973,14 @@ onUnmounted(() => {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* 平均线标签会压在柱身/柱子上，加一圈底色描边保证可读 */
 .ct-avg {
   font-size: 12px;
-  fill: rgba(255, 255, 255, 0.52);
+  fill: rgba(255, 255, 255, 0.72);
+  paint-order: stroke;
+  stroke: rgba(22, 17, 32, 0.82);
+  stroke-width: 3.5px;
+  stroke-linejoin: round;
 }
 
 .bar-rect {
